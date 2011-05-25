@@ -9,8 +9,7 @@
 
 var assert = require("assert");
 var BitBucket = require("./index").BitBucket;
-
-var username = "fjakobstest";
+var secrets = require("./secrets");
 
 var test = module.exports = {
 
@@ -36,8 +35,9 @@ var test = module.exports = {
 
     // test disabled because I don't want to see my password on github :-)
     "test: authenticate using username and password should show private repose" : function(finished) {
-        test.bitbucket.authenticatePassword("fjakobstest", "12345");
-        test.repoApi.getUserRepos("fjakobstest", function(err, repos) {
+        test.bitbucket.authenticatePassword(secrets.username, secrets.password);
+        test.repoApi.getUserRepos(secrets.username, function(err, repos) {
+            console.log(repos)
             assert.ok(repos.filter(function(repo) { return repo.is_private; }).length > 0);
             finished();
         });

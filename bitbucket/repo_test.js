@@ -34,6 +34,7 @@ var test = module.exports = {
 
     "test: get user repos" : function(finished) {
         test.repoApi.getUserRepos("fjakobstest", function(err, repos) {
+            console.log(repos)
             assert.ok(repos.length > 0);
             assert.ok(repos[0].name !== undefined);
             finished();
