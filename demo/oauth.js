@@ -17,15 +17,19 @@ var oauth = new OAuth(
     secrets.oauth.secret, //consumerSecret,
     "1.0", //version, 
     "http://node-bitbucket.fjakobs.c9.io/bitbucket/callback", //authorize_callback,
-    "HMAC-SHA1" //signatureMethod, 
+    'HMAC-SHA1' //signatureMethod, 
 );
 
-oauth.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results) {
-    console.log(arguments);
-    
-    // for demo purposes use one global access token
-    // in production this has to be stored in a user session
-    var accessToken = "";
+// for demo purposes use one global access token
+// in production this has to be stored in a user session
+var accessToken = "";
+
+function getOAuthRequestToken(callback) {
+    oauth.getOAuthRequestToken(callback)
+}
+
+getOAuthRequestToken(function(error, oauthToken, oauthTokenSecret, results) {
+    console.log(arguments)
     
     http.createServer(function(req, res) {
         var url = Url.parse(req.url);
@@ -40,12 +44,15 @@ oauth.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, resu
             // redirect to bitbucket if there is no access token        
             if (!accessToken) {
                 res.writeHead(303, {
-                    Location: "https://bitbucket.org/api/1.0/oauth/authenticate?oauth_token=" + oauth_token
+                    Location: oauth.signUrl("https://bitbucket.org/!api/1.0/oauth/authenticate/", oauthToken, oauthTokenSecret, "GET")                               
                 });
                 res.end();
                 return;
             }
                     
+            res.writeHead(200);
+            res.end("Jippie");
+            
             // TODO use API        
             /*
             user.show(function(err, user) {
@@ -63,7 +70,7 @@ oauth.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, resu
         // URL called by bitbucket after authenticating
         else if (path.match(/^\/bitbucket\/callback\/?$/)) {
             // upgrade the code to an access token
-            oauth.getOAuthAccessToken(oauth_token, oauth_token_secret, oauth.verifier, function(err, oauth_access_token, oauth_access_token_secret, results) {
+            oauth.getOAuthAccessToken(oauthToken, oauthTokenSecret, query.oauth_verifier, function(err, oauth_access_token, oauth_access_token_secret, results) {
                 if (err) {
                     console.log(err);
                     res.writeHead(500);
@@ -75,6 +82,7 @@ oauth.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, resu
                 
                 // authenticate API
                 bitbucket.authenticateOAuth(accessToken);
+                console.log("accessToken", accessToken)
                   
                 //redirect back
                 res.writeHead(303, {
