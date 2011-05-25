@@ -37,7 +37,7 @@ oauth.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, resu
         
         if (path == "/") {
             
-            // redirect to github if there is no access token        
+            // redirect to bitbucket if there is no access token        
             if (!accessToken) {
                 res.writeHead(303, {
                     Location: "https://bitbucket.org/api/1.0/oauth/authenticate?oauth_token=" + oauth_token
@@ -46,7 +46,8 @@ oauth.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, resu
                 return;
             }
                     
-            // use github API            
+            // TODO use API        
+            /*
             user.show(function(err, user) {
                 if (err) {
                     res.writeHead(err.status);
@@ -56,9 +57,10 @@ oauth.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, resu
                 res.writeHead(200);
                 res.end(JSON.stringify(user));
             });
+            */
             return;
         } 
-        // URL called by github after authenticating
+        // URL called by bitbucket after authenticating
         else if (path.match(/^\/bitbucket\/callback\/?$/)) {
             // upgrade the code to an access token
             oauth.getOAuthAccessToken(oauth_token, oauth_token_secret, oauth.verifier, function(err, oauth_access_token, oauth_access_token_secret, results) {
@@ -71,7 +73,7 @@ oauth.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, resu
                 
                 accessToken = oauth_access_token;
                 
-                // authenticate github API
+                // authenticate API
                 bitbucket.authenticateOAuth(accessToken);
                   
                 //redirect back
