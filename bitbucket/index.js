@@ -93,15 +93,17 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
     /**
      * Authenticate a user for all next requests using an API token
      *
-     * @param {String} login      GitHub username
-     * @param {String} password   GitHub password
+     * @param {OAuth} oauth      
+     * @param {String} accessToken
      * @return {GitHubApi}        fluent interface
      */
-    this.authenticateOAuth = function(accessToken)
+    this.authenticateOAuth = function(oauth, accessToken, accessTokenSecret)
     {
         this.getRequest()
             .setOption("login_type", "oauth")
-            .setOption('oauth_access_token', accessToken);
+            .setOption('oauth', oauth)
+            .setOption('oauth_access_token', accessToken)
+            .setOption('oauth_access_token_secret', accessTokenSecret);
     
         return this;
     };    

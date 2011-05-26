@@ -148,9 +148,26 @@ var Request = exports.Request = function(options) {
         var getParams  = httpMethod != "POST" ? parameters : {};
         var postParams = httpMethod == "POST" ? parameters : {};
 
+
+        var getQuery = querystring.stringify(getParams);
+        var postQuery = querystring.stringify(postParams);
+        this.$debug("get: "+ getQuery + " post " + postQuery);
+        
+        var path = this.$options.path + "/" + apiPath.replace(/\/*$/, "");
+        if (getQuery)
+            path += "?" + getQuery;
+
+        if (postQuery)
+            headers["Content-Length"] = postQuery.length;
+
         switch(this.$options.login_type) {
             case "oauth":
-                getParams.access_token = this.$options['oauth_access_token'];
+                headers.Authorization = this.$options.oauth.authHeader(
+                    "https://api.bitbucket.org" + path, 
+                    this.$options.oauth_access_token,
+                    this.$options.oauth_access_token_secret,
+                    httpMethod
+                );
                 break;
                 
             case "token":
@@ -168,18 +185,7 @@ var Request = exports.Request = function(options) {
             default:
                 // none
         }
-
-        var getQuery = querystring.stringify(getParams);
-        var postQuery = querystring.stringify(postParams);
-        this.$debug("get: "+ getQuery + " post " + postQuery);
         
-        var path = this.$options.path + "/" + apiPath.replace(/\/*$/, "");
-        if (getQuery)
-            path += "?" + getQuery;
-
-        if (postQuery)
-            headers["Content-Length"] = postQuery.length;
-
         var getOptions = {
             host: host,
             post: port,
@@ -187,8 +193,9 @@ var Request = exports.Request = function(options) {
             method: httpMethod,
             headers: headers
         };
-        
+
         this.$debug('send ' + httpMethod + ' request: ' + path);
+        console.log(getOptions)
         var request = require(this.$options.protocol).request(getOptions, function(response) {
             response.setEncoding('utf8');
 
