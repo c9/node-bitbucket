@@ -127,10 +127,21 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
      * @param {String}  route            the GitHub route
      * @param {Object}  parameters       GET parameters
      * @param {Object}  requestOptions   reconfigure the request
-     * @return {Array}                    data returned
      */
     this.get = function(route, parameters, requestOptions, callback) {
         return this.getRequest().get(route, parameters || {}, requestOptions, callback);
+    };
+    
+    /**
+     * Call any route, DELETE method
+     * Ex: api.delete('repos/show/my-username/my-repo')
+     *
+     * @param {String}  route            the GitHub route
+     * @param {Object}  parameters       GET parameters
+     * @param {Object}  requestOptions   reconfigure the request
+     */
+    this["delete"] = function(route, parameters, requestOptions, callback) {
+        return this.getRequest().send(route, parameters, 'DELETE', requestOptions, callback);
     };
 
     /**
@@ -140,7 +151,6 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
      * @param {String}  route            the GitHub route
      * @param {Object}  parameters       POST parameters
      * @param {Object}  requestOptions   reconfigure the request
-     * @return {Array}                     data returned
      */
     this.post = function(route, parameters, requestOptions, callback) {
         return this.getRequest().post(route, parameters || {}, requestOptions, callback);
@@ -160,19 +170,19 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
         return this.request;
     };
 
-//    /**
-//     * Get the user API
-//     *
-//     * @return {UserApi}  the user API
-//     */
-//    this.getUserApi = function()
-//    {
-//        if(!this.$apis['user']) {
-//            this.$apis['user'] = new (require("./github/UserApi").UserApi)(this);
-//        }
-//
-//        return this.$apis['user'];
-//    };
+    /**
+     * Get the user API
+     *
+     * @return {UserApi}  the user API
+     */
+    this.getUserApi = function()
+    {
+        if(!this.$apis.user) {
+            this.$apis.user = new (require("./user").UserApi)(this);
+        }
+
+        return this.$apis.user;
+    };
 
     /**
      * Get the repo API
@@ -181,11 +191,39 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
      */
     this.getRepoApi = function()
     {
-        if(!this.$apis['repo']) {
-            this.$apis['repo'] = new (require("./repo").RepoApi)(this);
+        if(!this.$apis.repo) {
+            this.$apis.repo = new (require("./repo").RepoApi)(this);
         }
 
-        return this.$apis['repo'];
+        return this.$apis.repo;
+     };
+     
+    /**
+     * Get the ssh API
+     *
+     * @return {SshApi}  the SSH API
+     */
+    this.getSshApi = function()
+    {
+        if(!this.$apis.ssh) {
+            this.$apis.ssh = new (require("./ssh").SshApi)(this);
+        }
+
+        return this.$apis.ssh;
+     };
+     
+    /**
+     * Get the email API
+     *
+     * @return {EmailApi}  the email API
+     */
+    this.getEmailApi = function()
+    {
+        if(!this.$apis.email) {
+            this.$apis.email = new (require("./email").EmailApi)(this);
+        }
+
+        return this.$apis.email;
      };
 
 //    /**

@@ -41,7 +41,5 @@ sys.inherits(SshApi, AbstractApi);
     this.deleteKey = function(pk, callback) {
         this.$api["delete"]("ssh-keys/" + pk, null, null, callback);
     };
-    
-    
 
 }).call(SshApi.prototype);

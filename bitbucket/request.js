@@ -195,7 +195,6 @@ var Request = exports.Request = function(options) {
         };
 
         this.$debug('send ' + httpMethod + ' request: ' + path);
-        console.log(getOptions)
         var request = require(this.$options.protocol).request(getOptions, function(response) {
             response.setEncoding('utf8');
 
@@ -207,7 +206,7 @@ var Request = exports.Request = function(options) {
                 var msg;
                 body = body.join("");
                 
-                if (response.statusCode > 200) {
+                if (response.statusCode > 204) {
                     if (response.headers["content-type"].indexOf("application/json") === 0) {
                         msg = JSON.parse(body);
                     } else {
@@ -216,6 +215,9 @@ var Request = exports.Request = function(options) {
                     callback({status: response.statusCode, msg: msg});
                     return;
                 }
+                if (response.statusCode == 204)
+                    body = "{}";
+                    
                 callback(null, body);
             });
         });
@@ -232,11 +234,10 @@ var Request = exports.Request = function(options) {
      */
     this.decodeResponse = function(response)
     {
-        if(this.$options['format'] === "text") {
+        if(this.$options.format === "text") {
             return response;
         }
-        else if(this.$options['format'] === "json")
-        {
+        else if(this.$options.format === "json") {
             return JSON.parse(response);
         }
     };
