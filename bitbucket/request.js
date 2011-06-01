@@ -162,12 +162,16 @@ var Request = exports.Request = function(options) {
 
         switch(this.$options.login_type) {
             case "oauth":
-                headers.Authorization = this.$options.oauth.authHeader(
-                    "https://api.bitbucket.org" + path, 
+                // TODO this should use oauth.authHeader once they add the missing argument
+                var oauth = this.$options.oauth;
+                var orderedParameters= oauth._prepareParameters(
                     this.$options.oauth_access_token,
                     this.$options.oauth_access_token_secret,
-                    httpMethod
+                    httpMethod,
+                    "https://api.bitbucket.org" + path, 
+                    postParams || {}
                 );
+                headers.Authorization = oauth._buildAuthorizationHeaders(orderedParameters);
                 break;
                 
             case "token":
