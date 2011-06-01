@@ -43,6 +43,7 @@ var test = module.exports = {
 
     "test: get all ssh keys" : function(finished) {
         test.sshApi.addKey(pubkey, function(err, key) {
+            assert.equal(err, null);
             test.sshApi.getKeys(function(err, keys) {
                 assert.equal(err, null);
                 assert.ok(keys.length > 0);
