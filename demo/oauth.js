@@ -8,7 +8,7 @@ var secrets = require("../bitbucket/secrets");
 
 var bitbucket = new BitBucket(true);
 var repo = bitbucket.getRepoApi();
-var PORT = process.env.C9_PORT || 7878;
+var PORT = process.env.PORT || 7878;
 
 var oauth = new OAuth(
     "https://bitbucket.org/api/1.0/oauth/request_token/", //requestUrl, 
