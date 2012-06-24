@@ -8,7 +8,7 @@
  */
 
 var http = require("http");
-var sys = require("sys");
+var util = require('util');
 var querystring = require("querystring");
 var crypto = require("crypto");
 

@@ -7,14 +7,14 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var sys = require("sys");
+var util = require('util');
 var AbstractApi = require("./abstract_api").AbstractApi;
 
 var RepoApi = exports.RepoApi = function(api) {
     this.$api = api;
 };
 
-sys.inherits(RepoApi, AbstractApi);
+util.inherits(RepoApi, AbstractApi);
 
 (function() {
 
