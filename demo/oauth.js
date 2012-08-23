@@ -16,7 +16,7 @@ var oauth = new OAuth(
     secrets.oauth.clientId, //consumerKey, 
     secrets.oauth.secret, //consumerSecret,
     "1.0", //version, 
-    "http://node-bitbucket.fjakobs.c9.io/bitbucket/callback", //authorize_callback,
+    "http://localhost:" + PORT + "/bitbucket/callback", //authorize_callback,
     'HMAC-SHA1' //signatureMethod, 
 );
 
@@ -49,17 +49,24 @@ getOAuthRequestToken(function(error, oauthToken, oauthTokenSecret, results) {
                 res.end();
                 return;
             }
+            
+            var onError = function (err) {
+                res.writeHead(500);
+                res.end(JSON.stringify(err));
+            };
+                                
+            // use API
+            bitbucket.getEmailApi().getAll(function (err, emails) {
+                if (err) return onError(err);
+                
+                bitbucket.getSshApi().getKeys(function (err, keys) {
+                    if (err) return onError(err);
                     
-            // use API        
-            repo.getUserRepos(secrets.username, function(err, user) {
-                if (err) {
-                    res.writeHead(err.status);
-                    res.end(JSON.stringify(err));
-                    return;
-                }
-                res.writeHead(200);
-                res.end(JSON.stringify(user));
+                    res.writeHead(200);
+                    res.end("Emails: " + JSON.stringify(emails) + ", Keys: " + keys.length);
+                });
             });
+            
             return;
         } 
         // URL called by bitbucket after authenticating

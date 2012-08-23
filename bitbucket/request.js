@@ -143,7 +143,8 @@ var Request = exports.Request = function(options) {
         var headers = {
             'Host':'api.bitbucket.org',
             "User-Agent": "NodeJS HTTP Client",
-            "Content-Length": "0"
+            "Content-Length": "0",
+            "Content-Type": "application/x-www-form-urlencoded"
         };
         var getParams  = httpMethod != "POST" ? parameters : {};
         var postParams = httpMethod == "POST" ? parameters : {};
