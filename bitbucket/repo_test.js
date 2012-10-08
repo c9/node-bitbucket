@@ -13,8 +13,8 @@ var BitBucket = require("./index").BitBucket;
 var test = module.exports = {
 
     setUp: function() {
-        this.bitbucket = new BitBucket(true);
-        this.repoApi = this.bitbucket.getRepoApi();
+        test.bitbucket = new BitBucket(true);
+        test.repoApi = test.bitbucket.getRepoApi();
     },
 
 //    "test: search repos" : function(finished) {
@@ -33,8 +33,9 @@ var test = module.exports = {
 //    },
 
     "test: get user repos" : function(finished) {
+        console.log(test);
         test.repoApi.getUserRepos("fjakobstest", function(err, repos) {
-            console.log(repos)
+            assert.equal(err, null);
             assert.ok(repos.length > 0);
             assert.ok(repos[0].name !== undefined);
             finished();

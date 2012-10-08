@@ -16,9 +16,9 @@ var secrets = require("./secrets");
 var test = module.exports = {
 
     setUp: function() {
-        this.bitbucket = new BitBucket(true);
-        this.bitbucket.authenticatePassword(secrets.username, secrets.password);
-        this.emailApi = this.bitbucket.getEmailApi();
+        test.bitbucket = new BitBucket(true);
+        test.repoApi = test.bitbucket.getRepoApi();
+        test.emailApi = test.bitbucket.getEmailApi();
     },
 
     "test: get list of all email addresses" : function(finished) {

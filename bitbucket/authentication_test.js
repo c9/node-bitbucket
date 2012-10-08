@@ -14,8 +14,8 @@ var secrets = require("./secrets");
 var test = module.exports = {
 
     setUp: function() {
-        this.bitbucket = new BitBucket(true);
-        this.repoApi = this.bitbucket.getRepoApi();
+        test.bitbucket = new BitBucket(true);
+        test.repoApi = test.bitbucket.getRepoApi();
     },
 
 //    "test: show user without authentification should have no 'plan'" : function(finished) {
@@ -50,7 +50,7 @@ var test = module.exports = {
 //            finished();
 //        });
 //    },
-    
+
 //    "test: authenticate with bad token" : function(finished) {
 //        test.github.authenticateToken(username, "bad-token");
 //        test.userApi.show(username, function(err, user) {
