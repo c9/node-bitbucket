@@ -33,7 +33,6 @@ var test = module.exports = {
 //    },
 
     "test: get user repos" : function(finished) {
-        console.log(test);
         test.repoApi.getUserRepos("fjakobstest", function(err, repos) {
             assert.equal(err, null);
             assert.ok(repos.length > 0);
