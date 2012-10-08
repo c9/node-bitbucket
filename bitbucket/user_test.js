@@ -13,7 +13,7 @@ var BitBucket = require("./index").BitBucket;
 var secrets = require("./secrets");
 
 
-var test = module.exports = {
+module.exports = {
 
     setUp: function() {
         this.bitbucket = new BitBucket(true);
@@ -22,7 +22,7 @@ var test = module.exports = {
     },
 
     "test: get data of authenticated user" : function(finished) {
-        test.userApi.getUserData(secrets.username, function(err, data) {
+        this.userApi.getUserData(secrets.username, function(err, data) {
             assert.equal(err, null);
             assert.equal(data.user.username, secrets.username);
             assert.ok("repositories" in data);

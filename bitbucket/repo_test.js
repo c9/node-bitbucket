@@ -10,15 +10,15 @@
 var assert = require("assert");
 var BitBucket = require("./index").BitBucket;
 
-var test = module.exports = {
+module.exports = {
 
     setUp: function() {
-        test.bitbucket = new BitBucket(true);
-        test.repoApi = test.bitbucket.getRepoApi();
+        this.bitbucket = new BitBucket(true);
+        this.repoApi = this.bitbucket.getRepoApi();
     },
 
 //    "test: search repos" : function(finished) {
-//        test.repoApi.search("php github api", function(err, repos) {
+//        this.repoApi.search("php github api", function(err, repos) {
 //            assert.ok(repos.length > 0);
 //            assert.ok(repos[0].name !== undefined);
 //            finished();
@@ -26,14 +26,14 @@ var test = module.exports = {
 //    },
 //
 //    "test: show repository" : function(finished) {
-//        test.repoApi.show("fjakobs", "qxoo", function(err, repo) {
+//        this.repoApi.show("fjakobs", "qxoo", function(err, repo) {
 //           assert.equal(repo.name, "qxoo");
 //           finished();
 //        });
 //    },
 
     "test: get user repos" : function(finished) {
-        test.repoApi.getUserRepos("fjakobstest", function(err, repos) {
+        this.repoApi.getUserRepos("fjakobstest", function(err, repos) {
             assert.equal(err, null);
             assert.ok(repos.length > 0);
             assert.ok(repos[0].name !== undefined);
@@ -42,28 +42,28 @@ var test = module.exports = {
     },
 //
 //    "test: get repo tags" : function(finished) {
-//        test.repoApi.getRepoTags("fjakobs", "node", function(err, tags) {
+//        this.repoApi.getRepoTags("fjakobs", "node", function(err, tags) {
 //            assert.ok(tags["v0.1.0"] == "813b53938b40484f63e7324c030e33711f26a149");
 //            finished();
 //        });
 //    },
 //
 //    "test: get repo languages" : function(finished) {
-//        test.repoApi.getRepoLanguages("fjakobs", "node", function(err, languages) {
+//        this.repoApi.getRepoLanguages("fjakobs", "node", function(err, languages) {
 //            assert.ok(languages['C++'] != undefined);
 //            finished();
 //        });
 //    },
 //
 //    "test: get repo branches" : function(finished) {
-//        test.repoApi.getRepoBranches("fjakobs", "node", function(err, branches) {
+//        this.repoApi.getRepoBranches("fjakobs", "node", function(err, branches) {
 //            assert.ok(branches["master"] !== undefined);
 //            finished();
 //        });
 //    },
 //
 //    "test: get repo collaborators" : function(finished) {
-//        test.repoApi.getRepoCollaborators("fjakobs", "node", function(err, collaborators) {
+//        this.repoApi.getRepoCollaborators("fjakobs", "node", function(err, collaborators) {
 //            assert.ok(collaborators.length > 0);
 //            assert.ok(!!~collaborators.toString().split(",").indexOf("fjakobs"));
 //            finished();
@@ -71,7 +71,7 @@ var test = module.exports = {
 //    },
 //
 //    "test: get repo contributors" : function(finished) {
-//        test.repoApi.getRepoContributors("fjakobs", "node", function(err, contributors) {
+//        this.repoApi.getRepoContributors("fjakobs", "node", function(err, contributors) {
 //            assert.ok(contributors.length > 0);
 //            assert.ok(contributors[0].login == "ry");
 //            finished();
@@ -79,7 +79,7 @@ var test = module.exports = {
 //    },
 //
 //    "test: get repo non-github contributors" : function(finished) {
-//        test.repoApi.getRepoContributors("fjakobs", "node", true, function(err, contributors) {
+//        this.repoApi.getRepoContributors("fjakobs", "node", true, function(err, contributors) {
 //            assert.ok(contributors.length > 0);
 //            assert.ok(contributors[0].login == "ry");
 //            finished();
@@ -87,7 +87,7 @@ var test = module.exports = {
 //    },
 //
 //    "test: get repo watchers" : function(finished) {
-//        test.repoApi.getRepoWatchers("fjakobs", "node", function(err, watchers) {
+//        this.repoApi.getRepoWatchers("fjakobs", "node", function(err, watchers) {
 //            assert.ok(watchers.length > 0);
 //            assert.ok(!!~watchers.toString().split(",").indexOf("fjakobs"));
 //            finished();

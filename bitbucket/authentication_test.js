@@ -11,11 +11,11 @@ var assert = require("assert");
 var BitBucket = require("./index").BitBucket;
 var secrets = require("./secrets");
 
-var test = module.exports = {
+module.exports = {
 
     setUp: function() {
-        test.bitbucket = new BitBucket(true);
-        test.repoApi = test.bitbucket.getRepoApi();
+        this.bitbucket = new BitBucket(true);
+        this.repoApi = this.bitbucket.getRepoApi();
     },
 
 //    "test: show user without authentification should have no 'plan'" : function(finished) {
@@ -35,8 +35,8 @@ var test = module.exports = {
 
     // test disabled because I don't want to see my password on github :-)
     "test: authenticate using username and password should show private repose" : function(finished) {
-        test.bitbucket.authenticatePassword(secrets.username, secrets.password);
-        test.repoApi.getUserRepos(secrets.username, function(err, repos) {
+        this.bitbucket.authenticatePassword(secrets.username, secrets.password);
+        this.repoApi.getUserRepos(secrets.username, function(err, repos) {
             console.log(repos)
             assert.ok(repos.filter(function(repo) { return repo.is_private; }).length > 0);
             finished();
@@ -44,16 +44,16 @@ var test = module.exports = {
     },
 
 //    "test: authenticate using username and wrong password" : function(finished) {
-//        test.bitbucket.authenticatePassword(username, "1234");
-//        test.userApi.show(username, function(err, user) {
+//        this.bitbucket.authenticatePassword(username, "1234");
+//        this.userApi.show(username, function(err, user) {
 //            assert.ok(err !== undefined);
 //            finished();
 //        });
 //    },
 
 //    "test: authenticate with bad token" : function(finished) {
-//        test.github.authenticateToken(username, "bad-token");
-//        test.userApi.show(username, function(err, user) {
+//        this.github.authenticateToken(username, "bad-token");
+//        this.userApi.show(username, function(err, user) {
 //            assert.ok(err !== undefined);
 //            finished();
 //        });

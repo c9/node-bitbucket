@@ -10,19 +10,19 @@
 var assert = require("assert");
 var async = require("asyncjs");
 var BitBucket = require("./index").BitBucket;
-var secrets = require("./secrets");
+//var secrets = require("./secrets");
 
 
-var test = module.exports = {
+module.exports = {
 
     setUp: function() {
-        test.bitbucket = new BitBucket(true);
-        test.repoApi = test.bitbucket.getRepoApi();
-        test.emailApi = test.bitbucket.getEmailApi();
+        this.bitbucket = new BitBucket(true);
+        this.repoApi = this.bitbucket.getRepoApi();
+        this.emailApi = this.bitbucket.getEmailApi();
     },
 
     "test: get list of all email addresses" : function(finished) {
-        test.emailApi.getAll(function(err, emails) {
+        this.emailApi.getAll(function(err, emails) {
             console.log(emails);
             assert.equal(err, null);
             assert.ok(emails.length);
