@@ -12,7 +12,7 @@ var async = require("asyncjs");
 var BitBucket = require("./index").BitBucket;
 var secrets = require("./secrets");
 
-var pubkey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDSE35sy6Ey4c47NqSma5/w5LqJ4dVzsPxvR6VdBkim0Q6Wfa/CvnToTr2KqaHtQzrBsY9lKqUATKpir3PCQcrMWgm4cq2/8gMTkRx1XwMtH/6XVBz6mccVziJk5079wbiqeV16Icy7VHYxYbYyCk7f9YfgexabARmSMbtJhttK1BdpKDMOSK2koi3oGNIKNMqdVvcNp0Ea5CnHb2Uq83zqfuwfjAQaCSGJ9mhXvtXf5P/UW6euA3HJWDPr8M16Q/q8ByxHzHn26NScek8AoAcYIsWLOXC3Y4vB/an/8YAZLVmB/0mlGFkCoLEMzP3LlsL+anTY2JFY9m0N3ecLNpF cloud9@vps6782.xlshosting.net";
+var pubkey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2YuevRJKTVUAjbUvGCi+rhEAdxc8CGXSiq3JwY0EpUXmD89UFSTr1XI+i3Bq5di/kAJhdI3mqiipN1+3LP7HZsd3sFuY9mb5wbZLwHrBvjEhTsOgxFEzyCm87K8OT2uuazsG2uHL/VT0E2o2Ttu2HEu6k3yrx+3ZcPTKJVOdT0tJ5nIobbpgfv3CHmbvdskqSTq1vefh2je8yeiQYMIFsdJ7ApZEmLtGwEIMEVFNSgBJauRQS6qDmI9D1oVV7h5zPNW1qCR1sjsPyb6jxQS2+N63duY0qZuA8C6h2zX+TneY1iSRJcgniAjds2alNH2MJTxl+toIjXvviA7hsVJCD c9@c9.io";
 
 module.exports = {
 
