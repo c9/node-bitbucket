@@ -73,7 +73,7 @@ module.exports = {
         var self = this;
         this.sshApi.addKey(pubkey, function(err, key) {
             self.sshApi.addKey(pubkey, function(err) {
-                assert.ok(err.msg.match(/Key already registered in bitbucket/));
+                assert.ok(err.msg.match(/Someone has already registered that SSH key/));
 
                 // cleanup
                 self.sshApi.deleteKey(key.pk, finished);
