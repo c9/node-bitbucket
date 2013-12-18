@@ -134,7 +134,7 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
     
     /**
      * Call any route, DELETE method
-     * Ex: api.delete('repos/show/my-username/my-repo')
+     * Ex: api.delete('repos/show/my-username/my-repo/ressoure-id')
      *
      * @param {String}  route            the GitHub route
      * @param {Object}  parameters       GET parameters
@@ -157,8 +157,8 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
     };
 
     /**
-     * Call any route, POST method
-     * Ex: api.post('repos/show/my-username', {'email': 'my-new-email@provider.org'})
+     * Call any route, PUT method
+     * Ex: api.put('repos/show/my-username/ressoure-id', {'email': 'my-new-email@provider.org'})
      *
      * @param {String}  route            the GitHub route
      * @param {Object}  parameters       POST parameters

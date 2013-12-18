@@ -217,7 +217,6 @@ var Request = exports.Request = function(options) {
 
         this.$debug('send ' + httpMethod + ' request: ' + path);
         var request = require(this.$options.protocol).request(getOptions, function(response) {
-            console.log("response", response);
             response.setEncoding('utf8');
 
             var body = [];
