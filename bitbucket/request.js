@@ -94,6 +94,22 @@ var Request = exports.Request = function(options) {
     };
 
     /**
+     * Send a PUT request
+     * @see send
+     */
+    this.put = function(apiPath, parameters, options, callback) {
+        return this.send(apiPath, parameters, 'PUT', options, callback);
+    };
+
+    /**
+     * Send a DELETE request
+     * @see send
+     */
+    this.delete = function(apiPath, parameters, options, callback) {
+        return this.send(apiPath, parameters, 'DELETE', options, callback);
+    };
+
+    /**
      * Send a request to the server, receive a response,
      * decode the response and returns an associative array
      *
@@ -146,8 +162,8 @@ var Request = exports.Request = function(options) {
             "Content-Length": "0",
             "Content-Type": "application/x-www-form-urlencoded"
         };
-        var getParams  = httpMethod != "POST" ? parameters : {};
-        var postParams = httpMethod == "POST" ? parameters : {};
+        var getParams  = httpMethod == "GET" ? parameters : {};
+        var postParams = httpMethod != "GET" ? parameters : {};
 
 
         var getQuery = querystring.stringify(getParams);
@@ -193,7 +209,7 @@ var Request = exports.Request = function(options) {
         
         var getOptions = {
             host: host,
-            post: port,
+            port: port,
             path: path,
             method: httpMethod,
             headers: headers
@@ -201,6 +217,7 @@ var Request = exports.Request = function(options) {
 
         this.$debug('send ' + httpMethod + ' request: ' + path);
         var request = require(this.$options.protocol).request(getOptions, function(response) {
+            console.log("response", response);
             response.setEncoding('utf8');
 
             var body = [];
@@ -227,7 +244,7 @@ var Request = exports.Request = function(options) {
             });
         });
         
-        if (httpMethod == "POST")
+        if (httpMethod != "GET")
             request.write(postQuery);
             
         request.end();
