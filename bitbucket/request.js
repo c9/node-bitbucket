@@ -42,9 +42,10 @@ var Request = exports.Request = function(options) {
     this.configure = function(options)
     {
         options = options || {};
-        this.$options = {};
+        this.$options = this.$options || {};
         for (var key in this.$defaults) {
-            this.$options[key] = options[key] !== undefined ? options[key] : this.$defaults[key];
+            if (options[key] !== undefined) this.$options[key] = options[key]
+            else if (!this.$options[key]) this.$options[key] = this.$defaults[key]
         }
 
         return this;
