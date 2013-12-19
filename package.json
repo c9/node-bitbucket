@@ -1,6 +1,6 @@
 {
-    "name" : "bitbucket",
-    "version" : "0.0.1",
+    "name" : "bitbucket2",
+    "version" : "0.0.2",
     "description" : "Wrapper for the BitBucket API",
     "author": "Fabian Jakobs <fabian.jakobs@web.de>",
     "homepage": "http://github.com/ajaxorg/node-bitbucket.git",
