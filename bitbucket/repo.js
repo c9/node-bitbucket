@@ -33,21 +33,20 @@ util.inherits(RepoApi, AbstractApi);
 //        );
 //    };
 //
-//    /**
-//     * Get extended information about a repository by its username and repo name
-//     * http://develop.github.com/p/repo.html
-//     *
-//     * @param {String}  username         the user who owns the repo
-//     * @param {String}  repo             the name of the repo
-//     */
-//    this.show = function(username, repo, callback)
-//    {
-//        this.$api.get(
-//            'repos/show/' + encodeURI(username) + "/" + encodeURI(repo),
-//            null, null,
-//            this.$createListener(callback, "repository")
-//        );
-//    };
+    /**
+    * Get extended information about a repository by its username and repo name
+    *
+    * @param {String}  username         the user who owns the repo
+    * @param {String}  repo             the name of the repo
+    */
+    this.show = function(username, repo, callback)
+    {
+        this.$api.get(
+            'repositories/' + encodeURI(username) + "/" + encodeURI(repo),
+            null, null,
+            callback
+        );
+    };
 
     /**
      * Get the repositories of a user

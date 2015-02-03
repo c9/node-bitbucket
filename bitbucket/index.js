@@ -185,6 +185,20 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
     };
 
     /**
+     * Get the users API
+     *
+     * @return {UsersApi}  the users API
+     */
+    this.getUsersApi = function()
+    {
+        if(!this.$apis.users) {
+            this.$apis.users = new (require("./users").UsersApi)(this);
+        }
+
+        return this.$apis.users;
+    };
+
+    /**
      * Get the repo API
      *
      * @return {RepoApi}  the repo API

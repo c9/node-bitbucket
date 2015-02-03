@@ -11,7 +11,7 @@ var util = require('util');
 var AbstractApi = require("./abstract_api").AbstractApi;
 
 /**
- * API wrapper for https://confluence.atlassian.com/display/BITBUCKET/user+Endpoint
+ * API wrapper for http://confluence.atlassian.com/display/BBDEV/Users
  */
 var UserApi = exports.UserApi = function(api) {
     this.$api = api;
@@ -22,17 +22,10 @@ util.inherits(UserApi, AbstractApi);
 (function() {
 
     /**
-     * Get user data
+     * Get user data including the repository list
      */
-    this.get = function(callback) {
-        this.$api.get("user", null, null, callback);
-    };
-    
-    /**
-     * Get a list of repositories visible to an account
-     */
-    this.getRepositories = function(callback) {
-        this.$api.get("user/repositories", null, null, callback);
+    this.getUserData = function(username, callback) {
+        this.$api.get("users/" + username, null, null, callback);
     };
 
 }).call(UserApi.prototype);
