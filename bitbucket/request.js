@@ -42,9 +42,10 @@ var Request = exports.Request = function(options) {
     this.configure = function(options)
     {
         options = options || {};
-        this.$options = {};
+        this.$options = this.$options || {};
         for (var key in this.$defaults) {
-            this.$options[key] = options[key] !== undefined ? options[key] : this.$defaults[key];
+            if (options[key] !== undefined) this.$options[key] = options[key]
+            else if (!this.$options[key]) this.$options[key] = this.$defaults[key]
         }
 
         return this;
@@ -91,6 +92,22 @@ var Request = exports.Request = function(options) {
      */
     this.post = function(apiPath, parameters, options, callback) {
         return this.send(apiPath, parameters, 'POST', options, callback);
+    };
+
+    /**
+     * Send a PUT request
+     * @see send
+     */
+    this.put = function(apiPath, parameters, options, callback) {
+        return this.send(apiPath, parameters, 'PUT', options, callback);
+    };
+
+    /**
+     * Send a DELETE request
+     * @see send
+     */
+    this.delete = function(apiPath, parameters, options, callback) {
+        return this.send(apiPath, parameters, 'DELETE', options, callback);
     };
 
     /**
@@ -146,8 +163,8 @@ var Request = exports.Request = function(options) {
             "Content-Length": "0",
             "Content-Type": "application/x-www-form-urlencoded"
         };
-        var getParams  = httpMethod != "POST" ? parameters : {};
-        var postParams = httpMethod == "POST" ? parameters : {};
+        var getParams  = httpMethod == "GET" ? parameters : {};
+        var postParams = httpMethod != "GET" ? parameters : {};
 
 
         var getQuery = querystring.stringify(getParams);
@@ -193,7 +210,7 @@ var Request = exports.Request = function(options) {
         
         var getOptions = {
             host: host,
-            post: port,
+            port: port,
             path: path,
             method: httpMethod,
             headers: headers
@@ -227,7 +244,7 @@ var Request = exports.Request = function(options) {
             });
         });
         
-        if (httpMethod == "POST")
+        if (httpMethod != "GET")
             request.write(postQuery);
             
         request.end();

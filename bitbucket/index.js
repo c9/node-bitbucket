@@ -134,14 +134,14 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
     
     /**
      * Call any route, DELETE method
-     * Ex: api.delete('repos/show/my-username/my-repo')
+     * Ex: api.delete('repos/show/my-username/my-repo/ressoure-id')
      *
      * @param {String}  route            the GitHub route
      * @param {Object}  parameters       GET parameters
      * @param {Object}  requestOptions   reconfigure the request
      */
     this["delete"] = function(route, parameters, requestOptions, callback) {
-        return this.getRequest().send(route, parameters, 'DELETE', requestOptions, callback);
+        return this.getRequest().delete(route, parameters || {}, requestOptions, callback);
     };
 
     /**
@@ -154,6 +154,18 @@ var BitBucket = exports.BitBucket = function(debug, proxy, http) {
      */
     this.post = function(route, parameters, requestOptions, callback) {
         return this.getRequest().post(route, parameters || {}, requestOptions, callback);
+    };
+
+    /**
+     * Call any route, PUT method
+     * Ex: api.put('repos/show/my-username/ressoure-id', {'email': 'my-new-email@provider.org'})
+     *
+     * @param {String}  route            the GitHub route
+     * @param {Object}  parameters       POST parameters
+     * @param {Object}  requestOptions   reconfigure the request
+     */
+    this.put = function(route, parameters, requestOptions, callback) {
+        return this.getRequest().put(route, parameters || {}, requestOptions, callback);
     };
 
     /**
