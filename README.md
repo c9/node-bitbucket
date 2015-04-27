@@ -5,14 +5,13 @@ Pure NodeJS implementation.
 
 ### Install
 
-```npm i node-bitbucket --sve ```
+```npm i node-bitbucket --save ```
 
 ### Usage
 
 ```js
     var BitBucket = require('node-bitbucket').BitBucket;
-    var bb = new BitBucket(true);
-    var session = var bb.authenticatePassword(secrets.username, secrets.password);
+    var session = var (new BitBucket(true)).authenticatePassword(secrets.username, secrets.password);
 
     session.getUserApi().getUserData(username, function(){ /* then handler */ });
     session.getRepoApi()...
