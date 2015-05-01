@@ -29,7 +29,7 @@ describe('repo', function(){
     bitbucket.getRepoApi().show(secrets.username, 'test', function(err, repo) {
       (err == null).should.eql(true);
       ('owner' in repo).should.eql(true);
-      repo.owner.should.eql(secrets.username)
+      repo.owner.should.eql(secrets.username);
       done();
     });
   });

@@ -25,11 +25,15 @@ var BitBucket = function(debug, proxy, http){
    * Define HTTP proxy in format localhost:3128
    */
   if (proxy) {
+    /* eslint-disable key-spacing, max-len, camelcase */
     this.$proxy_host = proxy.split(':')[0];
     this.$proxy_port = proxy.split(':')[1];
+    /* eslint-enable key-spacing, max-len, camelcase */
   }
   if (http) {
+    /* eslint-disable key-spacing, max-len, camelcase */
     this.$use_http = true;
+    /* eslint-enable key-spacing, max-len, camelcase */
   }
   /**
    * The list of loaded API instances
@@ -146,7 +150,9 @@ BitBucket.prototype.get =
  * @param callback (err{msg:''}, body{})
  * @returns {Request}
  */
+/* eslint-disable dot-notation */
 BitBucket.prototype['delete'] =
+/* eslint-enable dot-notation */
   function(route, parameters, requestOptions, callback) {
     return this.getRequest()
       .send(route, parameters, 'DELETE', requestOptions, callback);
@@ -154,7 +160,8 @@ BitBucket.prototype['delete'] =
 
 /**
  * Call any route, POST method
- * Ex: api.post('repos/show/my-username', {'email': 'my-new-email@provider.org'})
+ * Ex: api.post('repos/show/my-username',
+ *        {'email': 'my-new-email@provider.org'})
  *
  * @param {String}  route            the GitHub route
  * @param {Object}  parameters       POST parameters
@@ -175,12 +182,14 @@ BitBucket.prototype.post =
  */
 BitBucket.prototype.getRequest = function()
 {
-  if(!this.$request) {
+  if (!this.$request) {
     this.$request = new Request({
+      /* eslint-disable key-spacing, max-len, camelcase */
       debug: this.$debug,
       'proxy_host': this.$proxy_host,
       'proxy_port': this.$proxy_port,
       'protocol' : this.$use_http ? 'http' : 'https'
+      /* eslint-enable key-spacing, max-len, camelcase */
     });
   }
 
@@ -194,8 +203,8 @@ BitBucket.prototype.getRequest = function()
  */
 BitBucket.prototype.getUserApi = function()
 {
-  if(!this.$apis.user) {
-    this.$apis.user = new (require('./user'))(this);
+  if (!this.$apis.user) {
+    this.$apis.user = new (require('./user') )(this);
   }
 
   return this.$apis.user;
@@ -208,8 +217,8 @@ BitBucket.prototype.getUserApi = function()
  */
 BitBucket.prototype.getUsersApi = function()
 {
-  if(!this.$apis.users) {
-    this.$apis.users = new (require('./users'))(this);
+  if (!this.$apis.users) {
+    this.$apis.users = new (require('./users') )(this);
   }
 
   return this.$apis.users;
@@ -222,8 +231,8 @@ BitBucket.prototype.getUsersApi = function()
  */
 BitBucket.prototype.getRepoApi = function()
 {
-  if(!this.$apis.repo) {
-    this.$apis.repo = new (require('./repo'))(this);
+  if (!this.$apis.repo) {
+    this.$apis.repo = new (require('./repo') )(this);
   }
 
   return this.$apis.repo;
@@ -236,8 +245,8 @@ BitBucket.prototype.getRepoApi = function()
  */
 BitBucket.prototype.getSshApi = function()
 {
-  if(!this.$apis.ssh) {
-    this.$apis.ssh = new (require('./ssh'))(this);
+  if (!this.$apis.ssh) {
+    this.$apis.ssh = new (require('./ssh') )(this);
   }
 
   return this.$apis.ssh;
@@ -250,8 +259,8 @@ BitBucket.prototype.getSshApi = function()
  */
 BitBucket.prototype.getEmailApi = function()
 {
-  if(!this.$apis.email) {
-    this.$apis.email = new (require('./email'))(this);
+  if (!this.$apis.email) {
+    this.$apis.email = new (require('./email') )(this);
   }
 
   return this.$apis.email;

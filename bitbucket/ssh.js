@@ -42,7 +42,9 @@ SshApi.prototype.addKey = function(pubkey, callback) {
  * @param callback (err{msg:''}, body{})
  */
 SshApi.prototype.deleteKey = function(pubkey, callback) {
+  /* eslint-disable dot-notation */
   this.$api['delete']('ssh-keys/' + pubkey, null, null, callback);
+  /* eslint-enable dot-notation */
 };
 
 /**

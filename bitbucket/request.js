@@ -15,7 +15,7 @@ var querystring = require('querystring');
 
 var Request = function(options) {
   this.$defaults = {
-    /* eslint-disable key-spacing */
+    /* eslint-disable key-spacing, max-len, camelcase */
     protocol    : 'https',
     path        : '/1.0',
     hostname    : 'api.bitbucket.org',
@@ -31,7 +31,7 @@ var Request = function(options) {
     proxy_host  : null,
     proxy_port  : null,
     debug       : false
-    /* eslint-enable key-spacing */
+    /* eslint-enable key-spacing, max-len, camelcase */
   };
   this.configure(options);
 };
@@ -79,23 +79,23 @@ Request.prototype.getOption = function(name, defaultValue)
 /**
  * Send a GET request
  * @param apiPath
- * @param parameters
+ * @param params
  * @param options
- * @param callback (err{msg:''}, body{})
+ * @param then (err{msg:''}, body{})
  */
-Request.prototype.get = function(apiPath, parameters, options, callback) {
-  this.send(apiPath, parameters, 'GET', options, callback);
+Request.prototype.get = function(apiPath, params, options, then) {
+  this.send(apiPath, params, 'GET', options, then);
 };
 
 /**
  * Send a POST request
  * @param apiPath
- * @param parameters
+ * @param params
  * @param options
- * @param callback (err{msg:''}, body{})
+ * @param then (err{msg:''}, body{})
  */
-Request.prototype.post = function(apiPath, parameters, options, callback) {
-  this.send(apiPath, parameters, 'POST', options, callback);
+Request.prototype.post = function(apiPath, params, options, then) {
+  this.send(apiPath, params, 'POST', options, then);
 };
 
 /**
@@ -103,41 +103,41 @@ Request.prototype.post = function(apiPath, parameters, options, callback) {
  * decode the response and returns an associative array
  *
  * @param  {String}    apiPath        Request API path
- * @param  {Object}    parameters     Parameters
+ * @param  {Object}    params     params
  * @param  {String}    httpMethod     HTTP method to use
  * @param  {Object}    options        reconfigure the request for this call only
- * @param callback (err{msg:''}, body{})
+ * @param then (err{msg:''}, body{})
  */
-Request.prototype.send = function(apiPath, parameters, httpMethod, options, callback)
+Request.prototype.send = function(apiPath, params, httpMethod, options, then)
 {
   httpMethod = httpMethod || 'GET';
-  if(options)
+  if (options)
   {
     var initialOptions = this.$options;
     this.configure(options);
   }
 
   var self = this;
-  this.doSend(apiPath, parameters, httpMethod, function(err, response) {
+  this.doSend(apiPath, params, httpMethod, function(err, response) {
     if (!err) {
       var body = response.body;
       var status = response.status;
       var contentType = response.contentType;
 
-      if((''+status).match(/[45][0-9]{2}/)){
+      if ( ('' + status).match(/[45][0-9]{2}/) ) {
         err = {
           msg: response.body
-        }
+        };
       }
 
-      if(self.$options.format !== 'text') {
-        if (contentType.match('json')) {
-          try{
-            body = JSON.parse(body+'');
-          }catch(ex){
+      if (self.$options.format !== 'text') {
+        if (contentType.match('json') ) {
+          try {
+            body = JSON.parse(body + '');
+          } catch(ex){
             err = {
               msg: ex
-            }
+            };
           }
         }
       }
@@ -147,7 +147,9 @@ Request.prototype.send = function(apiPath, parameters, httpMethod, options, call
       }
     }
 
-    if(callback) callback(err, body);
+    if (then) {
+      then(err, body);
+    }
   });
 };
 
@@ -155,11 +157,11 @@ Request.prototype.send = function(apiPath, parameters, httpMethod, options, call
  * Send a request to the server, receive a response
  *
  * @param {String}   apiPath       Request API path
- * @param {Object}   parameters    Parameters
+ * @param {Object}   params    params
  * @param {String}   httpMethod    HTTP method to use
- * @param callback (err, body'')
+ * @param then (err, body'')
  */
-Request.prototype.doSend = function(apiPath, parameters, httpMethod, callback)
+Request.prototype.doSend = function(apiPath, params, httpMethod, then)
 {
   httpMethod = httpMethod.toUpperCase();
   var host = this.$options.proxy_host || this.$options.hostname;
@@ -168,50 +170,62 @@ Request.prototype.doSend = function(apiPath, parameters, httpMethod, callback)
     : this.$options.http_port || 443;
 
   var headers = {
-    'Host':'api.bitbucket.org',
+    'Host': 'api.bitbucket.org',
     'User-Agent': 'NodeJS HTTP Client',
     'Content-Length': '0',
     'Content-Type': 'application/x-www-form-urlencoded'
   };
-  var getParams  = httpMethod != 'POST' ? parameters : {};
-  var postParams = httpMethod == 'POST' ? parameters : {};
+  var getParams = httpMethod !== 'POST' ? params : {};
+  var postParams = httpMethod === 'POST' ? params : {};
 
 
   var getQuery = querystring.stringify(getParams);
   var postQuery = querystring.stringify(postParams);
-  this.$debug('get: '+ getQuery + ' post ' + postQuery);
+  this.$debug('get: ' + getQuery + ' post ' + postQuery);
 
   var path = this.$options.path + '/' + apiPath.replace(/\/*$/, '');
-  if (getQuery)
+  if (getQuery){
     path += '?' + getQuery;
+  }
 
-  if (postQuery)
+  if (postQuery){
     headers['Content-Length'] = postQuery.length;
+  }
 
-  switch(this.$options.login_type) {
+  switch (this.$options.login_type) {
     case 'oauth':
-      // TODO this should use oauth.authHeader once they add the missing argument
+      // TODO this should use oauth.authHeader
+      // TODO once they add the missing argument
       var oauth = this.$options.oauth;
-      var orderedParameters= oauth._prepareParameters(
+      /* eslint-disable */
+      var orderedParameters = oauth._prepareParameters(
+        /* eslint-enable */
         this.$options.oauth_access_token,
         this.$options.oauth_access_token_secret,
         httpMethod,
         'https://api.bitbucket.org' + path,
         postParams || {}
       );
-      headers.Authorization = oauth._buildAuthorizationHeaders(orderedParameters);
+
+      /* eslint-disable */
+      headers.Authorization =
+        oauth._buildAuthorizationHeaders(orderedParameters);
+      /* eslint-enable */
+
       break;
 
     case 'token':
-      var auth = this.$options['username'] + '/token:' + this.$options['api_token'];
-      var basic = new Buffer(auth, 'ascii').toString('base64');
-      headers.Authorization = 'Basic ' + basic;
+      var token = this.$options.username +
+        '/token:' + this.$options.api_token;
+      token = (new Buffer(token, 'ascii') ).toString('base64');
+      headers.Authorization = 'Basic ' + token;
       break;
 
     case 'basic':
-      var auth = this.$options['username'] + ':' + this.$options['password'];
-      var basic = new Buffer(auth, 'ascii').toString('base64');
-      headers.Authorization = 'Basic ' + basic;
+      var auth = this.$options.username +
+        ':' + this.$options.password;
+      auth = (new Buffer(auth, 'ascii') ).toString('base64');
+      headers.Authorization = 'Basic ' + auth;
       break;
 
     default:
@@ -242,9 +256,9 @@ Request.prototype.doSend = function(apiPath, parameters, httpMethod, callback)
         var contentType = response.headers['content-type'];
         body = body.join('');
 
-        if(contentType.match(/json/)){
-          that.$debug('JSON\n%s', JSON.stringify(JSON.parse(body),null,4));
-        }else{
+        if (contentType.match(/json/) ){
+          that.$debug('JSON\n%s', JSON.stringify(JSON.parse(body), null, 4) );
+        } else {
           that.$debug('body\n%s', body);
         }
         that.$debug('status code %s', response.statusCode);
@@ -256,12 +270,13 @@ Request.prototype.doSend = function(apiPath, parameters, httpMethod, callback)
           body: body
         };
 
-        callback(null, ret);
+        then(null, ret);
       });
     });
 
-  if (httpMethod == 'POST')
+  if (httpMethod === 'POST'){
     request.write(postQuery);
+  }
 
   request.end();
 };
@@ -269,10 +284,11 @@ Request.prototype.doSend = function(apiPath, parameters, httpMethod, callback)
 Request.prototype.$debug = function(msg) {
   if (this.$options.debug){
     console.error(msg,
-      arguments[1]||'', // creepy http://stackoverflow.com/questions/9521921/why-does-console-log-apply-throw-an-illegal-invocation-error
-      arguments[2]||'', arguments[3]||'',
-      arguments[4]||'', arguments[5]||'',
-      arguments[6]||'', arguments[7]||'');
+      arguments[1] || '',
+      // creepy http://stackoverflow.com/questions/9521921/
+      arguments[2] || '', arguments[3] || '',
+      arguments[4] || '', arguments[5] || '',
+      arguments[6] || '', arguments[7] || '');
   }
 };
 
