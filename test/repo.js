@@ -7,16 +7,33 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var assert = require("assert");
-var BitBucket = require("./index").BitBucket;
+var BitBucket = require("../");
+var secrets = require("./secrets");
+require('should');
 
-module.exports = {
+describe('repo', function(){
 
-    setUp: function() {
-        this.bitbucket = new BitBucket(true);
-        this.repoApi = this.bitbucket.getRepoApi();
-    },
+  this.timeout(20000);
 
+  var bitbucket = new BitBucket(true);
+  bitbucket.authenticatePassword(secrets.username, secrets.password);
+
+  it('should get user repos', function(done){
+    bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
+      (err==null).should.be.true;
+      repos.constructor.should.eql(Array);
+      done();
+    });
+  });
+  it('should get user repos', function(done){
+    bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
+      (err==null).should.be.true;
+      repos.constructor.should.eql(Array);
+      done();
+    });
+  });
+
+// @todo
 //    "test: search repos" : function(finished) {
 //        this.repoApi.search("php github api", function(err, repos) {
 //            assert.ok(repos.length > 0);
@@ -32,14 +49,7 @@ module.exports = {
 //        });
 //    },
 
-    "test: get user repos" : function(finished) {
-        this.repoApi.getUserRepos("c9test01", function(err, repos) {
-            assert.equal(err, null);
-            assert.ok(repos.length > 0);
-            assert.ok(repos[0].name !== undefined);
-            finished();
-        });
-    },
+// @todo
 //
 //    "test: get repo tags" : function(finished) {
 //        this.repoApi.getRepoTags("fjakobs", "node", function(err, tags) {
@@ -94,6 +104,4 @@ module.exports = {
 //        });
 //    }
 
-};
-
-!module.parent && require("asyncjs").test.testcase(module.exports).exec();
+});

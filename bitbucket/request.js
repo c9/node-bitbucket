@@ -10,7 +10,6 @@
 var http = require("http");
 var util = require('util');
 var querystring = require("querystring");
-var crypto = require("crypto");
 
 /**
  * Performs requests on GitHub API.
@@ -44,7 +43,7 @@ var Request = exports.Request = function(options) {
         options = options || {};
         this.$options = {};
         for (var key in this.$defaults) {
-            this.$options[key] = options[key] !== undefined ? options[key] : this.$defaults[key];
+            this.$options[key] = options[key] || this.$defaults[key];
         }
 
         return this;
@@ -67,7 +66,8 @@ var Request = exports.Request = function(options) {
     /**
     * Get an option value.
     *
-    * @param  string $name The option name
+    * @param  name string  The option name
+     * @param defaultValue
     *
     * @return mixed  The option value
     */
@@ -79,18 +79,24 @@ var Request = exports.Request = function(options) {
 
     /**
      * Send a GET request
-     * @see send
-     */
+   * @param apiPath
+   * @param parameters
+   * @param options
+   * @param callback (err{msg:''}, body{})
+   */
     this.get = function(apiPath, parameters, options, callback) {
-        return this.send(apiPath, parameters, 'GET', options, callback);
+        this.send(apiPath, parameters, 'GET', options, callback);
     };
 
     /**
      * Send a POST request
-     * @see send
-     */
+   * @param apiPath
+   * @param parameters
+   * @param options
+   * @param callback (err{msg:''}, body{})
+   */
     this.post = function(apiPath, parameters, options, callback) {
-        return this.send(apiPath, parameters, 'POST', options, callback);
+        this.send(apiPath, parameters, 'POST', options, callback);
     };
 
     /**
@@ -101,7 +107,8 @@ var Request = exports.Request = function(options) {
      * @param  {Object}    parameters     Parameters
      * @param  {String}    httpMethod     HTTP method to use
      * @param  {Object}    options        reconfigure the request for this call only
-     */
+   * @param callback (err{msg:''}, body{})
+   */
     this.send = function(apiPath, parameters, httpMethod, options, callback)
     {
         httpMethod = httpMethod || "GET";
@@ -113,32 +120,53 @@ var Request = exports.Request = function(options) {
 
         var self = this;
         this.doSend(apiPath, parameters, httpMethod, function(err, response) {
-            if (err) {
-                callback && callback(err);
-                return;
-            }
+            if (!err) {
+              var body = response.body;
+              var status = response.status;
+              var contentType = response.contentType;
 
-            response = self.decodeResponse(response);
+              if((''+status).match(/[45][0-9]{2}/)){
+                err = {
+                  msg: response.body
+                }
+              }
 
-            if (initialOptions) {
+              if(self.$options.format !== "text") {
+                if (contentType.match("json")) {
+                  try{
+                    body = JSON.parse(body+'');
+                  }catch(ex){
+                    err = {
+                      msg: ex
+                    }
+                  }
+                }
+              }
+
+              if (initialOptions) {
                 self.options = initialOptions;
+              }
             }
-            callback && callback(null, response);
+
+            if(callback) callback(err, body);
         });
     };
 
     /**
      * Send a request to the server, receive a response
      *
-     * @param {String}   $apiPath       Request API path
-     * @param {Object}    $parameters    Parameters
-     * @param {String}   $httpMethod    HTTP method to use
+     * @param {String}   apiPath       Request API path
+     * @param {Object}   parameters    Parameters
+     * @param {String}   httpMethod    HTTP method to use
+     * @param callback (err, body'')
      */
     this.doSend = function(apiPath, parameters, httpMethod, callback)
     {
         httpMethod = httpMethod.toUpperCase();
-        var host = this.$options.proxy_host ? this.$options.proxy_host : this.$options.hostname;
-        var port = this.$options.proxy_host ? this.$options.proxy_port || 3128 : this.$options.http_port || 443;
+        var host = this.$options.proxy_host || this.$options.hostname;
+        var port = this.$options.proxy_host
+          ? this.$options.proxy_port || 3128
+          : this.$options.http_port || 443;
 
         var headers = {
             'Host':'api.bitbucket.org',
@@ -199,8 +227,10 @@ var Request = exports.Request = function(options) {
             headers: headers
         };
 
-        this.$debug('send ' + httpMethod + ' request: ' + path);
-        var request = require(this.$options.protocol).request(getOptions, function(response) {
+        var that = this;
+        that.$debug('send ' + httpMethod + ' request: ' + path);
+        var request = require(this.$options.protocol)
+          .request(getOptions, function(response) {
             response.setEncoding('utf8');
 
             var body = [];
@@ -208,22 +238,22 @@ var Request = exports.Request = function(options) {
                 body.push(chunk);
             });
             response.addListener('end', function () {
-                var msg;
-                body = body.join("");
-                
-                if (response.statusCode > 204) {
-                    if (response.headers["content-type"].indexOf("application/json") === 0) {
-                        msg = JSON.parse(body);
-                    } else {
-                        msg = body;    
-                    }
-                    callback({status: response.statusCode, msg: msg});
-                    return;
-                }
-                if (response.statusCode == 204)
-                    body = "{}";
-                    
-                callback(null, body);
+              that.$debug('got reponse ' + httpMethod + ' request: ' + path);
+
+              var contentType = response.headers["content-type"];
+              body = body.join('');
+
+              that.$debug('body\n%s', body);
+              that.$debug('status code %s', response.statusCode);
+              that.$debug('content type %s', contentType);
+
+              var ret = {
+                status: response.statusCode,
+                contentType: contentType,
+                body: body
+              };
+
+              callback(null, ret);
             });
         });
         
@@ -233,23 +263,13 @@ var Request = exports.Request = function(options) {
         request.end();
     };
 
-
-    /**
-     * Get a JSON response and transform to JSON
-     */
-    this.decodeResponse = function(response)
-    {
-        if(this.$options.format === "text") {
-            return response;
-        }
-        else if(this.$options.format === "json") {
-            return JSON.parse(response);
-        }
-    };
-
     this.$debug = function(msg) {
         if (this.$options.debug)
-            console.log(msg);
+          console.error(msg,
+            arguments[1]||'', // creepy http://stackoverflow.com/questions/9521921/why-does-console-log-apply-throw-an-illegal-invocation-error
+            arguments[2]||'', arguments[3]||'',
+            arguments[4]||'', arguments[5]||'',
+            arguments[6]||'', arguments[7]||'');
     };
 
 }).call(Request.prototype);

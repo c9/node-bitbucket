@@ -1,21 +1,33 @@
 {
-    "name" : "bitbucket",
-    "version" : "0.0.1",
-    "description" : "Wrapper for the BitBucket API",
-    "author": "Fabian Jakobs <fabian.jakobs@web.de>",
-    "homepage": "http://github.com/ajaxorg/node-bitbucket.git",
-    "main" : "./bitbucket",
-    "repository" : {
-        "type" : "git",
-        "url" : "http://github.com/ajaxorg/node-bitbucket.git"
-    },
-    "engine" : ["node >=0.4.0"],
-    "dependencies": {
-        "asyncjs": ">=0.0.5",
-        "oauth": ">=0.9.0"
-    },
-    "licenses": [{
-        "type": "The MIT License",
-        "url": "http://www.opensource.org/licenses/mit-license.php"}
-    ]    
+  "name": "bitbucket",
+  "version": "0.0.2",
+  "description": "Wrapper for the BitBucket API",
+  "author": "Fabian Jakobs <fabian.jakobs@web.de>",
+  "homepage": "http://github.com/ajaxorg/node-bitbucket.git",
+  "main": "./bitbucket",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/ajaxorg/node-bitbucket.git"
+  },
+  "engine": [
+    "node >=0.4.0"
+  ],
+  "dependencies": {
+    "asyncjs": ">=0.0.5",
+    "oauth": ">=0.9.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "appveyor": "mocha",
+    "lint": "eslint bitbucket/* test/*.js"
+  },
+  "licenses": [
+    {
+      "type": "The MIT License",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "devDependencies": {
+    "should": "^6.0.1"
+  }
 }

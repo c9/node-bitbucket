@@ -8,24 +8,24 @@
  */
 
 var util = require('util');
-var AbstractApi = require("./abstract_api").AbstractApi;
+var AbstractApi = require("./abstract_api");
 
 /**
  * API wrapper for http://confluence.atlassian.com/display/BBDEV/Emails
  */
-var EmailApi = exports.EmailApi = function(api) {
+var EmailApi = (function(){
+  var EmailApi = function(api) {
     this.$api = api;
-};
+  };
+  util.inherits(EmailApi, AbstractApi);
 
-util.inherits(EmailApi, AbstractApi);
+  /**
+   * Get auuser data including the repository list
+   */
+  EmailApi.prototype.getAll = function(callback) {
+    this.$api.get("emails/", null, null, callback);
+  };
+  return EmailApi;
+})();
 
-(function() {
-
-    /**
-     * Get auuser data including the repository list
-     */
-    this.getAll = function(callback) {
-        this.$api.get("emails/", null, null, callback);
-    };
-
-}).call(EmailApi.prototype);
+module.exports = EmailApi;

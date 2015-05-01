@@ -8,16 +8,16 @@
  */
 
 var util = require('util');
-var AbstractApi = require("./abstract_api").AbstractApi;
+var AbstractApi = require("./abstract_api");
 
-var RepoApi = exports.RepoApi = function(api) {
+var RepoApi = (function(){
+
+  var RepoApi = function(api) {
     this.$api = api;
-};
+  };
+  util.inherits(RepoApi, AbstractApi);
 
-util.inherits(RepoApi, AbstractApi);
-
-(function() {
-
+// @todo
 //    /**
 //     * Search repos by keyword
 //     * http://develop.github.com/p/repo.html
@@ -33,36 +33,40 @@ util.inherits(RepoApi, AbstractApi);
 //        );
 //    };
 //
-    /**
-    * Get extended information about a repository by its username and repo name
-    *
-    * @param {String}  username         the user who owns the repo
-    * @param {String}  repo             the name of the repo
-    */
-    this.show = function(username, repo, callback)
-    {
-        this.$api.get(
-            'repositories/' + encodeURI(username) + "/" + encodeURI(repo),
-            null, null,
-            callback
-        );
-    };
 
-    /**
-     * Get the repositories of a user
-     * http://confluence.atlassian.com/display/BBDEV/Repositories
-     *
-     * @param {String}  username         the username
-     */
-    this.getUserRepos = function(username, callback)
-    {
-        this.$api.get(
-            'users/' + encodeURI(username),
-            null, null,
-            this.$createListener(callback, "repositories")
-        );
-    };
+  /**
+   * Get extended information about a repository by its username and repo name
+   *
+   * @param {String}  username         the user who owns the repo
+   * @param {String}  repo             the name of the repo
+   * @param callback (err{msg:''}, body{})
+   */
+  RepoApi.prototype.show = function(username, repo, callback)
+  {
+    this.$api.get(
+      'repositories/' + encodeURI(username) + "/" + encodeURI(repo),
+      null, null,
+      callback
+    );
+  };
 
+  /**
+   * Get the repositories of a user
+   * http://confluence.atlassian.com/display/BBDEV/Repositories
+   *
+   * @param {String}  username         the username
+   * @param callback (err{msg:''}, body{})
+   */
+  RepoApi.prototype.getUserRepos = function(username, callback)
+  {
+    this.$api.get(
+      'users/' + encodeURI(username),
+      null, null,
+      this.$createListener(callback, "repositories")
+    );
+  };
+
+// @todo
 //    /**
 //     * Get the tags of a repository
 //     * http://develop.github.com/p/repo.html
@@ -167,4 +171,7 @@ util.inherits(RepoApi, AbstractApi);
 //        );
 //    };
 
-}).call(RepoApi.prototype);
+  return RepoApi;
+})();
+
+module.exports = RepoApi;

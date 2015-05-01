@@ -1,7 +1,18 @@
 # node-bitbucket
 
 API to programmatically query / write on bitbucket.
+
 Pure NodeJS implementation.
+
+
+# About this repo
+
+It s a fork or original repo found on github, itself a fork of a bitbucket repo.
+
+I only want to note about the license, i see there is one, i m not interested into this, not at all.
+
+I just need this to work, the rest is pointless.
+
 
 ### Install
 
@@ -10,6 +21,17 @@ Pure NodeJS implementation.
 ### Usage
 
 ```js
+    var secrets = {
+        username:'',
+        password:'',
+        oauth = {
+            clientId: '',
+            secret: ''
+        }
+    };
+
+    // var secrets = require('./secrets.json');
+    
     var BitBucket = require('node-bitbucket').BitBucket;
     var session = var (new BitBucket(true)).authenticatePassword(secrets.username, secrets.password);
 
@@ -22,3 +44,10 @@ Pure NodeJS implementation.
 ### Documentation
 
 Please check source code.
+
+### Todo
+
+- write documentation
+- write missing tests (see tests files directly)
+- re write example
+- fix lint

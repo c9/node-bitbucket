@@ -8,38 +8,51 @@
  */
 
 var util = require('util');
-var AbstractApi = require("./abstract_api").AbstractApi;
+var async = require('asyncjs');
+var AbstractApi = require("./abstract_api");
 
-/**
- * API wrapper for http://confluence.atlassian.com/display/BBDEV/SSH+Keys
- */
-var SshApi = exports.SshApi = function(api) {
+var SshApi = (function(){
+  var SshApi = function(api) {
     this.$api = api;
-};
+  };
+  util.inherits(SshApi, AbstractApi);
 
-util.inherits(SshApi, AbstractApi);
+  /**
+   * List all public SSH keys on the account
+   */
+  SshApi.prototype.getKeys = function(callback) {
+    this.$api.get("ssh-keys/", null, null, callback);
+  };
 
-(function() {
+  /**
+   * Add a public SSH key on the account
+   */
+  SshApi.prototype.addKey = function(key, callback) {
+    this.$api.post("ssh-keys/", {key: key}, null, callback);
+  };
 
-    /**
-     * List all public SSH keys on the account
-     */
-    this.getKeys = function(callback) {
-        this.$api.get("ssh-keys/", null, null, callback);
-    };
+  /**
+   * Delete a public SSH key on the account
+   */
+  SshApi.prototype.deleteKey = function(pk, callback) {
+    this.$api["delete"]("ssh-keys/" + pk, null, null, callback);
+  };
 
-    /**
-     * Add a public SSH key on the account
-     */
-    this.addKey = function(key, callback) {
-        this.$api.post("ssh-keys/", {key: key}, null, callback);
-    };
-    
-    /**
-     * Delete a public SSH key on the account
-     */
-    this.deleteKey = function(pk, callback) {
-        this.$api["delete"]("ssh-keys/" + pk, null, null, callback);
-    };
+  /**
+   * delete all public SSH keys on the account
+   * @param then
+   */
+  SshApi.prototype.deleteAllKeys = function(then) {
+    var that = this;
+    this.getKeys(function(err, keys) {
+      if(err) throw err;
+      async.forEach(keys, function(key, next) {
+        that.deleteKey(key.pk, next);
+      }, then);
+    });
+  };
 
-}).call(SshApi.prototype);
+  return SshApi;
+})();
+
+module.exports = SshApi;
