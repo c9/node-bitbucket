@@ -8,27 +8,24 @@
  */
 
 var util = require('util');
-var AbstractApi = require("./abstract_api");
+var AbstractApi = require('./abstract_api');
 
-var UserApi = (function(){
-  var UserApi = function(api) {
-    this.$api = api;
-  };
-  util.inherits(UserApi, AbstractApi);
-  /**
-   * Get user data
-   */
-  UserApi.prototype.get = function(callback) {
-    this.$api.get("user", null, null, callback);
-  };
+var UserApi = function(api) {
+  this.$api = api;
+};
+util.inherits(UserApi, AbstractApi);
+/**
+ * Get user data
+ */
+UserApi.prototype.get = function(callback) {
+  this.$api.get('user', null, null, callback);
+};
 
-  /**
-   * Get a list of repositories visible to an account
-   */
-  UserApi.prototype.getRepositories = function(callback) {
-    this.$api.get("user/repositories", null, null, callback);
-  };
-  return UserApi;
-})();
+/**
+ * Get a list of repositories visible to an account
+ */
+UserApi.prototype.getRepositories = function(callback) {
+  this.$api.get('user/repositories', null, null, callback);
+};
 
 module.exports = UserApi;

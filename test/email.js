@@ -7,8 +7,8 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var BitBucket = require("../");
-var secrets = require("./secrets");
+var BitBucket = require('../');
+var secrets = require('./secrets');
 require('should');
 
 describe('email', function(){
@@ -20,7 +20,7 @@ describe('email', function(){
 
   it('should get list of all email addresses', function(done){
     bitbucket.getEmailApi().getAll(function(err, emails) {
-      (err==null).should.be.true;
+      (err == null).should.be.ok();
       emails.constructor.should.eql(Array);
       emails.length.should.be.above(0);
       emails[0].email.should.eql(secrets.email);

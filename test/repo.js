@@ -7,8 +7,8 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var BitBucket = require("../");
-var secrets = require("./secrets");
+var BitBucket = require('../');
+var secrets = require('./secrets');
 require('should');
 
 describe('repo', function(){
@@ -20,19 +20,20 @@ describe('repo', function(){
 
   it('should get user repos', function(done){
     bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
-      (err==null).should.be.true;
+      (err == null).should.be.ok();
       repos.constructor.should.eql(Array);
       done();
     });
   });
   it('should get user repos', function(done){
     bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
-      (err==null).should.be.true;
+      (err == null).should.be.ok();
       repos.constructor.should.eql(Array);
       done();
     });
   });
 
+  /* eslint-disable */
 // @todo
 //    "test: search repos" : function(finished) {
 //        this.repoApi.search("php github api", function(err, repos) {
@@ -103,5 +104,6 @@ describe('repo', function(){
 //            finished();
 //        });
 //    }
+  /* eslint-enable */
 
 });

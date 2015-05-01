@@ -7,8 +7,8 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var BitBucket = require("../");
-var secrets = require("./secrets");
+var BitBucket = require('../');
+var secrets = require('./secrets');
 require('should');
 
 describe('users', function(){
@@ -20,16 +20,16 @@ describe('users', function(){
 
   it('should get data of authenticated user', function(done){
     bitbucket.getUserApi().get(function(err, data) {
-      (err==null).should.be.true;
+      (err == null).should.be.ok();
       data.user.username.should.eql(secrets.username);
-      ("repositories" in data).should.be.true;
+      ('repositories' in data).should.be.ok();
       done();
     });
   });
 
   it('should get repositories of authenticated user', function(done){
     bitbucket.getUserApi().getRepositories(function(err, data) {
-      (err==null).should.be.true;
+      (err == null).should.be.ok();
       (data.constructor).should.be.eql(Array);
       done();
     });

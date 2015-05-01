@@ -7,9 +7,7 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var http = require("http");
-var util = require('util');
-var querystring = require("querystring");
+var querystring = require('querystring');
 
 /**
  * Performs requests on GitHub API.
@@ -21,14 +19,15 @@ var Request = exports.Request = function(options) {
 (function() {
 
     this.$defaults = {
+      /* eslint-disable key-spacing */
         protocol    : 'https',
         path        : '/1.0',
-        hostname    : "api.bitbucket.org",
+        hostname    : 'api.bitbucket.org',
         format      : 'json',
         user_agent  : 'js-bitbucket-api (http://github.com/ajaxorg/node-bitbucket)',
         http_port   : 443,
         timeout     : 20,
-        login_type  : "none",
+        login_type  : 'none',
         username    : null,
         password    : null,
         api_token   : null,
@@ -36,6 +35,7 @@ var Request = exports.Request = function(options) {
         proxy_host  : null,
         proxy_port  : null,
         debug       : false
+      /* eslint-enable key-spacing */
     };
 
     this.configure = function(options)
@@ -111,7 +111,7 @@ var Request = exports.Request = function(options) {
    */
     this.send = function(apiPath, parameters, httpMethod, options, callback)
     {
-        httpMethod = httpMethod || "GET";
+        httpMethod = httpMethod || 'GET';
         if(options)
         {
             var initialOptions = this.$options;
@@ -131,8 +131,8 @@ var Request = exports.Request = function(options) {
                 }
               }
 
-              if(self.$options.format !== "text") {
-                if (contentType.match("json")) {
+              if(self.$options.format !== 'text') {
+                if (contentType.match('json')) {
                   try{
                     body = JSON.parse(body+'');
                   }catch(ex){
@@ -170,49 +170,49 @@ var Request = exports.Request = function(options) {
 
         var headers = {
             'Host':'api.bitbucket.org',
-            "User-Agent": "NodeJS HTTP Client",
-            "Content-Length": "0",
-            "Content-Type": "application/x-www-form-urlencoded"
+            'User-Agent': 'NodeJS HTTP Client',
+            'Content-Length': '0',
+            'Content-Type': 'application/x-www-form-urlencoded'
         };
-        var getParams  = httpMethod != "POST" ? parameters : {};
-        var postParams = httpMethod == "POST" ? parameters : {};
+        var getParams  = httpMethod != 'POST' ? parameters : {};
+        var postParams = httpMethod == 'POST' ? parameters : {};
 
 
         var getQuery = querystring.stringify(getParams);
         var postQuery = querystring.stringify(postParams);
-        this.$debug("get: "+ getQuery + " post " + postQuery);
+        this.$debug('get: '+ getQuery + ' post ' + postQuery);
         
-        var path = this.$options.path + "/" + apiPath.replace(/\/*$/, "");
+        var path = this.$options.path + '/' + apiPath.replace(/\/*$/, '');
         if (getQuery)
-            path += "?" + getQuery;
+            path += '?' + getQuery;
 
         if (postQuery)
-            headers["Content-Length"] = postQuery.length;
+            headers['Content-Length'] = postQuery.length;
 
         switch(this.$options.login_type) {
-            case "oauth":
+            case 'oauth':
                 // TODO this should use oauth.authHeader once they add the missing argument
                 var oauth = this.$options.oauth;
                 var orderedParameters= oauth._prepareParameters(
                     this.$options.oauth_access_token,
                     this.$options.oauth_access_token_secret,
                     httpMethod,
-                    "https://api.bitbucket.org" + path, 
+                    'https://api.bitbucket.org' + path, 
                     postParams || {}
                 );
                 headers.Authorization = oauth._buildAuthorizationHeaders(orderedParameters);
                 break;
                 
-            case "token":
-                var auth = this.$options['username'] + "/token:" + this.$options['api_token'];
-                var basic = new Buffer(auth, "ascii").toString("base64");
-                headers.Authorization = "Basic " + basic;
+            case 'token':
+                var auth = this.$options['username'] + '/token:' + this.$options['api_token'];
+                var basic = new Buffer(auth, 'ascii').toString('base64');
+                headers.Authorization = 'Basic ' + basic;
                 break;
                 
-            case "basic":
-                var auth = this.$options['username'] + ":" + this.$options['password'];
-                var basic = new Buffer(auth, "ascii").toString("base64");
-                headers.Authorization = "Basic " + basic;
+            case 'basic':
+                var auth = this.$options['username'] + ':' + this.$options['password'];
+                var basic = new Buffer(auth, 'ascii').toString('base64');
+                headers.Authorization = 'Basic ' + basic;
                 break;
                 
             default:
@@ -240,7 +240,7 @@ var Request = exports.Request = function(options) {
             response.addListener('end', function () {
               that.$debug('got reponse ' + httpMethod + ' request: ' + path);
 
-              var contentType = response.headers["content-type"];
+              var contentType = response.headers['content-type'];
               body = body.join('');
 
               that.$debug('body\n%s', body);
@@ -257,7 +257,7 @@ var Request = exports.Request = function(options) {
             });
         });
         
-        if (httpMethod == "POST")
+        if (httpMethod == 'POST')
             request.write(postQuery);
             
         request.end();

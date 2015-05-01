@@ -8,15 +8,47 @@
  */
 
 var util = require('util');
-var AbstractApi = require("./abstract_api");
+var AbstractApi = require('./abstract_api');
 
-var RepoApi = (function(){
+var RepoApi = function(api) {
+  this.$api = api;
+};
+util.inherits(RepoApi, AbstractApi);
 
-  var RepoApi = function(api) {
-    this.$api = api;
-  };
-  util.inherits(RepoApi, AbstractApi);
+/**
+ * Get extended information about a repository by its username and repo name
+ *
+ * @param {String}  username         the user who owns the repo
+ * @param {String}  repo             the name of the repo
+ * @param callback (err{msg:''}, body{})
+ */
+RepoApi.prototype.show = function(username, repo, callback)
+{
+  this.$api.get(
+    'repositories/' + encodeURI(username) + '/' + encodeURI(repo),
+    null, null,
+    callback
+  );
+};
 
+/**
+ * Get the repositories of a user
+ * http://confluence.atlassian.com/display/BBDEV/Repositories
+ *
+ * @param {String}  username         the username
+ * @param callback (err{msg:''}, body{})
+ */
+RepoApi.prototype.getUserRepos = function(username, callback)
+{
+  this.$api.get(
+    'users/' + encodeURI(username),
+    null, null,
+    this.$createListener(callback, 'repositories')
+  );
+};
+
+
+/* eslint-disable */
 // @todo
 //    /**
 //     * Search repos by keyword
@@ -29,42 +61,10 @@ var RepoApi = (function(){
 //        this.$api.get(
 //            'repos/search/' + encodeURI(query),
 //            null, null,
-//            this.$createListener(callback, "repositories")
+//            this.$createListener(callback, 'repositories')
 //        );
 //    };
 //
-
-  /**
-   * Get extended information about a repository by its username and repo name
-   *
-   * @param {String}  username         the user who owns the repo
-   * @param {String}  repo             the name of the repo
-   * @param callback (err{msg:''}, body{})
-   */
-  RepoApi.prototype.show = function(username, repo, callback)
-  {
-    this.$api.get(
-      'repositories/' + encodeURI(username) + "/" + encodeURI(repo),
-      null, null,
-      callback
-    );
-  };
-
-  /**
-   * Get the repositories of a user
-   * http://confluence.atlassian.com/display/BBDEV/Repositories
-   *
-   * @param {String}  username         the username
-   * @param callback (err{msg:''}, body{})
-   */
-  RepoApi.prototype.getUserRepos = function(username, callback)
-  {
-    this.$api.get(
-      'users/' + encodeURI(username),
-      null, null,
-      this.$createListener(callback, "repositories")
-    );
-  };
 
 // @todo
 //    /**
@@ -77,9 +77,9 @@ var RepoApi = (function(){
 //    this.getRepoTags = function(username, repo, callback)
 //    {
 //        this.$api.get(
-//            'repos/show/' + encodeURI(username) + "/" + encodeURI(repo) + "/tags",
+//            'repos/show/' + encodeURI(username) + '/' + encodeURI(repo) + '/tags',
 //            null, null,
-//            this.$createListener(callback, "tags")
+//            this.$createListener(callback, 'tags')
 //        );
 //    };
 //
@@ -93,9 +93,9 @@ var RepoApi = (function(){
 //    this.getRepoBranches = function(username, repo, callback)
 //    {
 //        this.$api.get(
-//            'repos/show/' + encodeURI(username) + "/" + encodeURI(repo) + "/branches",
+//            'repos/show/' + encodeURI(username) + '/' + encodeURI(repo) + '/branches',
 //            null, null,
-//            this.$createListener(callback, "branches")
+//            this.$createListener(callback, 'branches')
 //        );
 //    };
 //
@@ -109,9 +109,9 @@ var RepoApi = (function(){
 //    this.getRepoLanguages = function(username, repo, callback)
 //    {
 //        this.$api.get(
-//            'repos/show/' + encodeURI(username) + "/" + encodeURI(repo) + "/languages",
+//            'repos/show/' + encodeURI(username) + '/' + encodeURI(repo) + '/languages',
 //            null, null,
-//            this.$createListener(callback, "languages")
+//            this.$createListener(callback, 'languages')
 //        );
 //    };
 //
@@ -125,9 +125,9 @@ var RepoApi = (function(){
 //    this.getRepoCollaborators = function(username, repo, callback)
 //    {
 //        this.$api.get(
-//            'repos/show/' + encodeURI(username) + "/" + encodeURI(repo) + "/collaborators",
+//            'repos/show/' + encodeURI(username) + '/' + encodeURI(repo) + '/collaborators',
 //            null, null,
-//            this.$createListener(callback, "collaborators")
+//            this.$createListener(callback, 'collaborators')
 //        );
 //    };
 //
@@ -149,9 +149,9 @@ var RepoApi = (function(){
 //            anon = '/anon';
 //        }
 //        this.$api.get(
-//            'repos/show/' + encodeURI(username) + "/" + encodeURI(repo) + "/contributors" + anon,
+//            'repos/show/' + encodeURI(username) + '/' + encodeURI(repo) + '/contributors' + anon,
 //            null, null,
-//            this.$createListener(callback, "contributors")
+//            this.$createListener(callback, 'contributors')
 //        );
 //    };
 //
@@ -165,13 +165,12 @@ var RepoApi = (function(){
 //    this.getRepoWatchers = function(username, repo, callback)
 //    {
 //        this.$api.get(
-//            'repos/show/' + encodeURI(username) + "/" + encodeURI(repo) + "/watchers",
+//            'repos/show/' + encodeURI(username) + '/' + encodeURI(repo) + '/watchers',
 //            null, null,
-//            this.$createListener(callback, "watchers")
+//            this.$createListener(callback, 'watchers')
 //        );
 //    };
+/* eslint-enable */
 
-  return RepoApi;
-})();
 
 module.exports = RepoApi;

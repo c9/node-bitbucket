@@ -6,8 +6,8 @@
  *
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
-var BitBucket = require("../");
-var secrets = require("./secrets");
+var BitBucket = require('../');
+var secrets = require('./secrets');
 require('should');
 
 describe('email', function(){
@@ -16,16 +16,17 @@ describe('email', function(){
 
   var bitbucket = new BitBucket(true);
 
-  it('should authenticate using username and password should show private repo', function(done){
+  it('should authenticate using username and password', function(done){
     bitbucket.authenticatePassword(secrets.username, secrets.password);
     bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
-      (err==null).should.be.true;
+      (err == null).should.be.ok();
       repos.constructor.should.eql(Array);
       done();
     });
 
   });
 
+  /* eslint-disable */
 // @todo
 //    "test: show user without authentification should have no 'plan'" : function(finished) {
 //        test.userApi.show(username, function(err, user) {
@@ -50,5 +51,6 @@ describe('email', function(){
 //            finished();
 //        });
 //    }
+  /* eslint-enable */
 
 });
