@@ -20,7 +20,7 @@ describe('email', function(){
 
   it('should get list of all email addresses', function(done){
     bitbucket.getEmailApi().getAll(function(err, emails) {
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       emails.constructor.should.eql(Array);
       emails.length.should.be.above(0);
       emails[0].email.should.eql(secrets.email);

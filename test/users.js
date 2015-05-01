@@ -20,9 +20,9 @@ describe('users', function(){
 
   it('should get data of authenticated user', function(done){
     bitbucket.getUsersApi().getUserData(secrets.username, function(err, data) {
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       data.user.username.should.eql(secrets.username);
-      ('repositories' in data).should.be.ok();
+      ('repositories' in data).should.eql(true);
       done();
     });
   });

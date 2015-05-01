@@ -20,14 +20,14 @@ describe('repo', function(){
 
   it('should get user repos', function(done){
     bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       repos.constructor.should.eql(Array);
       done();
     });
   });
   it('should get user repos', function(done){
     bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       repos.constructor.should.eql(Array);
       done();
     });

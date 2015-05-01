@@ -19,7 +19,7 @@ describe('email', function(){
   it('should authenticate using username and password', function(done){
     bitbucket.authenticatePassword(secrets.username, secrets.password);
     bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       repos.constructor.should.eql(Array);
       done();
     });

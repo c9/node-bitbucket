@@ -20,16 +20,16 @@ describe('users', function(){
 
   it('should get data of authenticated user', function(done){
     bitbucket.getUserApi().get(function(err, data) {
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       data.user.username.should.eql(secrets.username);
-      ('repositories' in data).should.be.ok();
+      ('repositories' in data).should.eql(true);
       done();
     });
   });
 
   it('should get repositories of authenticated user', function(done){
     bitbucket.getUserApi().getRepositories(function(err, data) {
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       (data.constructor).should.be.eql(Array);
       done();
     });

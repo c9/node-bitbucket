@@ -32,11 +32,11 @@ describe('ssh', function(){
   it('should delete/add ssh key', function(done){
     bitbucket.getSshApi().addKey(pubkey, function(err, key) {
       if (err) { console.error(err); }
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       key.key.should.eql(pubkey);
       bitbucket.getSshApi().deleteKey(key.pk, function(err2){
         if (err2) { console.error(err2); }
-        (err2 == null).should.be.ok();
+        (err2 == null).should.eql(true);
         done();
       });
     });
@@ -44,10 +44,10 @@ describe('ssh', function(){
   it('should get all ssh keys', function(done){
     bitbucket.getSshApi().addKey(pubkey, function(err) {
       if (err) { console.error(err); }
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       bitbucket.getSshApi().getKeys(function(err2, keys) {
         if (err2) { console.error(err2); }
-        (err2 == null).should.be.ok();
+        (err2 == null).should.eql(true);
         keys.length.should.be.above(0);
         keys[0].key.should.eql(pubkey);
         done();
@@ -59,7 +59,7 @@ describe('ssh', function(){
     bitbucket.getSshApi().addKey(pubkey, function(err, key) {
       if (err) { console.error(err); }
       key.key.should.eql(pubkey);
-      (err == null).should.be.ok();
+      (err == null).should.eql(true);
       bitbucket.getSshApi().addKey(pubkey, function(err2) {
         if (err2) { console.error(err); }
         err2.msg.should
