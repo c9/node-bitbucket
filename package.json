@@ -2,7 +2,6 @@
   "name": "node-okbitbucket",
   "version": "0.0.2",
   "description": "Wrapper for the BitBucket API",
-  "author": "Fabian Jakobs <fabian.jakobs@web.de>",
   "contributors": [
     {
       "name":"Fabian Jakobs",
@@ -19,7 +18,7 @@
     "url": "http://github.com/maboiteaspam/node-okbitbucket.git"
   },
   "engine": [
-    "node >=0.4.0"
+    "node >=0.10.0"
   ],
   "dependencies": {
     "asyncjs": ">=0.0.5",
