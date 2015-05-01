@@ -1,13 +1,22 @@
 {
-  "name": "bitbucket",
+  "name": "node-okbitbucket",
   "version": "0.0.2",
   "description": "Wrapper for the BitBucket API",
   "author": "Fabian Jakobs <fabian.jakobs@web.de>",
-  "homepage": "http://github.com/ajaxorg/node-bitbucket.git",
+  "contributors": [
+    {
+      "name":"Fabian Jakobs",
+      "email":"fabian.jakobs@web.de"
+    },
+    {
+      "name":"maboiteaspam"
+    }
+  ],
+  "homepage": "http://github.com/maboiteaspam/node-okbitbucket.git",
   "main": "./bitbucket/bitbucket.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/ajaxorg/node-bitbucket.git"
+    "url": "http://github.com/maboiteaspam/node-okbitbucket.git"
   },
   "engine": [
     "node >=0.4.0"

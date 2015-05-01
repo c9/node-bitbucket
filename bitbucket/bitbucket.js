@@ -7,7 +7,7 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var Request = require('./request').Request;
+var Request = require('./request');
 
 /**
  * Simple JavaScript GitHub API
