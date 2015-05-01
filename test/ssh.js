@@ -26,7 +26,9 @@ describe('ssh', function(){
   bitbucket.authenticatePassword(secrets.username, secrets.password);
 
   beforeEach(function(done){
-    bitbucket.getSshApi().deleteAllKeys(done);
+    bitbucket.getSshApi().deleteAllKeys(function(){
+      done();
+    });
   });
 
   it('should delete/add ssh key', function(done){
