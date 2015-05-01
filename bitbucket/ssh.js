@@ -18,6 +18,8 @@ util.inherits(SshApi, AbstractApi);
 
 /**
  * List all public SSH keys on the account
+ *
+ * @param callback (err{msg:''}, body{})
  */
 SshApi.prototype.getKeys = function(callback) {
   this.$api.get('ssh-keys/', null, null, callback);
@@ -25,21 +27,28 @@ SshApi.prototype.getKeys = function(callback) {
 
 /**
  * Add a public SSH key on the account
+ *
+ * @param pubkey
+ * @param callback (err{msg:''}, body{})
  */
-SshApi.prototype.addKey = function(key, callback) {
-  this.$api.post('ssh-keys/', {key: key}, null, callback);
+SshApi.prototype.addKey = function(pubkey, callback) {
+  this.$api.post('ssh-keys/', {key: pubkey}, null, callback);
 };
 
 /**
  * Delete a public SSH key on the account
+ *
+ * @param pubkey
+ * @param callback (err{msg:''}, body{})
  */
-SshApi.prototype.deleteKey = function(pk, callback) {
-  this.$api['delete']('ssh-keys/' + pk, null, null, callback);
+SshApi.prototype.deleteKey = function(pubkey, callback) {
+  this.$api['delete']('ssh-keys/' + pubkey, null, null, callback);
 };
 
 /**
  * delete all public SSH keys on the account
- * @param then
+ *
+ * @param then ()
  */
 SshApi.prototype.deleteAllKeys = function(then) {
   var that = this;

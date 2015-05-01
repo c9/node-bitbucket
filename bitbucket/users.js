@@ -16,7 +16,10 @@ var UsersApi = function(api){
 util.inherits(UsersApi, AbstractApi);
 
 /**
- * Get user data including the repository list
+ * Get user data and repository list
+ *
+ * @param username
+ * @param callback (err{msg:''}, body{})
  */
 UsersApi.prototype.getUserData = function(username, callback) {
   this.$api.get('users/' + username, null, null, callback);

@@ -242,7 +242,11 @@ Request.prototype.doSend = function(apiPath, parameters, httpMethod, callback)
         var contentType = response.headers['content-type'];
         body = body.join('');
 
-        that.$debug('body\n%s', body);
+        if(contentType.match(/json/)){
+          that.$debug('JSON\n%s', JSON.stringify(JSON.parse(body),null,4));
+        }else{
+          that.$debug('body\n%s', body);
+        }
         that.$debug('status code %s', response.statusCode);
         that.$debug('content type %s', contentType);
 
@@ -263,12 +267,13 @@ Request.prototype.doSend = function(apiPath, parameters, httpMethod, callback)
 };
 
 Request.prototype.$debug = function(msg) {
-  if (this.$options.debug)
+  if (this.$options.debug){
     console.error(msg,
       arguments[1]||'', // creepy http://stackoverflow.com/questions/9521921/why-does-console-log-apply-throw-an-illegal-invocation-error
       arguments[2]||'', arguments[3]||'',
       arguments[4]||'', arguments[5]||'',
       arguments[6]||'', arguments[7]||'');
+  }
 };
 
 module.exports = Request;

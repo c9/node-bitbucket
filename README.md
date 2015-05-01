@@ -32,13 +32,25 @@ Pure NodeJS implementation.
 
     // var secrets = require('./secrets.json');
     
-    var BitBucket = require('node-okbitbucket').BitBucket;
-    var session = var (new BitBucket(true)).authenticatePassword(secrets.username, secrets.password);
+    var BitBucket = require('node-okbitbucket');
+    
+    var bbt = (new BitBucket(true))
+            .authenticatePassword(secrets.username, secrets.password);
 
-    session.getUserApi().getUserData(username, function(){ /* then handler */ });
-    session.getRepoApi()...
-    session.getSshApi()...
-    session.getEmailApi()...
+    bbt.getUserApi().getRepositories(username, function(err, repos){  });
+    
+    bbt.getUsersApi().getUserData(username, function(err, user){  });
+    
+    bbt.getSshApi().getKeys(function(err, keys){  });
+    bbt.getSshApi().addKey(pubkey, function(err){  });
+    bbt.getSshApi().deleteKey(pubkey, function(err){  });
+    bbt.getSshApi().deleteAllKeys(function(){  });
+    
+    bbt.getRepoApi().show(username, repo, function(err, userRepo){  })
+    bbt.getRepoApi().getUserRepos(username, function(err, repositories){  })
+    
+    
+    bbt.getEmailApi().getAll(username, repo, function(err, userRepo){  })
     
 ```
 

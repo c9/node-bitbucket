@@ -13,14 +13,15 @@ var AbstractApi = require('./abstract_api');
 /**
  * API wrapper for http://confluence.atlassian.com/display/BBDEV/Emails
  */
-
 var EmailApi = function (api) {
   this.$api = api;
 };
 util.inherits(EmailApi, AbstractApi);
 
 /**
- * Get auuser data including the repository list
+ * Get user emails data
+ *
+ * @param callback (err{msg:''}, body{})
  */
 EmailApi.prototype.getAll = function(callback) {
   this.$api.get('emails/', null, null, callback);

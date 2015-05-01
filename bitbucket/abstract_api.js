@@ -11,6 +11,12 @@ var AbstractApi = function(api) {
   this.$api = api;
 };
 
+/**
+ *
+ * @param callback (err, body{*})
+ * @param key
+ * @returns {Function}
+ */
 AbstractApi.prototype.$createListener = function(callback, key) {
   return function(err, response) {
     if (err) {

@@ -175,8 +175,8 @@ BitBucket.prototype.post =
  */
 BitBucket.prototype.getRequest = function()
 {
-  if(!this.request) {
-    this.request = new Request({
+  if(!this.$request) {
+    this.$request = new Request({
       debug: this.$debug,
       'proxy_host': this.$proxy_host,
       'proxy_port': this.$proxy_port,
@@ -184,7 +184,7 @@ BitBucket.prototype.getRequest = function()
     });
   }
 
-  return this.request;
+  return this.$request;
 };
 
 /**

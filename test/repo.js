@@ -25,10 +25,11 @@ describe('repo', function(){
       done();
     });
   });
-  it('should get user repos', function(done){
-    bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
+  it('should show extended user repository data', function(done){
+    bitbucket.getRepoApi().show(secrets.username, 'test', function(err, repo) {
       (err == null).should.eql(true);
-      repos.constructor.should.eql(Array);
+      ('owner' in repo).should.eql(true);
+      repo.owner.should.eql(secrets.username)
       done();
     });
   });

@@ -14,8 +14,11 @@ var UserApi = function(api) {
   this.$api = api;
 };
 util.inherits(UserApi, AbstractApi);
+
 /**
  * Get user data
+ *
+ * @param callback (err{msg:''}, body{})
  */
 UserApi.prototype.get = function(callback) {
   this.$api.get('user', null, null, callback);
@@ -23,6 +26,8 @@ UserApi.prototype.get = function(callback) {
 
 /**
  * Get a list of repositories visible to an account
+ *
+ * @param callback (err{msg:''}, body{})
  */
 UserApi.prototype.getRepositories = function(callback) {
   this.$api.get('user/repositories', null, null, callback);
