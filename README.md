@@ -6,6 +6,7 @@ Mac/Linux | Windows
 | 
   [![Windows Build status](http://img.shields.io/appveyor/ci/maboiteaspam/node-okbitbucket.svg)](https://ci.appveyor.com/project/maboiteaspam/node-okbitbucket/branch/master)
 
+
 API to programmatically query / write on bitbucket.
 
 Pure NodeJS implementation.
