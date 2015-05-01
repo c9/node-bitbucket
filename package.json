@@ -4,7 +4,7 @@
   "description": "Wrapper for the BitBucket API",
   "author": "Fabian Jakobs <fabian.jakobs@web.de>",
   "homepage": "http://github.com/ajaxorg/node-bitbucket.git",
-  "main": "./bitbucket",
+  "main": "./bitbucket/bitbucket.js",
   "repository": {
     "type": "git",
     "url": "http://github.com/ajaxorg/node-bitbucket.git"
