@@ -51,7 +51,7 @@ inquirer.prompt([{
     });
   };
   streamDisplay('git add -A');
-  streamDisplay('git commit -ma "Publish '+releaseType+' '+revision+'"');
+  streamDisplay('git commit -am "Publish '+releaseType+' '+revision+'"');
   streamDisplay('git push origin master');
   streamOrDie('mkdir -p /tmp/node-okbitbucket');
   streamOrDie('cd /tmp/node-okbitbucket');
