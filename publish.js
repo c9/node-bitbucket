@@ -74,6 +74,11 @@ inquirer.prompt([{
       this.answer(/^Password/i, github.password);
     });
   };
+  var c = fs.readFileSync('.git/info/exclude');
+  if((c+'').indexOf('.idea/')==-1){
+    c = c+'\n'+'.idea/\n';
+    fs.writeFileSync('.git/info/exclude', c);
+  }
   gitAdd('-A');
   gitCommit('Publish '+releaseType+' '+revision);
   gitPush('origin master');
@@ -93,12 +98,12 @@ inquirer.prompt([{
   streamOrDie('cp '+__dirname+'/*md .');
   streamOrDie('jsdox --output docs/ '+__dirname+'/bitbucket/');
   streamOrDie('cd '+__dirname);
-  streamDisplay('mocha --reporter markdown > /tmp/node-okbitbucket/docs/test.md');
+  streamDisplay('mocha --reporter markdown > /tmp/'+pkg.name+'/docs/test.md');
   streamOrDie('cd /tmp/'+pkg.name);
   streamOrDie('ls -alh');
   gitAdd('-A');
   gitCommit('generate doc');
-  gitPush('git@github.com:maboiteaspam/node-okbitbucket.git gh-pages', function(){
+  gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git gh-pages', function(){
     this.display();
     this.answer(/^Username/i, github.username);
     this.answer(/^Password/i, github.password);
