@@ -74,11 +74,15 @@ inquirer.prompt([{
       this.answer(/^Password/i, github.password);
     });
   };
-  var c = fs.readFileSync('.git/info/exclude');
-  if((c+'').indexOf('.idea/')==-1){
-    c = c+'\n'+'.idea/\n';
-    fs.writeFileSync('.git/info/exclude', c);
-  }
+  var ensureFileContain = function(file, data){
+    var c = fs.readFileSync(file);
+    if((c+'').indexOf(data)==-1){
+      c = c+''+data;
+      fs.writeFileSync(file, c);
+    }
+  };
+  ensureFileContain('.git/info/exclude', '\n.idea/\n');
+  ensureFileContain('.git/info/exclude', '\ngithub.json/\n');
   gitAdd('-A');
   gitCommit('Publish '+releaseType+' '+revision);
   gitPush('origin master');
