@@ -10,7 +10,7 @@ var BitBucket = require('../');
 var secrets = require('./secrets');
 require('should');
 
-describe('email', function(){
+describe('authentification', function(){
 
   this.timeout(20000);
 
