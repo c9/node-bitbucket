@@ -15,7 +15,7 @@ describe('email', function(){
 
   this.timeout(20000);
 
-  var bitbucket = new BitBucket(true);
+  var bitbucket = new BitBucket();
   bitbucket.authenticatePassword(secrets.username, secrets.password);
 
   it('should get list of all email addresses', function(done){

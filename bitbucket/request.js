@@ -7,6 +7,8 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
+var pkg = require('../package.json');
+var debug = require('debug')(pkg.name);
 var querystring = require('querystring');
 
 /**
@@ -29,8 +31,7 @@ var Request = function(options) {
     api_token   : null,
     oauth_access_token: null,
     proxy_host  : null,
-    proxy_port  : null,
-    debug       : false
+    proxy_port  : null
     /* eslint-enable key-spacing, max-len, camelcase */
   };
   this.configure(options);
@@ -181,7 +182,7 @@ Request.prototype.doSend = function(apiPath, params, httpMethod, then)
 
   var getQuery = querystring.stringify(getParams);
   var postQuery = querystring.stringify(postParams);
-  this.$debug('get: ' + getQuery + ' post ' + postQuery);
+  debug('get: ' + getQuery + ' post ' + postQuery);
 
   var path = this.$options.path + '/' + apiPath.replace(/\/*$/, '');
   if (getQuery){
@@ -241,7 +242,7 @@ Request.prototype.doSend = function(apiPath, params, httpMethod, then)
   };
 
   var that = this;
-  that.$debug('send ' + httpMethod + ' request: ' + path);
+  debug('send ' + httpMethod + ' request: ' + path);
   var request = require(this.$options.protocol)
     .request(getOptions, function(response) {
       response.setEncoding('utf8');
@@ -251,18 +252,18 @@ Request.prototype.doSend = function(apiPath, params, httpMethod, then)
         body.push(chunk);
       });
       response.addListener('end', function () {
-        that.$debug('got reponse ' + httpMethod + ' request: ' + path);
+        debug('got reponse ' + httpMethod + ' request: ' + path);
 
         var contentType = response.headers['content-type'];
         body = body.join('');
 
         if (contentType.match(/json/) ){
-          that.$debug('JSON\n%s', JSON.stringify(JSON.parse(body), null, 4) );
+          debug('JSON\n%s', JSON.stringify(JSON.parse(body), null, 4) );
         } else {
-          that.$debug('body\n%s', body);
+          debug('body\n%s', body);
         }
-        that.$debug('status code %s', response.statusCode);
-        that.$debug('content type %s', contentType);
+        debug('status code %s', response.statusCode);
+        debug('content type %s', contentType);
 
         var ret = {
           status: response.statusCode,
@@ -279,17 +280,6 @@ Request.prototype.doSend = function(apiPath, params, httpMethod, then)
   }
 
   request.end();
-};
-
-Request.prototype.$debug = function(msg) {
-  if (this.$options.debug){
-    console.error(msg,
-      arguments[1] || '',
-      // creepy http://stackoverflow.com/questions/9521921/
-      arguments[2] || '', arguments[3] || '',
-      arguments[4] || '', arguments[5] || '',
-      arguments[6] || '', arguments[7] || '');
-  }
 };
 
 module.exports = Request;

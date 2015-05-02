@@ -14,7 +14,7 @@ describe('email', function(){
 
   this.timeout(20000);
 
-  var bitbucket = new BitBucket(true);
+  var bitbucket = new BitBucket();
 
   it('should authenticate using username and password', function(done){
     bitbucket.authenticatePassword(secrets.username, secrets.password);

@@ -7,19 +7,16 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
+var pkg = require('../package.json');
+var debug = require('debug')(pkg.name);
 var Request = require('./request');
 
 /**
- * Simple JavaScript GitHub API
- *
- * Based on the PHP GitHub API project http://github.com/ornicar/php-github-api
+ * @param proxy String http://some.proxy/
+ * @param http bool Prefer clear text?
+ * @constructor
  */
-
-var BitBucket = function(debug, proxy, http){
-  /**
-   * Use debug mode (prints debug messages)
-   */
-  this.$debug = debug;
+var BitBucket = function(proxy, http){
 
   /**
    * Define HTTP proxy in format localhost:3128
@@ -54,7 +51,7 @@ var BitBucket = function(debug, proxy, http){
  * @return {BitBucket}        fluent interface
  */
 BitBucket.prototype.authenticate = function(login, token) {
-  console.log('Deprecated: use \'authenticateToken\' instead!');
+  debug('Deprecated: use \'authenticateToken\' instead!');
   return this.authenticateToken(login, token);
 };
 
@@ -185,7 +182,6 @@ BitBucket.prototype.getRequest = function()
   if (!this.$request) {
     this.$request = new Request({
       /* eslint-disable key-spacing, max-len, camelcase */
-      debug: this.$debug,
       'proxy_host': this.$proxy_host,
       'proxy_port': this.$proxy_port,
       'protocol' : this.$use_http ? 'http' : 'https'

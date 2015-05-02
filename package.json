@@ -1,14 +1,14 @@
 {
   "name": "node-okbitbucket",
-  "version": "0.0.4",
+  "version": "1.0.4",
   "description": "Wrapper for the BitBucket API",
   "contributors": [
     {
-      "name":"Fabian Jakobs",
-      "email":"fabian.jakobs@web.de"
+      "name": "Fabian Jakobs",
+      "email": "fabian.jakobs@web.de"
     },
     {
-      "name":"maboiteaspam"
+      "name": "maboiteaspam"
     }
   ],
   "homepage": "http://github.com/maboiteaspam/node-okbitbucket.git",
@@ -22,11 +22,12 @@
   ],
   "dependencies": {
     "asyncjs": ">=0.0.5",
+    "debug": "^2.1.3",
     "oauth": ">=0.9.0"
   },
   "scripts": {
-    "test": "mocha",
-    "appveyor": "mocha",
+    "test": "DEBUG=node-okbitbucket mocha",
+    "appveyor": "set DEBUG=node-okbitbucket; mocha",
     "lint": "eslint bitbucket/* test/*.js"
   },
   "licenses": [
@@ -36,6 +37,7 @@
     }
   ],
   "devDependencies": {
+    "cluc": "git://github.com/maboiteaspam/cluc.git",
     "should": "^6.0.1"
   }
 }

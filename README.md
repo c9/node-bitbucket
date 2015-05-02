@@ -33,9 +33,14 @@ Pure NodeJS implementation.
 
     // var secrets = require('./secrets.json');
     
+    // enable debug messages
+    if ( process.env.NODE_ENV === 'test' ){
+      process.env.DEBUG='*';
+    }
+    
     var BitBucket = require('node-okbitbucket');
     
-    var bbt = (new BitBucket(true))
+    var bbt = (new BitBucket())
             .authenticatePassword(secrets.username, secrets.password);
 
     bbt.getUserApi().getRepositories(username, function(err, repos){  });

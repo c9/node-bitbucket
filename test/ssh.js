@@ -22,7 +22,7 @@ describe('ssh', function(){
 
   this.timeout(20000);
 
-  var bitbucket = new BitBucket(true);
+  var bitbucket = new BitBucket();
   bitbucket.authenticatePassword(secrets.username, secrets.password);
 
   beforeEach(function(done){
@@ -63,7 +63,7 @@ describe('ssh', function(){
       key.key.should.eql(pubkey);
       (err == null).should.eql(true);
       bitbucket.getSshApi().addKey(pubkey, function(err2) {
-        if (err2) { console.error(err); }
+        if (err2) { console.error(err2); }
         err2.msg.should
           .match(/Someone has already registered that SSH key/);
         done();
