@@ -62,7 +62,24 @@ Pure NodeJS implementation.
 
 ### Documentation
 
-Please check bitbucket/ and test/ folders.
+* [`BitBucket`](https://github.com/maboiteaspam/node-okbitbucket/tree/gh-pages/docs/bitbucket.md)
+* [`AbstractApi`](https://github.com/maboiteaspam/node-okbitbucket/tree/gh-pages/docs/abstract_api.md)
+* [`EmailApi`](https://github.com/maboiteaspam/node-okbitbucket/tree/gh-pages/docs/email.md)
+* [`RepositoryApi`](https://github.com/maboiteaspam/node-okbitbucket/tree/gh-pages/docs/repo.md)
+* [`Request`](https://github.com/maboiteaspam/node-okbitbucket/tree/gh-pages/docs/request.md)
+* [`SshApi`](https://github.com/maboiteaspam/node-okbitbucket/tree/gh-pages/docs/ssh.md)
+* [`UserApi`](https://github.com/maboiteaspam/node-okbitbucket/tree/gh-pages/docs/user.md)
+* [`UsersApi`](https://github.com/maboiteaspam/node-okbitbucket/tree/gh-pages/docs/users.md)
+
+### Test
+
+```
+npm run test
+DEBUG=node-okbitbucket mocha
+```
+
+* [`Test`](https://github.com/maboiteaspam/node-okbitbucket/tree/gh-pages/docs/test.md)
+
 
 ### Todo
 
