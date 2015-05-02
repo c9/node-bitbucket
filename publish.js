@@ -7,8 +7,15 @@ var fs = require('fs');
 
 var Cluc = require('cluc');
 
-
-var revision = pkg.version;
+var cleanUpFiles = [
+  './.vagra*',
+  './.travis*',
+  './.giti*',
+  './.esli*'
+];
+var jsdox = {
+  'bitbucket/':'docs/'
+};
 var releaseTypes = [
   "major",
   "premajor",
@@ -18,6 +25,7 @@ var releaseTypes = [
   "prepatch",
   "prerelease"
 ];
+var revision = pkg.version;
 
 releaseTypes.forEach(function(t, i){
   var r = semver.inc(revision, t);
@@ -74,6 +82,13 @@ inquirer.prompt([{
       this.answer(/^Password/i, github.password);
     });
   };
+  var jsDox = function(from, to){
+    streamOrDie('jsdox --output '+to+' '+from);
+  };
+  var mocha = function(reporter, to){
+    streamDisplay('mocha --reporter '+reporter+' > '+to);
+
+  };
   var ensureFileContain = function(file, data){
     var c = fs.readFileSync(file);
     if((c+'').indexOf(data)==-1){
@@ -81,6 +96,12 @@ inquirer.prompt([{
       fs.writeFileSync(file, c);
     }
   };
+  if(!pkg.name){
+    throw 'pkg.name is missing';
+  }
+  if(!pkg.repository){
+    throw 'pkg.repository is missing';
+  }
   ensureFileContain('.git/info/exclude', '\n.idea/\n');
   ensureFileContain('.git/info/exclude', '\ngithub.json/\n');
   gitAdd('-A');
@@ -89,20 +110,22 @@ inquirer.prompt([{
   streamOrDie('mkdir -p /tmp/'+pkg.name);
   streamOrDie('cd /tmp/'+pkg.name);
   streamDisplay('git clone '+pkg.repository.url+' .');
-  streamDisplay('git checkout gh-pages');
+  streamDisplay('git checkout -b gh-pages');
   streamDisplay('git reset --hard');
   streamDisplay('git pull origin gh-pages');
   streamOrDie('rm -fr ./*');
-  streamOrDie('rm -fr ./.travis*');
-  streamOrDie('rm -fr ./.giti*');
-  streamOrDie('rm -fr ./.esli*');
+  cleanUpFiles.forEach(function(projectPath){
+    streamOrDie('rm -fr '+projectPath);
+  });
   streamOrDie('ls -alh');
   streamDisplay('git commit -am cleanup');
   streamDisplay('git status');
   streamOrDie('cp '+__dirname+'/*md .');
-  streamOrDie('jsdox --output docs/ '+__dirname+'/bitbucket/');
+  Object.keys(jsdox).forEach(function(projectPath){
+    jsDox(__dirname+'/'+projectPath, jsdox[projectPath]);
+  });
   streamOrDie('cd '+__dirname);
-  streamDisplay('mocha --reporter markdown > /tmp/'+pkg.name+'/docs/test.md');
+  mocha('markdown', '/tmp/'+pkg.name+'/docs/test.md');
   streamOrDie('cd /tmp/'+pkg.name);
   streamOrDie('ls -alh');
   gitAdd('-A');

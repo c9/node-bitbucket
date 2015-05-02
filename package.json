@@ -1,6 +1,6 @@
 {
   "name": "node-okbitbucket",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "description": "Wrapper for the BitBucket API",
   "contributors": [
     {
