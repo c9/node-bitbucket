@@ -103,11 +103,7 @@ inquirer.prompt([{
   streamOrDie('ls -alh');
   gitAdd('-A');
   gitCommit('generate doc');
-  gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git gh-pages', function(){
-    this.display();
-    this.answer(/^Username/i, github.username);
-    this.answer(/^Password/i, github.password);
-  });
+  gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git gh-pages');
   streamOrDie('cd '+__dirname);
   streamOrDie('npm publish');
   streamOrDie('rm -fr /tmp/'+pkg.name);
