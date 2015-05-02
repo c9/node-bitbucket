@@ -93,7 +93,7 @@ inquirer.prompt([{
   streamOrDie('cp '+__dirname+'/*md .');
   streamOrDie('jsdox --output docs/ '+__dirname+'/bitbucket/');
   streamOrDie('cd '+__dirname);
-  //streamDisplay('mocha --reporter markdown > /tmp/node-okbitbucket/docs/test.md');
+  streamDisplay('mocha --reporter markdown > /tmp/node-okbitbucket/docs/test.md');
   streamOrDie('cd /tmp/'+pkg.name);
   streamOrDie('ls -alh');
   gitAdd('-A');
