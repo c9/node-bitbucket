@@ -110,6 +110,7 @@ inquirer.prompt([{
   });
   streamOrDie('cd '+__dirname);
   streamOrDie('npm publish');
+  streamOrDie('rm -fr /tmp/'+pkg.name);
 
   transport.run(line, function(){
     console.log('All done');
