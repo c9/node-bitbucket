@@ -50,8 +50,9 @@ inquirer.prompt([{
       this.dieOnError();
     });
   };
-  streamDisplay('git commit -m "Publish '+releaseType+' '+revision+'"');
-  streamDisplay('git push master');
+  streamDisplay('git add -A');
+  streamDisplay('git commit -ma "Publish '+releaseType+' '+revision+'"');
+  streamDisplay('git push origin master');
   streamOrDie('mkdir -p /tmp/node-okbitbucket');
   streamOrDie('cd /tmp/node-okbitbucket');
   streamDisplay('git clone '+pkg.repository.url+' .');
@@ -81,7 +82,6 @@ inquirer.prompt([{
   streamOrDie('cd '+__dirname);
   streamOrDie('npm publish');
 
-  return;
   transport.run(line, function(){
     console.log('All done');
   });
