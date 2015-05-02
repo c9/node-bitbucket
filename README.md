@@ -4,7 +4,7 @@ Mac/Linux | Windows
 ---- | ----
   [![Build Status](https://travis-ci.org/maboiteaspam/node-okbitbucket.svg?branch=master)](https://travis-ci.org/maboiteaspam/node-okbitbucket) 
 | 
-  [![Windows Build status](http://img.shields.io/appveyor/ci/maboiteaspam/node-okbitbucket.svg)](https://ci.appveyor.com/project/maboiteaspam/node-okbitbucket/branch/master)
+  [![Windows Build status](http://img.shields.io/appveyor/ci/maboiteaspam/node-bitbucket.svg)](https://ci.appveyor.com/project/maboiteaspam/node-bitbucket/branch/master)
 
 
 API to programmatically query / write on bitbucket.
