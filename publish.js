@@ -50,11 +50,35 @@ inquirer.prompt([{
       this.dieOnError();
     });
   };
-  streamDisplay('git -c core.excludes=.idea  add -A');
-  streamDisplay('git -c core.excludes=.idea  commit -am "Publish '+releaseType+' '+revision+'"');
-  streamDisplay('git push origin master');
-  streamOrDie('mkdir -p /tmp/node-okbitbucket');
-  streamOrDie('cd /tmp/node-okbitbucket');
+  var gitPush = function(cmd){
+    cmd = 'git -c core.askpass=true push '+cmd+'';
+    return line.stream(cmd, function(){
+      this.display();
+      this.answer(/^Username/i, github.username);
+      this.answer(/^Password/i, github.password);
+    });
+  };
+  var gitAdd = function(cmd){
+    cmd = 'git -c core.excludes=.idea  add '+cmd+'';
+    return line.stream(cmd, function(){
+      this.display();
+      this.answer(/^Username/i, github.username);
+      this.answer(/^Password/i, github.password);
+    });
+  };
+  var gitCommit = function(cmd){
+    cmd = 'git -c core.excludes=.idea  commit -am "'+cmd.replace(/"/g,'\\"')+'"';
+    return line.stream(cmd, function(){
+      this.display();
+      this.answer(/^Username/i, github.username);
+      this.answer(/^Password/i, github.password);
+    });
+  };
+  gitAdd('-A');
+  gitCommit('Publish '+releaseType+' '+revision);
+  gitPush('origin master');
+  streamOrDie('mkdir -p /tmp/'+pkg.name);
+  streamOrDie('cd /tmp/'+pkg.name);
   streamDisplay('git clone '+pkg.repository.url+' .');
   streamDisplay('git checkout gh-pages');
   streamDisplay('git reset --hard');
@@ -70,11 +94,11 @@ inquirer.prompt([{
   streamOrDie('jsdox --output docs/ '+__dirname+'/bitbucket/');
   streamOrDie('cd '+__dirname);
   //streamDisplay('mocha --reporter markdown > /tmp/node-okbitbucket/docs/test.md');
-  streamOrDie('cd /tmp/node-okbitbucket/');
+  streamOrDie('cd /tmp/'+pkg.name);
   streamOrDie('ls -alh');
-  streamOrDie('git add -A');
-  streamOrDie('git commit -am "generate doc"');
-  line.stream('git -c core.askpass=true push git@github.com:maboiteaspam/node-okbitbucket.git push gh-pages', function(){
+  gitAdd('-A');
+  gitCommit('generate doc');
+  gitPush('git@github.com:maboiteaspam/node-okbitbucket.git gh-pages', function(){
     this.display();
     this.answer(/^Username/i, github.username);
     this.answer(/^Password/i, github.password);
