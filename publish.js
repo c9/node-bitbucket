@@ -142,31 +142,27 @@ inquirer.prompt([{
   if(!pkg.repository){
     throw 'pkg.repository is missing';
   }
+
   ensureFileContain('.git/info/exclude', '\n.idea/\n');
   ensureFileContain('.git/info/exclude', '\ngithub.json/\n');
+
   gitAdd('-A');
   gitCommit('Publish '+releaseType+' '+revision);
   gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git master');
+
   streamOrDie('mkdir -p /tmp/'+pkg.name);
   streamOrDie('cd /tmp/'+pkg.name);
-  gitClone(pkg.repository.url+' .');
-  gitCheckout('-b gh-pages');
-  gitReset('--hard');
-  gitPull('origin gh-pages');
-  streamOrDie('rm -fr ./*');
-  cleanUpFiles.forEach(function(projectPath){
-    streamOrDie('rm -fr '+projectPath);
-  });
-  streamOrDie('ls -alh');
-  gitCommit('cleanup');
+  gitClone('-b gh-pages '+pkg.repository.url+' .');
   gitStatus();
-  streamOrDie('cp '+__dirname+'/*md .');
+  streamOrDie('cp '+__dirname+'/README.md .');
   Object.keys(jsdox).forEach(function(projectPath){
     jsDox(__dirname+'/'+projectPath, jsdox[projectPath]);
   });
+
   streamOrDie('cd '+__dirname);
   mocha('markdown', '/tmp/'+pkg.name+'/docs/test.md');
   streamOrDie('cd /tmp/'+pkg.name);
+
   streamOrDie('ls -alh');
   gitAdd('-A');
   gitCommit('generate doc');
