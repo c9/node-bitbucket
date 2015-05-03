@@ -62,6 +62,7 @@ inquirer.prompt([{
     cmd = 'git -c core.askpass=true push '+cmd+'';
     return line.stream(cmd, function(){
       this.display();
+      this.warn(/fatal:/);
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
     });
@@ -108,6 +109,8 @@ inquirer.prompt([{
     cmd = 'git -c core.excludes=.idea  commit -am "'+cmd.replace(/"/g,'\\"')+'"';
     return line.stream(cmd, function(){
       this.display();
+      this.success(/([0-9]+) file changed, ([0-9]+) insertions\(+\), ([0-9]+) deletions\(-\)/,
+      '%s %s %s');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
     });
@@ -116,7 +119,9 @@ inquirer.prompt([{
     streamOrDie('jsdox --output '+to+' '+from);
   };
   var mocha = function(reporter, to){
-    streamDisplay('mocha --reporter '+reporter+' > '+to);
+    streamDisplay('mocha --reporter '+reporter+' > '+to, function(){
+      this.spin(/.*/);
+    });
 
   };
   var ensureFileContain = function(file, data){
