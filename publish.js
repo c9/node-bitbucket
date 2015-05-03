@@ -168,7 +168,7 @@ inquirer.prompt([{
 
   streamOrDie('ls -alh');
   gitAdd('-A');
-  gitCommit('generate doc');
+  gitCommit('Generate doc '+releaseType+' '+revision);
   gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git gh-pages');
   streamOrDie('cd '+__dirname);
   //streamOrDie('npm publish');
