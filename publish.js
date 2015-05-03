@@ -109,7 +109,7 @@ inquirer.prompt([{
     cmd = 'git -c core.excludes=.idea  commit -am "'+cmd.replace(/"/g,'\\"')+'"';
     return line.stream(cmd, function(){
       this.display();
-      this.success(/[\[]([a-z0-9]+)\s+([a-z0-9]+)[\]]/i,
+      this.success(/\[([a-z0-9]+)\s+([a-z0-9]+)]/i,
       'branch: %s revision: %s');
       this.success(/([0-9]+)\s+file[^0-9]+([0-9]+)[^0-9]+([0-9]+)/i,
       'changed: %s new: %s deleted: %s');
