@@ -115,7 +115,7 @@ inquirer.prompt([{
     return line.stream(cmd, function(){
       this.confirm(/\[([\w-]+)\s+([\w-]+)]/i,
       'branch: %s revision: %s');
-      this.confirm(/([0-9]+)\s+file[^0-9]+([0-9]+)[^0-9]+([0-9]+)/i,
+      this.confirm(/([0-9]+)\s+file[^0-9]+?([0-9]+)?[^0-9]+?([0-9]+)?/i,
       'changed: %s new: %s deleted: %s');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
