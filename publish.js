@@ -63,7 +63,7 @@ inquirer.prompt([{
     return line.stream(cmd, function(){
       this.warn(/fatal:/);
       this.success(/(:<remoteRev>[\w-]+)[.]+(:<localRev>[\w-]+)\s+(:<remoteBranch>[\w-]+)\s+->\s+(:<localBranch>[\w-]+)/,
-      'pushed local localBranch@localRev to remote remoteBranch@remoteRev');
+      'pushed\nlocal\tlocalBranch@localRev\nremote\tremoteBranch@remoteRev');
       this.success('Everything up-to-date');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
@@ -115,9 +115,9 @@ inquirer.prompt([{
     cmd = 'git -c core.excludes=.idea  commit -am "'+cmd.replace(/"/g,'\\"')+'"';
     return line.stream(cmd, function(){
       this.confirm(/\[([\w-]+)\s+([\w-]+)]/i,
-      'branch\t\t%s\nnew revision\t %s');
+      'branch\t\t%s\nnew revision\t%s');
       this.confirm(/([0-9]+)\s+file[^0-9]+?([0-9]+)?[^0-9]+?([0-9]+)?/i,
-      'changed\t%s\nnew\t%s\ndeleted\t%s');
+      'changed\t%s\nnew\t\t%s\ndeleted\t%s');
       this.warn(/(est propre|is clean)/i, 'Nothing to do');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
