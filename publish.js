@@ -121,10 +121,10 @@ inquirer.prompt([{
     streamOrDie('jsdox --output '+to+' '+from);
   };
   var mocha = function(reporter, to){
-    streamDisplay('mocha --reporter '+reporter+' > '+to, function(){
+    return line.stream('mocha --reporter '+reporter+' > '+to, function(){
+      this.display();
       this.spinUntil(null);
     });
-
   };
   var ensureFileContain = function(file, data){
     var c = fs.readFileSync(file);
@@ -141,6 +141,7 @@ inquirer.prompt([{
   }
   ensureFileContain('.git/info/exclude', '\n.idea/\n');
   ensureFileContain('.git/info/exclude', '\ngithub.json/\n');
+  mocha('markdown', '/tmp/'+pkg.name+'/docs/test.md');
   gitAdd('-A');
   gitCommit('Publish '+releaseType+' '+revision);
   gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git master');
