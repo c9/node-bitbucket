@@ -41,7 +41,7 @@ inquirer.prompt([{
   var releaseType = answers.release.match(/^\s*([a-z]+)\s*=>\s*(.+)$/i)[1];
   var revision = answers.release.match(/^\s*([a-z]+)\s*=>\s*(.+)$/i)[2];
   pkg.version = revision;
-  //fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2)+'\n');
+  fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2)+'\n');
 
 
   var transport = new (Cluc.transports.process)();
@@ -62,9 +62,9 @@ inquirer.prompt([{
     cmd = 'git -c core.askpass=true push '+cmd+'';
     return line.stream(cmd, function(){
       this.warn(/fatal:/);
-      this.confirm(/(:<remoteRev>[\w-]+)[.]+(:<localRev>[\w-]+)\s+(:<remoteBranch>[\w-]+)\s+->\s+(:<localBranch>[\w-]+)/,
+      this.success(/(:<remoteRev>[\w-]+)[.]+(:<localRev>[\w-]+)\s+(:<remoteBranch>[\w-]+)\s+->\s+(:<localBranch>[\w-]+)/,
       'pushed local localBranch@localRev to remote remoteBranch@remoteRev');
-      this.confirm('Everything up-to-date');
+      this.success('Everything up-to-date');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
       this.display();
@@ -107,6 +107,7 @@ inquirer.prompt([{
     var cmd = 'git status';
     return line.stream(cmd, function(){
       this.warn(/fatal:/);
+      this.warn(/(est propre|is clean)/i, 'Nothing to do');
       this.display();
     });
   };
@@ -115,8 +116,9 @@ inquirer.prompt([{
     return line.stream(cmd, function(){
       this.confirm(/\[([\w-]+)\s+([\w-]+)]/i,
       'branch: %s revision: %s');
-      this.confirm(/([0-9]+)\s+file[^0-9]+?([0-9]+)?[^0-9]+?([0-9]+)?/i,
+      this.success(/([0-9]+)\s+file[^0-9]+?([0-9]+)?[^0-9]+?([0-9]+)?/i,
       'changed: %s new: %s deleted: %s');
+      this.warn(/(est propre|is clean)/i, 'Nothing to do');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
       this.display();
