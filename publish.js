@@ -63,6 +63,9 @@ inquirer.prompt([{
     return line.stream(cmd, function(){
       this.display();
       this.warn(/fatal:/);
+      this.success(/([a-z0-9]+)[.]+([a-z0-9]+)\s+([a-z0-9]+)\s+->\s+([a-z0-9]+)/);
+      this.success(/(:<remoteRev>[a-z0-9]+)[.]+(:<localRev>[a-z0-9]+)\s+(:<remoteBranch>[a-z0-9]+)\s+->\s+(:<localBranch>[a-z0-9]+)/,
+      'pushed local localBranch at localRev to remote remoteBranch at remoteRev');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
     });
@@ -141,7 +144,6 @@ inquirer.prompt([{
   }
   ensureFileContain('.git/info/exclude', '\n.idea/\n');
   ensureFileContain('.git/info/exclude', '\ngithub.json/\n');
-  mocha('markdown', '/tmp/'+pkg.name+'/docs/test.md');
   gitAdd('-A');
   gitCommit('Publish '+releaseType+' '+revision);
   gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git master');
