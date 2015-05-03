@@ -122,7 +122,7 @@ inquirer.prompt([{
   };
   var mocha = function(reporter, to){
     streamDisplay('mocha --reporter '+reporter+' > '+to, function(){
-      this.spinUntil(/.*/);
+      this.spinUntil(null);
     });
 
   };
