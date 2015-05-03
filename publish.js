@@ -63,9 +63,9 @@ inquirer.prompt([{
     return line.stream(cmd, function(){
       this.display();
       this.warn(/fatal:/);
-      //this.success(/([a-z0-9]+)[.]+([a-z0-9]+)\s+([a-z0-9]+)\s+->\s+([a-z0-9]+)/);
       this.confirm(/(:<remoteRev>\w+)[.]+(:<localRev>\w+)\s+(:<remoteBranch>\w+)\s+->\s+(:<localBranch>\w+)/,
       'pushed local localBranch@localRev to remote remoteBranch@remoteRev');
+      this.confirm('Everything up-to-date');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
     });
@@ -93,6 +93,7 @@ inquirer.prompt([{
   var gitClone = function(cmd){
     cmd = 'git clone '+cmd+'';
     return line.stream(cmd, function(){
+      this.warn(/fatal:/);
       this.display();
     });
   };
@@ -105,6 +106,7 @@ inquirer.prompt([{
   var gitStatus = function(){
     var cmd = 'git status';
     return line.stream(cmd, function(){
+      this.warn(/fatal:/);
       this.display();
     });
   };
@@ -150,6 +152,7 @@ inquirer.prompt([{
   gitCommit('Publish '+releaseType+' '+revision);
   gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git master');
 
+  streamOrDie('rm -fr /tmp/'+pkg.name);
   streamOrDie('mkdir -p /tmp/'+pkg.name);
   streamOrDie('cd /tmp/'+pkg.name);
   gitClone('-b gh-pages '+pkg.repository.url+' .');
