@@ -63,9 +63,9 @@ inquirer.prompt([{
     return line.stream(cmd, function(){
       this.display();
       this.warn(/fatal:/);
-      this.success(/([a-z0-9]+)[.]+([a-z0-9]+)\s+([a-z0-9]+)\s+->\s+([a-z0-9]+)/);
+      //this.success(/([a-z0-9]+)[.]+([a-z0-9]+)\s+([a-z0-9]+)\s+->\s+([a-z0-9]+)/);
       this.success(/(:<remoteRev>[a-z0-9]+)[.]+(:<localRev>[a-z0-9]+)\s+(:<remoteBranch>[a-z0-9]+)\s+->\s+(:<localBranch>[a-z0-9]+)/,
-      'pushed local localBranch at localRev to remote remoteBranch at remoteRev');
+      'pushed local localBranch@localRev to remote remoteBranch@remoteRev');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
     });
