@@ -62,7 +62,7 @@ inquirer.prompt([{
     cmd = 'git -c core.askpass=true push '+cmd+'';
     return line.stream(cmd, function(){
       this.warn(/fatal:/);
-      this.confirm(/(:<remoteRev>[\w-]+)[.]+(:<localRev>[\w-]+)\s+(:<remoteBranch>[\w-]+)\s+->\s+(:<localBranch>[\w-]+)/,
+      this.success(/(:<remoteRev>[\w-]+)[.]+(:<localRev>[\w-]+)\s+(:<remoteBranch>[\w-]+)\s+->\s+(:<localBranch>[\w-]+)/,
       'pushed\nlocal\tlocalBranch@localRev\nremote\tremoteBranch@remoteRev');
       this.success('Everything up-to-date');
       this.answer(/^Username/i, github.username);
