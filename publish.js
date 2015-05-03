@@ -7,12 +7,6 @@ var fs = require('fs');
 
 var Cluc = require('cluc');
 
-var cleanUpFiles = [
-  './.vagra*',
-  './.travis*',
-  './.giti*',
-  './.esli*'
-];
 var jsdox = {
   'bitbucket/':'docs/'
 };
