@@ -41,7 +41,7 @@ inquirer.prompt([{
   var releaseType = answers.release.match(/^\s*([a-z]+)\s*=>\s*(.+)$/i)[1];
   var revision = answers.release.match(/^\s*([a-z]+)\s*=>\s*(.+)$/i)[2];
   pkg.version = revision;
-  fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2)+'\n');
+  //fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2)+'\n');
 
 
   var transport = new (Cluc.transports.process)();
@@ -66,12 +66,42 @@ inquirer.prompt([{
       this.answer(/^Password/i, github.password);
     });
   };
+  var gitPull = function(cmd){
+    cmd = 'git pull '+cmd+'';
+    return line.stream(cmd, function(){
+      this.display();
+    });
+  };
+  var gitReset = function(cmd){
+    cmd = 'git reset '+cmd+'';
+    return line.stream(cmd, function(){
+      this.display();
+    });
+  };
   var gitAdd = function(cmd){
     cmd = 'git -c core.excludes=.idea  add '+cmd+'';
     return line.stream(cmd, function(){
       this.display();
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
+    });
+  };
+  var gitClone = function(cmd){
+    cmd = 'git clone '+cmd+'';
+    return line.stream(cmd, function(){
+      this.display();
+    });
+  };
+  var gitCheckout = function(cmd){
+    cmd = 'git checkout '+cmd+'';
+    return line.stream(cmd, function(){
+      this.display();
+    });
+  };
+  var gitStatus = function(){
+    var cmd = 'git status';
+    return line.stream(cmd, function(){
+      this.display();
     });
   };
   var gitCommit = function(cmd){
@@ -109,17 +139,17 @@ inquirer.prompt([{
   gitPush('origin master');
   streamOrDie('mkdir -p /tmp/'+pkg.name);
   streamOrDie('cd /tmp/'+pkg.name);
-  streamDisplay('git clone '+pkg.repository.url+' .');
-  streamDisplay('git checkout -b gh-pages');
-  streamDisplay('git reset --hard');
-  streamDisplay('git pull origin gh-pages');
+  gitClone(pkg.repository.url+' .');
+  gitCheckout('-b gh-pages');
+  gitReset('--hard');
+  gitPull('origin gh-pages');
   streamOrDie('rm -fr ./*');
   cleanUpFiles.forEach(function(projectPath){
     streamOrDie('rm -fr '+projectPath);
   });
   streamOrDie('ls -alh');
-  streamDisplay('git commit -am cleanup');
-  streamDisplay('git status');
+  gitCommit('cleanup');
+  gitStatus();
   streamOrDie('cp '+__dirname+'/*md .');
   Object.keys(jsdox).forEach(function(projectPath){
     jsDox(__dirname+'/'+projectPath, jsdox[projectPath]);
@@ -132,7 +162,7 @@ inquirer.prompt([{
   gitCommit('generate doc');
   gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git gh-pages');
   streamOrDie('cd '+__dirname);
-  streamOrDie('npm publish');
+  //streamOrDie('npm publish');
   streamOrDie('rm -fr /tmp/'+pkg.name);
 
   transport.run(line, function(){
