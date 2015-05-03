@@ -64,7 +64,7 @@ inquirer.prompt([{
       this.display();
       this.warn(/fatal:/);
       //this.success(/([a-z0-9]+)[.]+([a-z0-9]+)\s+([a-z0-9]+)\s+->\s+([a-z0-9]+)/);
-      this.confirm(/(:<remoteRev>\d+)[.]+(:<localRev>\d+)\s+(:<remoteBranch>\d+)\s+->\s+(:<localBranch>\d+)/,
+      this.confirm(/(:<remoteRev>\w+)[.]+(:<localRev>\w+)\s+(:<remoteBranch>\w+)\s+->\s+(:<localBranch>\w+)/,
       'pushed local localBranch@localRev to remote remoteBranch@remoteRev');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
