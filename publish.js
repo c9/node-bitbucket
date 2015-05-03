@@ -109,7 +109,7 @@ inquirer.prompt([{
     cmd = 'git -c core.excludes=.idea  commit -am "'+cmd.replace(/"/g,'\\"')+'"';
     return line.stream(cmd, function(){
       this.display();
-      this.success(/([0-9]+) file changed, ([0-9]+) insertions\(+\), ([0-9]+) deletions\(-\)/,
+      this.success(/([0-9]+) files? changed, ([0-9]+) insertions?\(+\), ([0-9]+) deletions?\(-\)/,
       '%s %s %s');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
@@ -120,7 +120,7 @@ inquirer.prompt([{
   };
   var mocha = function(reporter, to){
     streamDisplay('mocha --reporter '+reporter+' > '+to, function(){
-      this.spin(/.*/);
+      this.spinUntil(/.*/);
     });
 
   };
