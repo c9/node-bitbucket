@@ -141,7 +141,7 @@ inquirer.prompt([{
   ensureFileContain('.git/info/exclude', '\ngithub.json/\n');
   gitAdd('-A');
   gitCommit('Publish '+releaseType+' '+revision);
-  gitPush('origin master');
+  gitPush('git@github.com:'+github.username+'/'+pkg.name+'.git master');
   streamOrDie('mkdir -p /tmp/'+pkg.name);
   streamOrDie('cd /tmp/'+pkg.name);
   gitClone(pkg.repository.url+' .');
