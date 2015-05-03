@@ -64,7 +64,7 @@ inquirer.prompt([{
       this.display();
       this.warn(/fatal:/);
       //this.success(/([a-z0-9]+)[.]+([a-z0-9]+)\s+([a-z0-9]+)\s+->\s+([a-z0-9]+)/);
-      this.success(/(:<remoteRev>[a-z0-9]+)[.]+(:<localRev>[a-z0-9]+)\s+(:<remoteBranch>[a-z0-9]+)\s+->\s+(:<localBranch>[a-z0-9]+)/,
+      this.confirm(/(:<remoteRev>\d+)[.]+(:<localRev>\d+)\s+(:<remoteBranch>\d+)\s+->\s+(:<localBranch>\d+)/,
       'pushed local localBranch@localRev to remote remoteBranch@remoteRev');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
@@ -112,9 +112,9 @@ inquirer.prompt([{
     cmd = 'git -c core.excludes=.idea  commit -am "'+cmd.replace(/"/g,'\\"')+'"';
     return line.stream(cmd, function(){
       this.display();
-      this.success(/\[([a-z0-9]+)\s+([a-z0-9]+)]/i,
+      this.confirm(/\[([a-z0-9]+)\s+([a-z0-9]+)]/i,
       'branch: %s revision: %s');
-      this.success(/([0-9]+)\s+file[^0-9]+([0-9]+)[^0-9]+([0-9]+)/i,
+      this.confirm(/([0-9]+)\s+file[^0-9]+([0-9]+)[^0-9]+([0-9]+)/i,
       'changed: %s new: %s deleted: %s');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
