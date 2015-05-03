@@ -61,13 +61,13 @@ inquirer.prompt([{
   var gitPush = function(cmd){
     cmd = 'git -c core.askpass=true push '+cmd+'';
     return line.stream(cmd, function(){
-      this.display();
       this.warn(/fatal:/);
       this.confirm(/(:<remoteRev>[\w-]+)[.]+(:<localRev>[\w-]+)\s+(:<remoteBranch>[\w-]+)\s+->\s+(:<localBranch>[\w-]+)/,
       'pushed local localBranch@localRev to remote remoteBranch@remoteRev');
       this.confirm('Everything up-to-date');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
+      this.display();
     });
   };
   var gitPull = function(cmd){
@@ -113,26 +113,26 @@ inquirer.prompt([{
   var gitCommit = function(cmd){
     cmd = 'git -c core.excludes=.idea  commit -am "'+cmd.replace(/"/g,'\\"')+'"';
     return line.stream(cmd, function(){
-      this.display();
       this.confirm(/\[([\w-]+)\s+([\w-]+)]/i,
       'branch: %s revision: %s');
       this.confirm(/([0-9]+)\s+file[^0-9]+([0-9]+)[^0-9]+([0-9]+)/i,
       'changed: %s new: %s deleted: %s');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
+      this.display();
     });
   };
   var jsDox = function(from, to){
     return line.stream('jsdox --output '+to+' '+from, function(){
-      this.display();
       this.spinUntil(/.+/);
       this.success('completed');
+      this.display();
     });
   };
   var mocha = function(reporter, to){
     return line.stream('mocha --reporter '+reporter+' > '+to, function(){
-      this.display();
       this.spinUntil(null);
+      this.display();
     });
   };
   var ensureFileContain = function(file, data){
