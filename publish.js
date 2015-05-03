@@ -107,7 +107,7 @@ inquirer.prompt([{
     var cmd = 'git status';
     return line.stream(cmd, function(){
       this.warn(/fatal:/);
-      this.warn(/(est propre|is clean)/i, 'Nothing to do');
+      this.confirm(/(est propre|is clean)/i, 'It s all good');
       this.display();
     });
   };
@@ -115,9 +115,9 @@ inquirer.prompt([{
     cmd = 'git -c core.excludes=.idea  commit -am "'+cmd.replace(/"/g,'\\"')+'"';
     return line.stream(cmd, function(){
       this.confirm(/\[([\w-]+)\s+([\w-]+)]/i,
-      'branch: %s revision: %s');
-      this.success(/([0-9]+)\s+file[^0-9]+?([0-9]+)?[^0-9]+?([0-9]+)?/i,
-      'changed: %s new: %s deleted: %s');
+      'branch\t\t%s\nnew revision\t %s');
+      this.confirm(/([0-9]+)\s+file[^0-9]+?([0-9]+)?[^0-9]+?([0-9]+)?/i,
+      'changed\t%s\nnew\t%s\ndeleted\t%s');
       this.warn(/(est propre|is clean)/i, 'Nothing to do');
       this.answer(/^Username/i, github.username);
       this.answer(/^Password/i, github.password);
