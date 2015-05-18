@@ -7,249 +7,279 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var http = require("http");
-var util = require('util');
-var querystring = require("querystring");
-var crypto = require("crypto");
+var pkg = require('../package.json');
+var debug = require('debug')(pkg.name);
+var querystring = require('querystring');
 
 /**
  * Performs requests on GitHub API.
  */
-var Request = exports.Request = function(options) {
-    this.configure(options);
+
+var Request = function(options) {
+  this.$defaults = {
+    /* eslint-disable key-spacing, max-len, camelcase */
+    protocol    : 'https',
+    path        : '/1.0',
+    hostname    : 'api.bitbucket.org',
+    format      : 'json',
+    user_agent  : 'js-okbitbucket-api (http://github.com/maboiteaspam/node-okbitbucket)',
+    http_port   : 443,
+    timeout     : 20,
+    login_type  : 'none',
+    username    : null,
+    password    : null,
+    api_token   : null,
+    oauth_access_token: null,
+    proxy_host  : null,
+    proxy_port  : null
+    /* eslint-enable key-spacing, max-len, camelcase */
+  };
+  this.configure(options);
 };
 
-(function() {
 
-    this.$defaults = {
-        protocol    : 'https',
-        path        : '/1.0',
-        hostname    : "api.bitbucket.org",
-        format      : 'json',
-        user_agent  : 'js-bitbucket-api (http://github.com/ajaxorg/node-bitbucket)',
-        http_port   : 443,
-        timeout     : 20,
-        login_type  : "none",
-        username    : null,
-        password    : null,
-        api_token   : null,
-        oauth_access_token: null,
-        proxy_host  : null,
-        proxy_port  : null,
-        debug       : false
-    };
+Request.prototype.configure = function(options)
+{
+  options = options || {};
+  this.$options = {};
+  for (var key in this.$defaults) {
+    this.$options[key] = options[key] || this.$defaults[key];
+  }
 
-    this.configure = function(options)
-    {
-        options = options || {};
-        this.$options = {};
-        for (var key in this.$defaults) {
-            this.$options[key] = options[key] !== undefined ? options[key] : this.$defaults[key];
-        }
+  return this;
+};
 
-        return this;
-    };
+/**
+ * Change an option value.
+ *
+ * @param {String} name   The option name
+ * @param {Object} value  The value
+ *
+ * @return {Request} The current object instance
+ */
+Request.prototype.setOption = function(name, value)
+{
+  this.$options[name] = value;
+  return this;
+};
 
-    /**
-     * Change an option value.
-     *
-     * @param {String} name   The option name
-     * @param {Object} value  The value
-     *
-     * @return {Request} The current object instance
-     */
-    this.setOption = function(name, value)
-    {
-        this.$options[name] = value;
-        return this;
-    };
+/**
+ * Get an option value.
+ *
+ * @param  name string  The option name
+ * @param defaultValue
+ *
+ * @return mixed  The option value
+ */
+Request.prototype.getOption = function(name, defaultValue)
+{
+  defaultValue = defaultValue === undefined ? null : defaultValue;
+  return this.$options[name] ? this.$options[name] : defaultValue;
+};
 
-    /**
-    * Get an option value.
-    *
-    * @param  string $name The option name
-    *
-    * @return mixed  The option value
-    */
-    this.getOption = function(name, defaultValue)
-    {
-        defaultValue = defaultValue === undefined ? null : defaultValue;
-        return this.$options[name] ? this.$options[name] : defaultValue;
-    };
+/**
+ * Send a GET request
+ * @param apiPath
+ * @param params
+ * @param options
+ * @param then (err{msg:''}, body{})
+ */
+Request.prototype.get = function(apiPath, params, options, then) {
+  this.send(apiPath, params, 'GET', options, then);
+};
 
-    /**
-     * Send a GET request
-     * @see send
-     */
-    this.get = function(apiPath, parameters, options, callback) {
-        return this.send(apiPath, parameters, 'GET', options, callback);
-    };
+/**
+ * Send a POST request
+ * @param apiPath
+ * @param params
+ * @param options
+ * @param then (err{msg:''}, body{})
+ */
+Request.prototype.post = function(apiPath, params, options, then) {
+  this.send(apiPath, params, 'POST', options, then);
+};
 
-    /**
-     * Send a POST request
-     * @see send
-     */
-    this.post = function(apiPath, parameters, options, callback) {
-        return this.send(apiPath, parameters, 'POST', options, callback);
-    };
+/**
+ * Send a request to the server, receive a response,
+ * decode the response and returns an associative array
+ *
+ * @param  {String}    apiPath        Request API path
+ * @param  {Object}    params     params
+ * @param  {String}    httpMethod     HTTP method to use
+ * @param  {Object}    options        reconfigure the request for this call only
+ * @param then (err{msg:''}, body{})
+ */
+Request.prototype.send = function(apiPath, params, httpMethod, options, then)
+{
+  httpMethod = httpMethod || 'GET';
+  if (options)
+  {
+    var initialOptions = this.$options;
+    this.configure(options);
+  }
 
-    /**
-     * Send a request to the server, receive a response,
-     * decode the response and returns an associative array
-     *
-     * @param  {String}    apiPath        Request API path
-     * @param  {Object}    parameters     Parameters
-     * @param  {String}    httpMethod     HTTP method to use
-     * @param  {Object}    options        reconfigure the request for this call only
-     */
-    this.send = function(apiPath, parameters, httpMethod, options, callback)
-    {
-        httpMethod = httpMethod || "GET";
-        if(options)
-        {
-            var initialOptions = this.$options;
-            this.configure(options);
-        }
+  var self = this;
+  this.doSend(apiPath, params, httpMethod, function(err, response) {
+    if (!err) {
+      var body = response.body;
+      var status = response.status;
+      var contentType = response.contentType;
 
-        var self = this;
-        this.doSend(apiPath, parameters, httpMethod, function(err, response) {
-            if (err) {
-                callback && callback(err);
-                return;
-            }
-
-            response = self.decodeResponse(response);
-
-            if (initialOptions) {
-                self.options = initialOptions;
-            }
-            callback && callback(null, response);
-        });
-    };
-
-    /**
-     * Send a request to the server, receive a response
-     *
-     * @param {String}   $apiPath       Request API path
-     * @param {Object}    $parameters    Parameters
-     * @param {String}   $httpMethod    HTTP method to use
-     */
-    this.doSend = function(apiPath, parameters, httpMethod, callback)
-    {
-        httpMethod = httpMethod.toUpperCase();
-        var host = this.$options.proxy_host ? this.$options.proxy_host : this.$options.hostname;
-        var port = this.$options.proxy_host ? this.$options.proxy_port || 3128 : this.$options.http_port || 443;
-
-        var headers = {
-            'Host':'api.bitbucket.org',
-            "User-Agent": "NodeJS HTTP Client",
-            "Content-Length": "0",
-            "Content-Type": "application/x-www-form-urlencoded"
+      if ( ('' + status).match(/[45][0-9]{2}/) ) {
+        err = {
+          msg: response.body
         };
-        var getParams  = httpMethod != "POST" ? parameters : {};
-        var postParams = httpMethod == "POST" ? parameters : {};
+      }
 
-
-        var getQuery = querystring.stringify(getParams);
-        var postQuery = querystring.stringify(postParams);
-        this.$debug("get: "+ getQuery + " post " + postQuery);
-        
-        var path = this.$options.path + "/" + apiPath.replace(/\/*$/, "");
-        if (getQuery)
-            path += "?" + getQuery;
-
-        if (postQuery)
-            headers["Content-Length"] = postQuery.length;
-
-        switch(this.$options.login_type) {
-            case "oauth":
-                // TODO this should use oauth.authHeader once they add the missing argument
-                var oauth = this.$options.oauth;
-                var orderedParameters= oauth._prepareParameters(
-                    this.$options.oauth_access_token,
-                    this.$options.oauth_access_token_secret,
-                    httpMethod,
-                    "https://api.bitbucket.org" + path, 
-                    postParams || {}
-                );
-                headers.Authorization = oauth._buildAuthorizationHeaders(orderedParameters);
-                break;
-                
-            case "token":
-                var auth = this.$options['username'] + "/token:" + this.$options['api_token'];
-                var basic = new Buffer(auth, "ascii").toString("base64");
-                headers.Authorization = "Basic " + basic;
-                break;
-                
-            case "basic":
-                var auth = this.$options['username'] + ":" + this.$options['password'];
-                var basic = new Buffer(auth, "ascii").toString("base64");
-                headers.Authorization = "Basic " + basic;
-                break;
-                
-            default:
-                // none
+      if (self.$options.format !== 'text') {
+        if (contentType.match('json') ) {
+          try {
+            body = JSON.parse(body + '');
+          } catch(ex){
+            err = {
+              msg: ex
+            };
+          }
         }
-        
-        var getOptions = {
-            host: host,
-            post: port,
-            path: path,
-            method: httpMethod,
-            headers: headers
+      }
+
+      if (initialOptions) {
+        self.options = initialOptions;
+      }
+    }
+
+    if (then) {
+      then(err, body);
+    }
+  });
+};
+
+/**
+ * Send a request to the server, receive a response
+ *
+ * @param {String}   apiPath       Request API path
+ * @param {Object}   params    params
+ * @param {String}   httpMethod    HTTP method to use
+ * @param then (err, body'')
+ */
+Request.prototype.doSend = function(apiPath, params, httpMethod, then)
+{
+  httpMethod = httpMethod.toUpperCase();
+  var host = this.$options.proxy_host || this.$options.hostname;
+  var port = this.$options.proxy_host
+    ? this.$options.proxy_port || 3128
+    : this.$options.http_port || 443;
+
+  var headers = {
+    'Host': 'api.bitbucket.org',
+    'User-Agent': 'NodeJS HTTP Client',
+    'Content-Length': '0',
+    'Content-Type': 'application/x-www-form-urlencoded'
+  };
+  var getParams = httpMethod !== 'POST' ? params : {};
+  var postParams = httpMethod === 'POST' ? params : {};
+
+
+  var getQuery = querystring.stringify(getParams);
+  var postQuery = querystring.stringify(postParams);
+  debug('get: ' + getQuery + ' post ' + postQuery);
+
+  var path = this.$options.path + '/' + apiPath.replace(/\/*$/, '');
+  if (getQuery){
+    path += '?' + getQuery;
+  }
+
+  if (postQuery){
+    headers['Content-Length'] = postQuery.length;
+  }
+
+  switch (this.$options.login_type) {
+    case 'oauth':
+      // TODO this should use oauth.authHeader
+      // TODO once they add the missing argument
+      var oauth = this.$options.oauth;
+      /* eslint-disable */
+      var orderedParameters = oauth._prepareParameters(
+        /* eslint-enable */
+        this.$options.oauth_access_token,
+        this.$options.oauth_access_token_secret,
+        httpMethod,
+        'https://api.bitbucket.org' + path,
+        postParams || {}
+      );
+
+      /* eslint-disable */
+      headers.Authorization =
+        oauth._buildAuthorizationHeaders(orderedParameters);
+      /* eslint-enable */
+
+      break;
+
+    case 'token':
+      var token = this.$options.username +
+        '/token:' + this.$options.api_token;
+      token = (new Buffer(token, 'ascii') ).toString('base64');
+      headers.Authorization = 'Basic ' + token;
+      break;
+
+    case 'basic':
+      var auth = this.$options.username +
+        ':' + this.$options.password;
+      auth = (new Buffer(auth, 'ascii') ).toString('base64');
+      headers.Authorization = 'Basic ' + auth;
+      break;
+
+    default:
+    // none
+  }
+
+  var getOptions = {
+    host: host,
+    post: port,
+    path: path,
+    method: httpMethod,
+    headers: headers
+  };
+
+  var that = this;
+  debug('send ' + httpMethod + ' request: ' + path);
+  var request = require(this.$options.protocol)
+    .request(getOptions, function(response) {
+      response.setEncoding('utf8');
+
+      var body = [];
+      response.addListener('data', function (chunk) {
+        body.push(chunk);
+      });
+      response.addListener('end', function () {
+        debug('got reponse ' + httpMethod + ' request: ' + path);
+
+        var contentType = response.headers['content-type'];
+        body = body.join('');
+
+        if (contentType.match(/json/) ){
+          debug('JSON\n%s', JSON.stringify(JSON.parse(body), null, 4) );
+        } else {
+          debug('body\n%s', body);
+        }
+        debug('status code %s', response.statusCode);
+        debug('content type %s', contentType);
+
+        var ret = {
+          status: response.statusCode,
+          contentType: contentType,
+          body: body
         };
 
-        this.$debug('send ' + httpMethod + ' request: ' + path);
-        var request = require(this.$options.protocol).request(getOptions, function(response) {
-            response.setEncoding('utf8');
+        then(null, ret);
+      });
+    });
 
-            var body = [];
-            response.addListener('data', function (chunk) {
-                body.push(chunk);
-            });
-            response.addListener('end', function () {
-                var msg;
-                body = body.join("");
-                
-                if (response.statusCode > 204) {
-                    if (response.headers["content-type"].indexOf("application/json") === 0) {
-                        msg = JSON.parse(body);
-                    } else {
-                        msg = body;    
-                    }
-                    callback({status: response.statusCode, msg: msg});
-                    return;
-                }
-                if (response.statusCode == 204)
-                    body = "{}";
-                    
-                callback(null, body);
-            });
-        });
-        
-        if (httpMethod == "POST")
-            request.write(postQuery);
-            
-        request.end();
-    };
+  if (httpMethod === 'POST'){
+    request.write(postQuery);
+  }
 
+  request.end();
+};
 
-    /**
-     * Get a JSON response and transform to JSON
-     */
-    this.decodeResponse = function(response)
-    {
-        if(this.$options.format === "text") {
-            return response;
-        }
-        else if(this.$options.format === "json") {
-            return JSON.parse(response);
-        }
-    };
-
-    this.$debug = function(msg) {
-        if (this.$options.debug)
-            console.log(msg);
-    };
-
-}).call(Request.prototype);
+module.exports = Request;

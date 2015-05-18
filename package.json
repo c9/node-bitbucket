@@ -1,21 +1,45 @@
 {
-    "name" : "bitbucket",
-    "version" : "0.0.1",
-    "description" : "Wrapper for the BitBucket API",
-    "author": "Fabian Jakobs <fabian.jakobs@web.de>",
-    "homepage": "http://github.com/ajaxorg/node-bitbucket.git",
-    "main" : "./bitbucket",
-    "repository" : {
-        "type" : "git",
-        "url" : "http://github.com/ajaxorg/node-bitbucket.git"
+  "name": "node-okbitbucket",
+  "version": "1.0.21",
+  "description": "Wrapper for the BitBucket API",
+  "contributors": [
+    {
+      "name": "Fabian Jakobs",
+      "email": "fabian.jakobs@web.de"
     },
-    "engine" : ["node >=0.4.0"],
-    "dependencies": {
-        "asyncjs": ">=0.0.5",
-        "oauth": ">=0.9.0"
-    },
-    "licenses": [{
-        "type": "The MIT License",
-        "url": "http://www.opensource.org/licenses/mit-license.php"}
-    ]    
+    {
+      "name": "maboiteaspam"
+    }
+  ],
+  "homepage": "http://github.com/maboiteaspam/node-okbitbucket.git",
+  "main": "./bitbucket/bitbucket.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/maboiteaspam/node-okbitbucket.git"
+  },
+  "engine": [
+    "node >=0.10.0"
+  ],
+  "dependencies": {
+    "asyncjs": ">=0.0.5",
+    "debug": "^2.1.3",
+    "oauth": ">=0.9.0"
+  },
+  "scripts": {
+    "test": "DEBUG=node-okbitbucket mocha",
+    "appveyor": "set DEBUG=node-okbitbucket; mocha",
+    "lint": "eslint bitbucket/* test/*.js"
+  },
+  "licenses": [
+    {
+      "type": "The MIT License",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "devDependencies": {
+    "cluc": "git://github.com/maboiteaspam/cluc.git",
+    "inquirer": "^0.8.2",
+    "semver": "^4.3.3",
+    "should": "^6.0.1"
+  }
 }

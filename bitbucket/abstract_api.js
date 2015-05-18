@@ -7,21 +7,28 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var AbstractApi = exports.AbstractApi = function(api) {
-    this.$api = api;
+var AbstractApi = function(api) {
+  this.$api = api;
 };
 
-(function() {
+/**
+ *
+ * @param callback (err, body{*})
+ * @param key
+ * @returns {Function}
+ */
+AbstractApi.prototype.$createListener = function(callback, key) {
+  return function(err, response) {
+    if (err) {
+      if (callback) {
+        return callback(err);
+      }
+    }
 
-    this.$createListener = function(callback, key) {
-        return function(err, response) {
-            if (err) {
-                callback & callback(err);
-                return;
-            }
+    if (callback) {
+      return callback(err, key ? response[key] : response);
+    }
+  };
+};
 
-            callback && callback(err, key ? response[key] : response);
-        };
-    };
-
-}).call(AbstractApi.prototype);
+module.exports = AbstractApi;

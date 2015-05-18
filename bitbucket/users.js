@@ -8,24 +8,21 @@
  */
 
 var util = require('util');
-var AbstractApi = require("./abstract_api").AbstractApi;
+var AbstractApi = require('./abstract_api.js');
+
+var UsersApi = function(api){
+  this.$api = api;
+};
+util.inherits(UsersApi, AbstractApi);
 
 /**
- * API wrapper for http://confluence.atlassian.com/display/BBDEV/Users
+ * Get user data and repository list
+ *
+ * @param username
+ * @param callback (err{msg:''}, body{})
  */
-var UserApi = exports.UserApi = function(api) {
-    this.$api = api;
+UsersApi.prototype.getUserData = function(username, callback) {
+  this.$api.get('users/' + username, null, null, callback);
 };
 
-util.inherits(UserApi, AbstractApi);
-
-(function() {
-
-    /**
-     * Get user data including the repository list
-     */
-    this.getUserData = function(username, callback) {
-        this.$api.get("users/" + username, null, null, callback);
-    };
-
-}).call(UserApi.prototype);
+module.exports = UsersApi;

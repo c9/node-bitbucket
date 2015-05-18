@@ -7,16 +7,35 @@
  * Author: Fabian Jaokbs <fabian@ajax.org>
  */
 
-var assert = require("assert");
-var BitBucket = require("./index").BitBucket;
+var BitBucket = require('../');
+var secrets = require('./secrets');
+require('should');
 
-module.exports = {
+describe('repo', function(){
 
-    setUp: function() {
-        this.bitbucket = new BitBucket(true);
-        this.repoApi = this.bitbucket.getRepoApi();
-    },
+  this.timeout(20000);
 
+  var bitbucket = new BitBucket();
+  bitbucket.authenticatePassword(secrets.username, secrets.password);
+
+  it('should get user repos', function(done){
+    bitbucket.getRepoApi().getUserRepos(secrets.username, function(err, repos) {
+      (err == null).should.eql(true);
+      repos.constructor.should.eql(Array);
+      done();
+    });
+  });
+  it('should show extended user repository data', function(done){
+    bitbucket.getRepoApi().show(secrets.username, 'test', function(err, repo) {
+      (err == null).should.eql(true);
+      ('owner' in repo).should.eql(true);
+      repo.owner.should.eql(secrets.username);
+      done();
+    });
+  });
+
+  /* eslint-disable */
+// @todo
 //    "test: search repos" : function(finished) {
 //        this.repoApi.search("php github api", function(err, repos) {
 //            assert.ok(repos.length > 0);
@@ -32,14 +51,7 @@ module.exports = {
 //        });
 //    },
 
-    "test: get user repos" : function(finished) {
-        this.repoApi.getUserRepos("c9test01", function(err, repos) {
-            assert.equal(err, null);
-            assert.ok(repos.length > 0);
-            assert.ok(repos[0].name !== undefined);
-            finished();
-        });
-    },
+// @todo
 //
 //    "test: get repo tags" : function(finished) {
 //        this.repoApi.getRepoTags("fjakobs", "node", function(err, tags) {
@@ -93,7 +105,6 @@ module.exports = {
 //            finished();
 //        });
 //    }
+  /* eslint-enable */
 
-};
-
-!module.parent && require("asyncjs").test.testcase(module.exports).exec();
+});

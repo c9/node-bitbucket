@@ -8,31 +8,29 @@
  */
 
 var util = require('util');
-var AbstractApi = require("./abstract_api").AbstractApi;
+var AbstractApi = require('./abstract_api');
 
-/**
- * API wrapper for https://confluence.atlassian.com/display/BITBUCKET/user+Endpoint
- */
-var UserApi = exports.UserApi = function(api) {
-    this.$api = api;
+var UserApi = function(api) {
+  this.$api = api;
 };
-
 util.inherits(UserApi, AbstractApi);
 
-(function() {
+/**
+ * Get user data
+ *
+ * @param callback (err{msg:''}, body{})
+ */
+UserApi.prototype.get = function(callback) {
+  this.$api.get('user', null, null, callback);
+};
 
-    /**
-     * Get user data
-     */
-    this.get = function(callback) {
-        this.$api.get("user", null, null, callback);
-    };
-    
-    /**
-     * Get a list of repositories visible to an account
-     */
-    this.getRepositories = function(callback) {
-        this.$api.get("user/repositories", null, null, callback);
-    };
+/**
+ * Get a list of repositories visible to an account
+ *
+ * @param callback (err{msg:''}, body{})
+ */
+UserApi.prototype.getRepositories = function(callback) {
+  this.$api.get('user/repositories', null, null, callback);
+};
 
-}).call(UserApi.prototype);
+module.exports = UserApi;

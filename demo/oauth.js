@@ -1,3 +1,9 @@
+
+
+// @todo rewrite example.
+
+process.env.DEBUG='*';
+
 var http = require("http");
 var Url = require("url");
 var querystring = require("querystring");
@@ -6,7 +12,7 @@ var OAuth = require("oauth").OAuth;
 
 var secrets = require("../bitbucket/secrets");
 
-var bitbucket = new BitBucket(true);
+var bitbucket = new BitBucket();
 var repo = bitbucket.getRepoApi();
 var PORT = process.env.PORT || 7878;
 
