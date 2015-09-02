@@ -215,24 +215,44 @@ var Request = exports.Request = function(options) {
                     if (response.headers["content-type"].indexOf("application/json") === 0) {
                         msg = JSON.parse(body);
                     } else {
-                        msg = body;    
+                        msg = body;
                     }
-                    callback({status: response.statusCode, msg: msg});
+                    done({status: response.statusCode, msg: msg});
                     return;
                 }
                 if (response.statusCode == 204)
                     body = "{}";
                     
-                callback(null, body);
+                done(null, body);
+            });
+            
+            response.addListener("error", function(e) {
+                done(e);
+            });
+    
+            response.addListener("timeout", function() {
+                done(new Error("Request timed out"));
             });
         });
         
+        request.on("error", function(e) {
+            done(e);
+        });
+
         if (httpMethod == "POST")
             request.write(postQuery);
             
         request.end();
-    };
+        
+        var called = false;
+        function done(err, body) {
+            if (called)
+                return;
 
+            called = true;
+            callback(err, body);
+        }
+    };
 
     /**
      * Get a JSON response and transform to JSON
