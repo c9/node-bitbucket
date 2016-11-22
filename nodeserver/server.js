@@ -22,7 +22,7 @@ http.createServer(function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Success');
 
-}).listen(port, ip);//
+}).listen(port, ip);
 
 
 console.log("started server on " + ip + ":" + port);

@@ -5,4 +5,5 @@ env:
 - NODE_ENV=TEST
 script:
   - cd nodeserver
+  - npm install
   - npm test
