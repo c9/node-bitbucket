@@ -1,0 +1,12 @@
+.settings/
+.buildpath
+.project
+provision/.vagrant/machines/default/virtualbox/action_provision
+provision/.vagrant/machines/default/virtualbox/synced_folders
+provision/php-cli.ini
+provision/php.ini
+provision/.vagrant/machines/default/virtualbox/action_set_name
+provision/.vagrant/
+screenshots/
+/deploy.sh
+environments/prod/

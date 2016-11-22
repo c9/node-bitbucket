@@ -1,0 +1,17 @@
+{
+	"name": "mootensai/yii2-jsblock",
+	"description": "Embed Javascript block with IDE checking",
+	"keywords": ["yii2", "javascript","block"],
+	"type": "yii2-extension",
+	"authors": [
+		{
+			"name": "mdmunir",
+			"email": "misbahuldmunir@gmail.com"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"mootensai\\components\\": ""
+		}
+	}
+}

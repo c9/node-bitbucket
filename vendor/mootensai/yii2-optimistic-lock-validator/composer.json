@@ -1,0 +1,25 @@
+{
+    "name": "mootensai/yii2-optimistic-lock-validator",
+    "description": "Yii 2 Optimistic Lock validator",
+    "keywords": ["optimistic", "lock", "optimistic-lock", "yii2", "yii", "validator"],
+    "license": "BSD-3-Clause",
+    "type": "yii2-extension",
+    "authors": [
+        {
+            "name": "Yohanes Candrajaya",
+            "email": "moo.tensai@gmail.com"
+        },
+        {
+            "name": "Jiwantoro Ndaru",
+            "email": "jiwanndaru@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "mootensai\\components\\": ""
+        }
+    }
+}

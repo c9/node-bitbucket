@@ -1,0 +1,34 @@
+{
+    "name": "mootensai/yii2-uuid-behavior",
+    "type": "library",
+    "description": "Set UUID before save on Yii 2 models",
+    "keywords": ["Yii2","uuid","before","save","beforesave"],
+    "homepage": "http://github.com/mootensai/yii2-uuid-behavior",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Yohanes Candrajaya",
+            "email": "moo.tensai@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Jiwantoro Ndaru",
+            "email": "jiwanndaru@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+	"psr-4": {
+		"mootensai\\behaviors\\": ""
+	}
+    },
+    "extra": {
+	"branch-alias": {
+    		"dev-master": "1.0.x-dev"
+	}
+    },
+    "version" : "1.0.0"
+}
