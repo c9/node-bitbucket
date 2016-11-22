@@ -1,0 +1,53 @@
+{
+	"id": "f0d4a58b-2000-96a0-248d-c4a104c94306",
+	"name": "coderuss",
+	"description": "",
+	"order": [
+		"56ca4863-9ed5-d255-25c6-1b5e9832a0c9",
+		"d87bd499-ae43-9bd3-5682-303389f680bb"
+	],
+	"folders": [],
+	"timestamp": 1479839797363,
+	"owner": "237302",
+	"public": false,
+	"requests": [
+		{
+			"id": "56ca4863-9ed5-d255-25c6-1b5e9832a0c9",
+			"headers": "",
+			"url": "{{protocol}}//{{host}}/ping",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "GET",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1479839992965,
+			"name": "ping",
+			"description": "",
+			"collectionId": "f0d4a58b-2000-96a0-248d-c4a104c94306",
+			"rawModeData": "{\n  \"location\": {\n    \"parent_id\":\"{{root_location_id}}\",\n    \"branding_domain_url\":\"{{domain}}\",\n    \"name\":\"Location 1\",\n    \"ticket_hash_key\": \"{{location.ticket_hash_key}}\",\n    \"location_api_id\": \"{{location.location_api_id}}\"\n  }\n}"
+		},
+		{
+			"id": "d87bd499-ae43-9bd3-5682-303389f680bb",
+			"headers": "",
+			"url": "{{protocol}}//{{host}}/404",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "GET",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1479840987429,
+			"name": "404",
+			"description": "",
+			"collectionId": "f0d4a58b-2000-96a0-248d-c4a104c94306",
+			"rawModeData": "{\n  \"location\": {\n    \"parent_id\":\"{{root_location_id}}\",\n    \"branding_domain_url\":\"{{domain}}\",\n    \"name\":\"Location 1\",\n    \"ticket_hash_key\": \"{{location.ticket_hash_key}}\",\n    \"location_api_id\": \"{{location.location_api_id}}\"\n  }\n}"
+		}
+	]
+}

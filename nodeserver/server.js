@@ -9,10 +9,12 @@ http.createServer(function (req, res) {
 
     if (path.pathname === '/sms') {
         console.log('sms receipt');
+    } else if (path.pathname === '/ping') {
+        console.log('ping');
     }
-
-    if (path.pathname === '/sms') {
-        console.log('sms receipt');
+    else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end("Page could not be found");
     }
     if (req.body) {
         console.log(req.body);

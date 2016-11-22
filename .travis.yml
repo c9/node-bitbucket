@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - 6
+env:
+- NODE_ENV=TEST
+script:
+  - cd nodeserver
+  - npm test
