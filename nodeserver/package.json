@@ -2,10 +2,12 @@
   "name": "code-russ-node",
   "version": "1.0.0",
   "devDependencies": {
-    "jshint": "^2.8.0"
+    "chakram": "^1.5.0",
+    "jshint": "^2.8.0",
+    "mocha": "^3.1.2"
   },
   "scripts": {
-    "test": "./node_modules/jshint/bin/jshint server.js"
+    "test": "./node_modules/jshint/bin/jshint server.js && ./node_modules/.bin/mocha * --reporter spec"
   },
   "dependencies": {
     "url": "^0.11.0"
