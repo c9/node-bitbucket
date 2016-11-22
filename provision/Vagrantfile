@@ -33,6 +33,8 @@ Vagrant.configure(2) do |config|
   config.vm.network "forwarded_port", guest: 3306, host: 3308
   config.vm.network "forwarded_port", guest: 80, host: 85
   config.vm.network :forwarded_port, guest: 22, host: 2224
+  config.vm.network :forwarded_port, guest: 3000, host: 3000
+
 
 
 
@@ -52,7 +54,7 @@ Vagrant.configure(2) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
   # config.vm.synced_folder ".", "/api", type: "smb" #use this in place of default /vagrant start admin command and run vagrant up in windows
-	config.vm.synced_folder "../", "/vagrant"
+	config.vm.synced_folder "../", "/vagrant", type: "rsync", rsync__exclude: "node_modules/"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
