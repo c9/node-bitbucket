@@ -54,7 +54,7 @@ Vagrant.configure(2) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
   # config.vm.synced_folder ".", "/api", type: "smb" #use this in place of default /vagrant start admin command and run vagrant up in windows
-	config.vm.synced_folder "../", "/vagrant", type: "rsync", rsync__exclude: "node_modules/"
+	config.vm.synced_folder "../", "/vagrant"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.

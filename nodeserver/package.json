@@ -4,7 +4,8 @@
   "devDependencies": {
     "chakram": "^1.5.0",
     "jshint": "^2.8.0",
-    "mocha": "^3.1.2"
+    "mocha": "^3.1.2",
+    "chai": "*"
   },
   "scripts": {
     "test": "./node_modules/jshint/bin/jshint server.js && ./node_modules/.bin/mocha * --reporter spec"
