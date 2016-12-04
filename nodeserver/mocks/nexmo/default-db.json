@@ -1,0 +1,31 @@
+{
+    "applications": [
+        {
+            "id": "1402c3dd-68ab-4faa-9cda-2d59ff632ed3",
+            "name": "test",
+            "voice": {
+                "webhooks": [
+                    {
+                        "endpoint_type": "event_url",
+                        "endpoint": "1",
+                        "http_method": "POST"
+                    },
+                    {
+                        "endpoint_type": "answer_url",
+                        "endpoint": "1",
+                        "http_method": "GET"
+                    }
+                ]
+            },
+            "keys": {
+                "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1uCV74CZ41ClbmP+kQ3f\nGwl0xmF/SVDJIu1JKncniaNKpYsxFfAtWdsck2mQa3DDqb9SNO0jw0HP2Hkz2FQW\nr5b0ivoi6rA4Zx13J1P+BriVnrd7TLbx00mj6WI7FnvYflC0bwd6JgBOt2uYE7pE\nzbpj6RqDOe+R4GhaDUgoO3fnEv3IJMLGeuXc79HQYN/2MY8Q2Eoz7KNAXTm5R6IQ\nzYJgMWmRpNOxnc7M4gcYFhKummST0Y0Oa168k5msk2Uo0RyzYkj9dU2/DKuOwSoc\ncofT6p7k5U4dVLVPWkmq0mE3UDu6vStvgVC/nnT5Gl9M789hypXmksHcPvNWw1S4\n1wIDAQAB\n-----END PUBLIC KEY-----\n",
+                "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDW4JXvgJnjUKVu\nY/6RDd8bCXTGYX9JUMki7UkqdyeJo0qlizEV8C1Z2xyTaZBrcMOpv1I07SPDQc/Y\neTPYVBavlvSK+iLqsDhnHXcnU/4GuJWet3tMtvHTSaPpYjsWe9h+ULRvB3omAE63\na5gTukTNumPpGoM575HgaFoNSCg7d+cS/cgkwsZ65dzv0dBg3/YxjxDYSjPso0Bd\nOblHohDNgmAxaZGk07GdzsziBxgWEq6aZJPRjQ5rXryTmayTZSjRHLNiSP11Tb8M\nq47BKhxyh9PqnuTlTh1UtU9aSarSYTdQO7q9K2+BUL+edPkaX0zvz2HKleaSwdw+\n81bDVLjXAgMBAAECggEADGt2vx0jx+vFZBgLgr7Wgm2NflnsTYSJ26bzb6zrcB0s\nF11wPOBg/qyXfj2/xzYBWTJhwgVi58pKBS0cPgi+Nu/2uoGyuvXsjKk7Vd6Y9DJ/\nE2lviwOX/qpm+vpeh/IolUR86V35RXEHG7rwU1OU3n9Dfxm1NAgQ2nOtoM7m5Gjy\nqH1YmGPK7mCql2lo0i/6a4Z2tow7Mm3uibyKj8ECxytRD3GEXmov5RH4s9DSs+Rx\nV2LxmY/yyIZ04oIkiFwZwCg+8VQqHLjT7hgA+GOTVTUr+ETPUOTV2bDSxU5IbgB7\nV4ABPQ4T51Ko8mScYemkKRcakdzQImroKBfD3xWaIQKBgQDuO2Y2sMb7/w05pDGL\nUsKllk5x+nhU79cqbfarztQrOyaBA4r4gwwAxNBAuTKqyOfbkY4Jl4X0X9L7egzS\nWfExxmkp3XsVoj2q2VWAWOmW48fFo5XV/IsmvOg2t/XUtZMTnt4Mp6937iFBOapA\nPEWYKe+Ryf8hxj7KzF4VwHOucwKBgQDm50VQuj4RKbGlLrNyf1PhQ+CAyrKqXTpQ\nWQWrDYNiuJqSfXEg10RtC7CSzAEhj7m+gE2wCc4KEFP4uNa3dBI79TXlUtqmEzO3\n0ksJPpWxkWtdHZ9jaBNV2QootbhH5q2b/V9Ah5vNCfTQgIfDgpfPFJbY25iGrPLP\nSPU4+qtvDQKBgEAGTLEUD1Y4NIiyPPJxmog//fMZ2m8RSiVICkwgONspeW6g0h95\nsKcgPcu3Ogu2FMHou2COjVygyCX3pix+KZkz9p1eva6RvLsGz7i/rH911gGitikd\nRxRxHoNeKz4wUkeqoYiLJFg58kwCQGQlDpsXYiAvRlcAXW3JQNvdrflLAoGABTQv\nHrujzHU5GLTtvGXcORZzh9OJpUdGmir3crxyOpZYfXawRwIy+5Yo25YXbG81y3JO\nzenap+VoTxGzXR0TkCBdn5Z3cQi7wKfPoxyy+PaDCe0x+2aMEQI8NWCrD4vGW96g\n9+5Wd4+C4fQTmzdlPniDUc3ZKSfarQtC447asD0CgYEA6h5hAwcIqPGdzWtYorxr\nvtj9RSNTwEFBWA1ZPCJ+U4/7shmGfQiyIKDShcVSLJyWVhOq4wC/SvNWK1+7/uR4\n7q6MitKNh69Lvy2SSVGq2nPzZ+Mqc1bsHHzc7OQjKkjzP2C3Hx3QoeGCBiFnTToh\nnQRkCc0SAxCdLfd4+7n17ok=\n-----END PRIVATE KEY-----\n"
+            },
+            "_links": {
+                "self": {
+                    "href": "/v1/applications/1402c3dd-68ab-4faa-9cda-2d59ff632ed3"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,83 @@
+
+base_url = https://api.nexmo.com/v1
+private_key is only displayed on POST creation of the new application
+
+
+/applications POST 201
+
+/applications/:id DELETE 204 response
+
+
+/applications GET 200 response example
+{
+  "count": 2,
+  "page_size": 10,
+  "page_index": 1,
+  "_embedded": {
+    "applications": [
+      {
+        "id": "1402c3dd-68ab-4faa-9cda-2d59ff632ed3",
+        "name": "test",
+        "voice": {
+          "webhooks": [
+            {
+              "endpoint_type": "event_url",
+              "endpoint": "1",
+              "http_method": "POST"
+            },
+            {
+              "endpoint_type": "answer_url",
+              "endpoint": "1",
+              "http_method": "GET"
+            }
+          ]
+        },
+        "keys": {
+          "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1uCV74CZ41ClbmP+kQ3f\nGwl0xmF/SVDJIu1JKncniaNKpYsxFfAtWdsck2mQa3DDqb9SNO0jw0HP2Hkz2FQW\nr5b0ivoi6rA4Zx13J1P+BriVnrd7TLbx00mj6WI7FnvYflC0bwd6JgBOt2uYE7pE\nzbpj6RqDOe+R4GhaDUgoO3fnEv3IJMLGeuXc79HQYN/2MY8Q2Eoz7KNAXTm5R6IQ\nzYJgMWmRpNOxnc7M4gcYFhKummST0Y0Oa168k5msk2Uo0RyzYkj9dU2/DKuOwSoc\ncofT6p7k5U4dVLVPWkmq0mE3UDu6vStvgVC/nnT5Gl9M789hypXmksHcPvNWw1S4\n1wIDAQAB\n-----END PUBLIC KEY-----\n"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/applications/1402c3dd-68ab-4faa-9cda-2d59ff632ed3"
+          }
+        }
+      },
+      {
+        "id": "4a620354-b84e-41fd-abea-eb1ddcb06621",
+        "name": "test",
+        "voice": {
+          "webhooks": [
+            {
+              "endpoint_type": "answer_url",
+              "endpoint": "1",
+              "http_method": "GET"
+            },
+            {
+              "endpoint_type": "event_url",
+              "endpoint": "1",
+              "http_method": "POST"
+            }
+          ]
+        },
+        "keys": {
+          "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw3QfNu+KW76AX54rqKjX\nUhp6IoF3oWJkCNTZUNIfRvFIFMrAikE1sn+qUaBkEh/gx02D3u81Ib92NeoPBw8O\nGCIOiCnBQxFvulTBuShu/Is0hw5pd1Y8/1KhhP6MzYZmzoWMBw4mw+b3v4F5n3jo\nljVK9Rzsei5ubpIpdHn2b0TAUWiMogZBH5sKkho5gGPWXQ6xa+hbvDR67f8OD4om\n2JP5ihp/uWrf9PU+8Spz5OIvtyFGUJ5QvBV8UmBhd8p3YDcgGyotAXGifvNwMXEO\nIdkhK8USnmnBqciWJIohR6a6NYJOdo6+NztEz1sREWSn2V/RJ494ngnHwXRLl60d\njwIDAQAB\n-----END PUBLIC KEY-----\n"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/applications/4a620354-b84e-41fd-abea-eb1ddcb06621"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "/v1/applications?page_size=10&page_index=1"
+    },
+    "first": {
+      "href": "/v1/applications?page_size=10"
+    },
+    "last": {
+      "href": "/v1/applications?page_size=10&page_index=1"
+    }
+  }
+}

@@ -11,3 +11,4 @@ screenshots/
 /deploy.sh
 environments/prod/
 node_modules
+db.json
