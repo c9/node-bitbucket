@@ -8,6 +8,7 @@
     "chai": "*"
   },
   "scripts": {
+    "start": "node nodeserver/server.js",
     "test": "./node_modules/jshint/bin/jshint server.js && ./node_modules/.bin/mocha * --reporter spec"
   },
   "dependencies": {
