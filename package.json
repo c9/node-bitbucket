@@ -12,7 +12,11 @@
     "test": "./node_modules/jshint/bin/jshint server.js && ./node_modules/.bin/mocha * --reporter spec"
   },
   "dependencies": {
+    "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "lodash": "^4.17.2",
+    "low": "0.0.1",
+    "lowdb": "^0.14.0",
     "url": "^0.11.0"
   }
 }

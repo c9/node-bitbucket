@@ -6,10 +6,16 @@ module.exports = function (opts) {
     var module = {};
 
     module.opts = opts;
+    const db = module.db = opts.db;
 
 
     var express = require('express');
+    var bodyParser = require('body-parser');
+
     var app = express();
+
+    app.use(bodyParser.urlencoded({ extended: false }));
+
 
     var staticRoot = __dirname + '/public';
 
@@ -17,7 +23,12 @@ module.exports = function (opts) {
 
 
     app.get('/ivr', function (req, res) {
-        res.send('Hello World!')
+        // res.send(res.body);
+    });
+
+    app.post('/',function(req,res) {
+        console.log(req.body);
+        res.send(req.body);
     });
 
     module.registerApp = function(protocol,host,port) {
