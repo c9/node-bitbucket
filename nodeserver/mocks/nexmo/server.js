@@ -26,15 +26,17 @@ exec('cp ' + __dirname + '/default-db.json ' + __dirname + '/db.json', (error, s
   console.log(`stderr: ${stderr}`);
 });
 
-var ursa = require('ursa');
 var fs = require('fs');
 
-// create a pair of keys (a private key contains both keys...)
-var keys = ursa.generatePrivateKey();
-console.log('keys:', keys);
+fs.readFile(__dirname+'/private.pem', 'ascii', function (err,data) {
+  private_key = data;
+});
 
+fs.readFile(__dirname+'/public.pem', 'ascii', function (err,data) {
+  public_key = data;
+});
 
-
+var ursa = require('ursa');
 
 var jsonServer = require('json-server')
 var app = jsonServer.create()
@@ -50,6 +52,7 @@ app.use(function (req, res, next) {
   if (url_parts.pathname === '/applications' ||
     url_parts.pathname === '/applications/') {
     if (req.method === 'POST') {
+
       console.log(url_parts.query);
       var query = url_parts.query;
       req.body = req.body || {};
@@ -69,10 +72,11 @@ app.use(function (req, res, next) {
           }
         ],
         "keys": {
-          "public_key": "123",
-          "private_key": "123"
+          "public_key": public_key,
+          "private_key": private_key
         }
       };
+      console.log(req.body);
     }
   }
   next();
