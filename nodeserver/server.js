@@ -55,6 +55,7 @@ var request = require('request');
 var cron = require('node-cron');
 
 cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
+    console.log('ping job running');
     var url = BASE_URL + '/ping';
     console.log(url);
     request.get({
