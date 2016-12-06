@@ -6,10 +6,11 @@ const NEXMO_SECRET = process.env.NEXMO_SECRET || '123';
 const low = require('lowdb');
 const db = low('db.json');
 const PROTOCOL = process.env.PROTOCOL || 'http';
+const ENDPOINT_PORT = process.env.ENDPOINT_PORT || port;
 const HOST = process.env.HOST || 'localhost';
-const BASE_URL = PROTOCOL + "://" + HOST + ':' + port;
+const BASE_URL = PROTOCOL + "://" + HOST + ':' + ENDPOINT_PORT;
 
-const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 120;
+const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 2;
 
 
 if (init) {
@@ -41,6 +42,8 @@ var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {
 
 // setup the logger
 app.use(morgan('combined', { stream: accessLogStream }))
+app.use(morgan('combined'));
+
 
 var opts = { db: db, app: app };
 
@@ -57,19 +60,16 @@ var cron = require('node-cron');
 cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
     console.log('ping job running');
     var url = BASE_URL + '/ping';
-    console.log(url);
     request.get({
         headers: { 'X-PING': 'PING' },
         url: url,
         followRedirect: false
     }, function (error, response, body) {
-        console.log(body);
     });
     request.post({
         headers: { 'X-PING': 'PING' },
         url: url,
         followRedirect: false
     }, function (error, response, body) {
-        console.log(body);
     });
 });
