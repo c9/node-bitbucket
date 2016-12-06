@@ -1,21 +1,14 @@
 module.exports = function (opts) {
     var http = require('http');
     var url = require('url');
+    var express = require('express');
+    var app = opts.app; //express app
 
 
     var module = {};
 
     module.opts = opts;
     const db = module.db = opts.db;
-
-
-    var express = require('express');
-    var bodyParser = require('body-parser');
-
-    var app = express();
-
-    app.use(bodyParser.urlencoded({ extended: false }));
-
 
     var staticRoot = __dirname + '/public';
 
