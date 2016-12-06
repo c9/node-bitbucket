@@ -55,16 +55,18 @@ var request = require('request');
 var cron = require('node-cron');
 
 cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
+    var url = BASE_URL + '/ping';
+    console.log(url);
     request.get({
         headers: { 'X-PING': 'PING' },
-        url: BASE_URL + '/ping',
+        url: url,
         followRedirect: false
     }, function (error, response, body) {
         console.log(body);
     });
     request.post({
         headers: { 'X-PING': 'PING' },
-        url: BASE_URL + '/ping',
+        url: url,
         followRedirect: false
     }, function (error, response, body) {
         console.log(body);
