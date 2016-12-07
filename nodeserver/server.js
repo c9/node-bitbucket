@@ -4,13 +4,31 @@ var init = process.env.INIT || false;
 const NEXMO_API = process.env.NEXMO_API || '123';
 const NEXMO_SECRET = process.env.NEXMO_SECRET || '123';
 const low = require('lowdb');
+
 const db = low('db.json');
 const PROTOCOL = process.env.PROTOCOL || 'http';
 const ENDPOINT_PORT = process.env.ENDPOINT_PORT || port;
 const HOST = process.env.HOST || 'localhost';
 const BASE_URL = PROTOCOL + "://" + HOST + ':' + ENDPOINT_PORT;
-
 const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 2;
+
+const MongoClient = require('mongodb').MongoClient;
+
+const MONGO_CONNECTION = process.env.MONGO_CONNECTION || 'mongodb://localhost:27017/voice';
+
+
+MongoClient.connect(MONGO_CONNECTION, function(err, db) {
+  var collection = db.collection('documents');
+  // Insert some documents
+  collection.insertMany([
+    {a : 1}, {a : 2}, {a : 3}
+  ], function(err, result) {
+      console.log(err);
+      console.log(result.ops);
+    console.log("Inserted 3 documents into the document collection");
+  });
+});
+
 
 
 if (init) {
@@ -21,7 +39,6 @@ if (init) {
 
     db.set('settings.nexmo_api', NEXMO_API).value();
     db.set('settings.nexmo_secret', NEXMO_SECRET).value();
-
 
 }
 
