@@ -16,17 +16,16 @@ const MongoClient = require('mongodb').MongoClient;
 
 const MONGO_CONNECTION = process.env.MONGO_CONNECTION || 'mongodb://localhost:27017/voice';
 
-
-MongoClient.connect(MONGO_CONNECTION, function(err, db) {
-  var collection = db.collection('documents');
-  // Insert some documents
-  collection.insertMany([
-    {a : 1}, {a : 2}, {a : 3}
-  ], function(err, result) {
-      console.log(err);
-      console.log(result.ops);
-    console.log("Inserted 3 documents into the document collection");
-  });
+MongoClient.connect(MONGO_CONNECTION, function (err, db) {
+    var collection = db.collection('documents');
+    // Insert some documents
+    collection.insertMany([
+        { a: 1 }, { a: 2 }, { a: 3 }
+    ], function (err, result) {
+        console.log(err);
+        console.log(result.ops);
+        console.log("Inserted 3 documents into the document collection");
+    });
 });
 
 
@@ -49,17 +48,51 @@ var bodyParser = require('body-parser');
 
 var app = express();
 var morgan = require('morgan');
+var winston = require('winston');
+var Papertrail = require('winston-papertrail').Papertrail;
+
 var fs = require('fs');
 var path = require('path');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+var logger = new winston.Logger({
+    transports: [
+        new winston.transports.File({
+            level: 'info',
+            filename: path.join(__dirname, 'access.log'),
+            handleExceptions: true,
+            json: true,
+            maxsize: 5242880, //5MB
+            maxFiles: 5,
+            colorize: false
+        }),
+        new winston.transports.Console({
+            level: 'debug',
+            handleExceptions: true,
+            json: false,
+            colorize: true
+        }),
+        new Papertrail({
+            host: 'logs5.papertrailapp.com',
+            port: 26785,
+            program: 'nodeserver'
+        })
+
+    ],
+    exitOnError: false
+});
+
+
+logger.stream = {
+    write: function (message, encoding) {
+        logger.info(message);
+    }
+};
 
 // setup the logger
-app.use(morgan('combined', { stream: accessLogStream }))
-app.use(morgan('combined'));
+app.use(morgan('combined', { stream: logger.stream }))
 
 
 var opts = { db: db, app: app };
@@ -75,7 +108,6 @@ var request = require('request');
 var cron = require('node-cron');
 
 cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
-    console.log('ping job running');
     var url = BASE_URL + '/ping';
     request.get({
         headers: { 'X-PING': 'PING' },
