@@ -16,7 +16,7 @@ const fs = require('fs');
 const path = require('path');
 var winston = require('winston');
 var Papertrail = require('winston-papertrail').Papertrail;
-var logger = new winston.Logger({
+var winston = logger = new winston.Logger({
     transports: [
         new winston.transports.File({
             level: 'info',
@@ -56,7 +56,7 @@ const MONGO_CONNECTION = process.env.MONGO_CONNECTION || 'mongodb://localhost:27
 
 MongoClient.connect(MONGO_CONNECTION, function (err, db) {
     var collection = db.collection('documents');
-    var voice = require('./voice.js')({db:db,express:express,
+    var voice = require('./voice.js')({db:db,express:express,winston:winston,
         app:app, nexmo: {
             api_key:NEXMO_API,api_secret:NEXMO_SECRET,
             base_url: NEXMO_BASE_URL
