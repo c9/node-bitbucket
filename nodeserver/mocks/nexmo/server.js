@@ -14,7 +14,7 @@
 //https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk
 //npm config set msvs_version 2013 --global
 
-const IP = process.env.IP || 3100;
+const PORT = process.env.PORT || 3100;
 // server.js
 const exec = require('child_process').exec;
 exec('cp ' + __dirname + '/default-db.json ' + __dirname + '/db.json', (error, stdout, stderr) => {
@@ -98,7 +98,7 @@ app.render = function (req, res) {
 
 
 app.use(router);
-server = app.listen(IP, function () {
+server = app.listen(PORT, function () {
   console.log('JSON Server is running')
 });
 

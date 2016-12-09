@@ -3,16 +3,14 @@ var express = require('express');
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
-
-
 var port = process.env.PORT || 3000;
 var ip = process.env.IP || '0.0.0.0';
 var init = process.env.INIT || false;
 
-
 const NEXMO_API = process.env.NEXMO_API || '123';
 const NEXMO_SECRET = process.env.NEXMO_SECRET || '123';
+const NEXMO_BASE_URL = process.env.NEXMO_BASE_URL || 'http://localhost:3100';
+
 const low = require('lowdb');
 const fs = require('fs');
 const path = require('path');
@@ -59,8 +57,11 @@ const MONGO_CONNECTION = process.env.MONGO_CONNECTION || 'mongodb://localhost:27
 MongoClient.connect(MONGO_CONNECTION, function (err, db) {
     var collection = db.collection('documents');
     var voice = require('./voice.js')({db:db,express:express,
-        app:app});
-    winston.log('info','router:'+voice.router);
+        app:app, nexmo: {
+            api_key:NEXMO_API,api_secret:NEXMO_SECRET,
+            base_url: NEXMO_BASE_URL
+            }
+        });
     app.use('/voice',voice.router);
     // Insert some documents
     collection.insertMany([
