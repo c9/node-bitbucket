@@ -1,3 +1,11 @@
+var bodyParser = require('body-parser');
+var express = require('express');
+var app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+
+
+
+
 var port = process.env.PORT || 3000;
 var ip = process.env.IP || '0.0.0.0';
 var init = process.env.INIT || false;
@@ -50,6 +58,10 @@ const MONGO_CONNECTION = process.env.MONGO_CONNECTION || 'mongodb://localhost:27
 
 MongoClient.connect(MONGO_CONNECTION, function (err, db) {
     var collection = db.collection('documents');
+    var voice = require('./voice.js')({db:db,express:express,
+        app:app});
+    winston.log('info','router:'+voice.router);
+    app.use('/voice',voice.router);
     // Insert some documents
     collection.insertMany([
         { a: 1 }, { a: 2 }, { a: 3 }
@@ -75,10 +87,8 @@ if (init) {
 
 winston.info(db.getState());
 
-var express = require('express');
-var bodyParser = require('body-parser');
 
-var app = express();
+
 var morgan = require('morgan');
 
 
@@ -88,8 +98,6 @@ logger.stream = {
     }
 };
 
-app.use(bodyParser.urlencoded({ extended: false }));
-
 // create a write stream (in append mode)
 
 // setup the logger
@@ -98,7 +106,6 @@ app.use(morgan('combined', { stream: logger.stream }));
 
 var opts = { db: db, app: app };
 
-var voice = require('./voice.js')(opts);
 var ping = require('./ping.js')(opts);
 
 

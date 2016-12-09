@@ -1,25 +1,39 @@
 module.exports = function (opts) {
     var http = require('http');
     var url = require('url');
-    var express = require('express');
+    var express = opts.express || require('express');
     var app = opts.app; //express app
-
+    var winston = opts.winston || require('winston');
+    
+    var router = express.Router();
 
     var module = {};
+
+    module.router = router;
 
     module.opts = opts;
     const db = module.db = opts.db;
 
+
+    var collection = db.collection('init');
+
+    collection.insert({server_start:Date.now()},
+     function (err, result) {
+        if (err) winston.error(err);
+        winston.info(JSON.stringify(result.ops));
+    });
+
     var staticRoot = __dirname + '/public';
 
-    app.use(express.static(staticRoot));
+    router.use(express.static(staticRoot));
 
 
-    app.get('/ivr', function (req, res) {
+    router.get('/ivr', function (req, res) {
+        res.send('ivr');
         // res.send(res.body);
     });
 
-    app.post('/',function(req,res) {
+    router.post('/',function(req,res) {
         console.log(req.body);
         res.send(req.body);
     });
