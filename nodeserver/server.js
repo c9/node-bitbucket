@@ -1,6 +1,5 @@
 var bodyParser = require('body-parser');
 var express = require('express');
-var busboy = require('connect-busboy');
 
 var app = express();
 app.use(busboy());
