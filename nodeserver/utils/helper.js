@@ -13,6 +13,19 @@ module.exports = function (opts, callback) {
     }
 
     module.files = {
+        view: function (opts, callback) {
+            var url = getBaseUrl() + "/file/tmp/" + opts.id;
+            request.get(
+                {
+                    url: url,
+                },
+                function (err, response, body) {
+                    if (err) {
+                        console.error('upload failed:', err);
+                    }
+                    callback(err, response, body)
+                });
+        },
         get: function (opts, callback) {
             var url = getBaseUrl() + "/file/tmp";
             request.get(
@@ -23,7 +36,7 @@ module.exports = function (opts, callback) {
                     if (err) {
                         console.error('upload failed:', err);
                     }
-                    callback(err,response,body)
+                    callback(err, response, body)
                 });
         },
         post: function (opts, callback) {
@@ -34,27 +47,29 @@ module.exports = function (opts, callback) {
             var url = getBaseUrl() + "/file/tmp"
             winston.debug(url);
             var formData = {
-                // Pass a simple key-value pair 
-                my_field: 'my_value',
-                // Pass data via Buffers 
-                my_buffer: new Buffer([1, 2, 3]),
-                // Pass data via Streams 
-                my_file: fs.createReadStream(__dirname + '/../fixtures/test1.txt'),
-                // Pass multiple values /w an Array 
-                attachments: [
-                    fs.createReadStream(__dirname + '/../fixtures/test1.txt'),
-                    fs.createReadStream(__dirname + '/../fixtures/test1.txt')
-                ],
+                // avatar: new Buffer([1, 2, 3]),//'avatar',
+                // // Pass a simple key-value pair 
+                // my_field: 'my_value',
+                // // Pass data via Buffers 
+                // my_buffer: new Buffer([1, 2, 3]),
+                // // Pass data via Streams 
+                file: fs.createReadStream(__dirname + '/../fixtures/test1.txt'),
+                // // Pass multiple values /w an Array 
+                // attachments: [
+                //     fs.createReadStream(__dirname + '/../fixtures/test1.txt'),
+                //     fs.createReadStream(__dirname + '/../fixtures/test1.txt'),
+                //     // fs.createReadStream('/dev/urandom')
+                // ],
                 // Pass optional meta-data with an 'options' object with style: {value: DATA, options: OPTIONS} 
                 // Use case: for some types of streams, you'll need to provide "file"-related information manually. 
                 // See the `form-data` README for more information about options: https://github.com/form-data/form-data 
-                custom_file: {
-                    // value: fs.createReadStream('/dev/urandom'),
-                    options: {
-                        filename: 'topsecret.jpg',
-                        contentType: 'image/jpg'
-                    }
-                }
+                // custom_file: {
+                //     value: fs.createReadStream('/dev/urandom'),
+                //     options: {
+                //         filename: 'topsecret.jpg',
+                //         contentType: 'image/jpg'
+                //     }
+                // }
             };
             request.post(
                 {
@@ -65,8 +80,8 @@ module.exports = function (opts, callback) {
                     callback(err, response, body);
                 });
         },
-            //https://github.com/expressjs/multer/issues/224
-//https://github.com/expressjs/multer/issues/350
+        //https://github.com/expressjs/multer/issues/224
+        //https://github.com/expressjs/multer/issues/350
         postBad:
         function (opts, callback) {
             var url = getBaseUrl() + "/file/tmp"

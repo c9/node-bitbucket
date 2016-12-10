@@ -23,4 +23,4 @@ var app = express();
 // });
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use();
-app.use('/file',require('./main.js')({winston:logger}).router).listen(3000);
+app.use('/file',require('./main.js')({winston:logger,expiry:60000}).router).listen(3000);

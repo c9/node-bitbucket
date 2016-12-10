@@ -6,7 +6,24 @@ module.exports = function (opts) {
     var fs = require('fs');
     var Busboy = require('busboy');
     var inspect = require('util').inspect;
+    var current_files = {};
+    var doDelete = true;
 
+    var expiry = opts.expiry || 86400000; //24 hours
+
+    var cron = require('node-cron');
+    cron.schedule('*/1 * * * * *', function () {
+        winston.debug('start cron');
+        var count = 0;
+        for (var key in current_files) {
+            count++;
+            if ((Date.now() - current_files[key].created) > expiry) {
+                winston.info('removing file');
+                delete current_files[key];
+            }
+        }
+        winston.debug('file count is ' + count);
+    });
 
     var multer = require('multer');
 
@@ -14,87 +31,72 @@ module.exports = function (opts) {
 
     var module = {};
 
+
     module.router = router;
 
-    router.get('/tmp', function (req, res) {
-        winston.debug('tmp get');
-        res.send('pong');
-    });
     var storage = multer.memoryStorage();
-    var upload = multer({ storage: storage }).single('avatar');
-    //.single('avatar');
+
+
+    router.get('/tmp', function (req, res) {
+        if (!current_files[req.query.id]) {
+            res.status(404);
+            res.send(JSON.stringify({
+                meta: {
+                    message: "File not found"
+                }
+            }));
+            return;
+        }
+        var file = current_files[req.query.id].file;
+        var filename = file.originalname;
+
+        res.setHeader('Content-disposition', 'attachment; filename='+filename);
+        res.send(file.buffer);
+
+        if (doDelete) {
+            delete current_files[req.query.id];
+        }
+
+    });
+
+    var upload = multer({ storage: storage }).single('file');
 
     router.post('/tmp', function (req, res) {
-        // var requestBody = req.body;
         var errors = [];
-        var busboy = new Busboy({ headers: req.headers });
-        busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
-            console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
-            file.on('data', function (data) {
-                console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
-            });
-            file.on('end', function () {
-                console.log('File [' + fieldname + '] Finished');
-            });
-        });
-        busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
-            console.log('Field [' + fieldname + ']: value: ' + inspect(val));
-        });
-        busboy.on('finish', function () {
-            console.log('Done parsing form!');
-            res.writeHead(303, { Connection: 'close', Location: '/' });
-            res.end();
-        });
-        req.pipe(busboy);        
-        // req.socket.on("error", function (err) {
-        //     winston.error("requst socket error" + err);
-        //     errors.push("Request socket error");
-        //     return;
-        // });
-        // res.socket.on("error", function (err) {
-        //     winston.error("response socket error" + err);
-        //     errors.push("Response socket error");
-        //     return;
-        // });
+        var requestBody = req.body;
 
-        // upload(req, res, function (err) {
-        //     if (err) {
-        //         winston.error("upload error:" + err);
-        //         winston.error(requestBody);
-        //         winston.error(req.files);
-        //         winston.error(req.file);
-        //         // res.send('1');
-        //         // res.status(400);
-        //         // res.send(JSON.stringify({error:'Bad Request'}));
-        //         return;
-        //     }
-        //     res.setHeader('Content-Type', 'application/json');
-        //     res.send(JSON.stringify({ a: 1 }));
-        //     res.send('hello');
-        // });
+        upload(req, res, function (err) {
+            winston.info(req.file);
+            if (err || !req.file) {
+                winston.error("upload error:" + err);
+                winston.error(req.files);
+                winston.error(req.file);
+                res.status(400);
+                res.send(JSON.stringify({ error: 'Bad Request' }));
+                return;
+            }
+            winston.info(req.file);
+            const crypto = require('crypto');
+            crypto.randomBytes(256, (err, buf) => {
+                if (err) throw err;
+                var id = buf.toString('hex');
+                current_files[id] = {
+                    file: req.file,
+                    created: Date.now()
+                };
+
+                winston.debug(JSON.stringify(current_files));
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(
+                    {
+                        id: id,
+                        meta: {
+                            message: "Temporary file created",
+                        }
+                    }))
+            });
+        });
     });
-
-    function upload_file(req, res) {
-        req.setBodyEncoding('binary');
-
-        var stream = new multipart.Stream(req);
-        stream.addListener('part', function (part) {
-            part.addListener('body', function (chunk) {
-                var progress = (stream.bytesReceived / stream.bytesTotal * 100).toFixed(2);
-                var mb = (stream.bytesTotal / 1024 / 1024).toFixed(1);
-
-                sys.print("Uploading " + mb + "mb (" + progress + "%)\015");
-
-                // chunk could be appended to a file if the uploaded file needs to be saved
-            });
-        });
-        stream.addListener('complete', function () {
-            res.sendHeader(200, { 'Content-Type': 'text/plain' });
-            res.sendBody('Thanks for playing!');
-            res.finish();
-            sys.puts("\n=> Done");
-        });
-    }
 
     return module;
 };
