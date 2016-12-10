@@ -25,7 +25,7 @@ var winston = logger = new winston.Logger({
         new winston.transports.File({
             level: 'info',
             filename: path.join(__dirname, 'access.log'),
-            // handleExceptions: true,
+            handleExceptions: true,
             json: true,
             maxsize: 5242880, //5MB
             maxFiles: 5,
@@ -33,7 +33,7 @@ var winston = logger = new winston.Logger({
         }),
         new winston.transports.Console({
             level: 'debug',
-            // handleExceptions: true,
+            handleExceptions: true,
             json: false,
             colorize: true
         }),
