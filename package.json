@@ -19,11 +19,11 @@
     "lowdb": "^0.14.0",
     "mongodb": "^2.2.13",
     "morgan": "^1.7.0",
+    "multer": "^1.2.0",
     "node-cron": "^1.1.2",
     "path": "^0.12.7",
     "url": "^0.11.0",
     "winston": "^2.3.0",
-    "winston-papertrail": "^1.0.4",
-    "winston-rsyslog": "0.0.2"
+    "winston-papertrail": "^1.0.4"
   }
 }

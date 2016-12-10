@@ -1,6 +1,9 @@
 var bodyParser = require('body-parser');
 var express = require('express');
+var busboy = require('connect-busboy');
+
 var app = express();
+app.use(busboy());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 var port = process.env.PORT || 3000;
@@ -15,13 +18,14 @@ const low = require('lowdb');
 const fs = require('fs');
 const path = require('path');
 var winston = require('winston');
+
 var Papertrail = require('winston-papertrail').Papertrail;
 var winston = logger = new winston.Logger({
     transports: [
         new winston.transports.File({
             level: 'info',
             filename: path.join(__dirname, 'access.log'),
-            handleExceptions: true,
+            // handleExceptions: true,
             json: true,
             maxsize: 5242880, //5MB
             maxFiles: 5,
@@ -29,14 +33,15 @@ var winston = logger = new winston.Logger({
         }),
         new winston.transports.Console({
             level: 'debug',
-            handleExceptions: true,
+            // handleExceptions: true,
             json: false,
             colorize: true
         }),
         new Papertrail({
             host: 'logs5.papertrailapp.com',
             port: 26785,
-            program: 'nodeserver'
+            program: 'nodeserver',
+            level: 'warn',
         })
 
     ],
@@ -48,7 +53,7 @@ const PROTOCOL = process.env.PROTOCOL || 'http';
 const ENDPOINT_PORT = process.env.ENDPOINT_PORT || port;
 const HOST = process.env.HOST || 'localhost';
 const BASE_URL = PROTOCOL + "://" + HOST + ':' + ENDPOINT_PORT;
-const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 2;
+const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 300;
 
 const MongoClient = require('mongodb').MongoClient;
 
@@ -108,6 +113,10 @@ app.use(morgan('combined', { stream: logger.stream }));
 var opts = { db: db, app: app };
 
 var ping = require('./ping.js')(opts);
+
+var fileapi = require('./files/main.js')({winston:winston});
+
+app.use('/file',fileapi.router);
 
 
 app.listen(port, ip, function () {
