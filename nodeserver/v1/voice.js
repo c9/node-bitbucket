@@ -21,18 +21,26 @@ module.exports = function (opts) {
     var applicationsCollection = db.collection('applications');
     applicationsCollection.findOne({ title: "main_voice_application" }, function (err, document) {
         if (!document) {
-            createApplication({ name: 'main_voice_application' }, function (err, application) {
-                applicationsCollection.insert({ "title": "main_voice_application", nexmo_application: application }, function (err, result) {
+            createApplication({ name: 'main_voice_application' },
+                function (err, application) {
                     if (err) {
                         winston.log('error', err);
+                        return;
                     }
-                    else {
-                        winston.log('info', 'main_application_inserted:', result);
-                        main_application = result.ops[0];
-                        winston.log('info', 'main_voice_application:', JSON.stringify(main_application));
+                    if (application.id) {
+                        applicationsCollection.insert({ "title": "main_voice_application", nexmo_application: application }, function (err, result) {
+                            if (err) {
+                                winston.log('error', err);
+                            }
+                            else {
+                                winston.log('info', 'main_application_inserted:', result);
+                                main_application = result.ops[0];
+                                winston.log('info', 'main_voice_application:', JSON.stringify(main_application));
+                            }
+                        })
                     }
+
                 })
-            })
 
         }
         else {
@@ -57,16 +65,23 @@ module.exports = function (opts) {
             },
             headers: {}
         };
+        winston.log('info', 'create application options:', options);
         request(options, function (error, response, body) {
             if (error) {
                 winston.log('error', error);
                 callback(error);
             }
             else {
-                winston.log('info', response.statusCode);
-                winston.log('info', response.headers);
-                winston.log('info', body);
+                var lvl = 'info';
+                if (response.statusCode < 400) {
+                    lvl = 'error';
+                }
+
+                winston.log(lvl, response.statusCode);
+                winston.log(lvl, response.headers);
+                winston.log(lvl, body);
                 callback(error, JSON.parse(body));
+
             }
 
         });
@@ -89,15 +104,15 @@ module.exports = function (opts) {
     router.use(express.static(staticRoot));
 
 
-    router.post('/events',function(req,res) {
-        winston.log('info','headers', JSON.stringify(req.headers));
+    router.post('/events', function (req, res) {
+        winston.log('info', 'headers', JSON.stringify(req.headers));
         winston.log('info', req.body);
         res.status(201);
         res.send('Success');
     });
 
-    router.get('/answers',function(req,res) {
-        winston.log('info','headers', JSON.stringify(req.headers));
+    router.get('/answers', function (req, res) {
+        winston.log('info', 'headers', JSON.stringify(req.headers));
         winston.log('info', req.body);
         res.status(200);
         res.send('Success');

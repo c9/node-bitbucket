@@ -10,5 +10,5 @@ script:
   - npm start
   - sleep 1
   - npm test
-  before_script:
+before_script:
   - sleep 1
