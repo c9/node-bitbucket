@@ -8,8 +8,8 @@ var port = process.env.PORT || 3000;
 var ip = process.env.IP || '0.0.0.0';
 var init = process.env.INIT || false;
 
-const NEXMO_API = process.env.NEXMO_API || '123';
-const NEXMO_SECRET = process.env.NEXMO_SECRET || '123';
+const NEXMO_API_KEY = process.env.NEXMO_API_KEY || '123';
+const NEXMO_API_SECRET = process.env.NEXMO_SECRET || '123';
 const NEXMO_BASE_URL = process.env.NEXMO_BASE_URL || 'http://localhost:3100';
 const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'info';
 const VOICE_API_BASE_URL = process.env.VOICE_API_BASE_URL || 'http://localhost:3000/api/v1/voice';
@@ -72,7 +72,7 @@ function addVoiceRouter() {
     var voice = require('./v1/voice.js')({
         db: mongo_db, express: express, winston: winston,
         app: app, nexmo: {
-            api_key: NEXMO_API, api_secret: NEXMO_SECRET,
+            api_key: NEXMO_API_KEY, api_secret: NEXMO_API_SECRET,
             base_url: NEXMO_BASE_URL
         },
         base_url:VOICE_API_BASE_URL,
