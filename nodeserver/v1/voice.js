@@ -103,8 +103,17 @@ module.exports = function (opts) {
 
     router.use(express.static(staticRoot));
 
+    router.get('/status', function (req, res) {
+        winston.log('info', 'status');
+        winston.log('info', 'headers', JSON.stringify(req.headers));
+        winston.log('info', req.body);
+        res.status(200);
+        res.send('Success');
+    });
 
     router.post('/events', function (req, res) {
+        winston.log('info', 'events');
+
         winston.log('info', 'headers', JSON.stringify(req.headers));
         winston.log('info', req.body);
         res.status(201);
@@ -112,6 +121,7 @@ module.exports = function (opts) {
     });
 
     router.get('/answers', function (req, res) {
+        winston.log('info', 'answers');
         winston.log('info', 'headers', JSON.stringify(req.headers));
         winston.log('info', req.body);
         res.status(200);
