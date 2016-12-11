@@ -106,16 +106,17 @@ module.exports = function (opts) {
     router.get('/status', function (req, res) {
         winston.log('info', 'status');
         winston.log('info', 'headers', JSON.stringify(req.headers));
-        winston.log('info', req.body);
+        winston.log('info', JSON.stringify(req.body));
         res.status(200);
         res.send('Success');
     });
 
     router.post('/events', function (req, res) {
         winston.log('info', 'events');
-
+        winston.log('info',req.url);
+        winston.log('info','queryParams:',JSON.stringify(req.query));
         winston.log('info', 'headers', JSON.stringify(req.headers));
-        winston.log('info', req.body);
+        winston.log('info', JSON.stringify(req.body));
         res.status(201);
         res.send('Success');
     });
@@ -123,7 +124,7 @@ module.exports = function (opts) {
     router.get('/answers', function (req, res) {
         winston.log('info', 'answers');
         winston.log('info', 'headers', JSON.stringify(req.headers));
-        winston.log('info', req.body);
+        winston.log('info', JSON.stringify(req.body));
         res.status(200);
         res.send('Success');
     });

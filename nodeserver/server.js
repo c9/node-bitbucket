@@ -2,7 +2,8 @@ var bodyParser = require('body-parser');
 var express = require('express');
 
 var app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 var port = process.env.PORT || 3000;
 var ip = process.env.IP || '0.0.0.0';
@@ -86,7 +87,7 @@ var morgan = require('morgan');
 
 logger.stream = {
     write: function (message, encoding) {
-        logger.info(message);
+        logger.log('debug',message);
     }
 };
 
