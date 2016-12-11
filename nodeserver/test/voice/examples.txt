@@ -1,0 +1,21 @@
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info events 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info /events 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info queryParams: {} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info headers {"host":"coderuss.herokuapp.com","connection":"close","content-type":"application/json","user-agent":"VAPIApplication (callback-service-http)","accept-encoding":"gzip,deflate","x-request-id":"7e1c8157-d899-4d02-adc2-39b68d542f2d","x-forwarded-for":"174.36.197.202","x-forwarded-proto":"https","x-forwarded-port":"443","via":"1.1 vegur","connect-time":"1","x-request-start":"1481494802031","total-route-time":"0","content-length":"101"} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info {"conversation_uuid":"e8d8df4f-cf7f-4101-b36d-a34f4d13d9d5","status":"started","direction":"inbound"} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info events 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info /events 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info queryParams: {} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info headers {"host":"coderuss.herokuapp.com","connection":"close","content-type":"application/json","user-agent":"VAPIApplication (callback-service-http)","accept-encoding":"gzip,deflate","x-request-id":"bfc5fa3f-c1b6-4f6b-ad41-9d1e8b09cd9f","x-forwarded-for":"174.36.197.202","x-forwarded-proto":"https","x-forwarded-port":"443","via":"1.1 vegur","connect-time":"1","x-request-start":"1481494802014","total-route-time":"0","content-length":"101"} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info {"conversation_uuid":"e8d8df4f-cf7f-4101-b36d-a34f4d13d9d5","status":"ringing","direction":"inbound"} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info answers 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info headers {"host":"coderuss.herokuapp.com","connection":"close","user-agent":"Apache-HttpAsyncClient/4.1 (Java/1.8.0_66)","x-request-id":"d3b124b7-f2a3-4a04-89a7-784c6cf5c4a3","x-forwarded-for":"174.36.197.202","x-forwarded-proto":"https","x-forwarded-port":"443","via":"1.1 vegur","connect-time":"9","x-request-start":"1481494802033","total-route-time":"0"} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info {} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info events 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info /events 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info queryParams: {} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info headers {"host":"coderuss.herokuapp.com","connection":"close","content-type":"application/json","user-agent":"VAPIApplication (callback-service-http)","accept-encoding":"gzip,deflate","x-request-id":"aca0b854-da2f-4122-bcc1-0b8e10ca9fdb","x-forwarded-for":"174.36.197.202","x-forwarded-proto":"https","x-forwarded-port":"443","via":"1.1 vegur","connect-time":"1","x-request-start":"1481494802068","total-route-time":"0","content-length":"121"} 
+Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info {"reason":"Unexpected content type: text/html; charset=utf-8","conversation_uuid":"e8d8df4f-cf7f-4101-b36d-a34f4d13d9d5"} 
+Dec 11 14:20:12 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info status 
+Dec 11 14:20:12 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info headers {"host":"coderuss.herokuapp.com","connection":"close","accept":"*/*","user-agent":"Jakarta Commons-HttpClient/3.1","x-request-id":"35b4da00-3c5e-4d6e-8c49-29edef47374c","x-forwarded-for":"169.54.104.168","x-forwarded-proto":"https","x-forwarded-port":"443","via":"1.1 vegur","connect-time":"0","x-request-start":"1481494812522","total-route-time":"0"} 
+Dec 11 14:20:12 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info {} 

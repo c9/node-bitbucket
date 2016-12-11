@@ -103,6 +103,11 @@ module.exports = function (opts) {
 
     router.use(express.static(staticRoot));
 
+    router.get('', function (req, res) {
+        res.status(200);
+        res.send();
+    });
+
     router.get('/status', function (req, res) {
         winston.log('info', 'status');
         winston.log('info', 'headers', JSON.stringify(req.headers));
@@ -117,16 +122,19 @@ module.exports = function (opts) {
         winston.log('info','queryParams:',JSON.stringify(req.query));
         winston.log('info', 'headers', JSON.stringify(req.headers));
         winston.log('info', JSON.stringify(req.body));
+        res.set('content-type', 'application/json');
         res.status(201);
-        res.send('Success');
+        res.send(default_answer);
     });
 
     router.get('/answers', function (req, res) {
         winston.log('info', 'answers');
         winston.log('info', 'headers', JSON.stringify(req.headers));
         winston.log('info', JSON.stringify(req.body));
+
         res.status(200);
-        res.send('Success');
+        res.set('Content-Type', 'application/json');
+        res.send(default_answer);
     });
 
 
@@ -150,9 +158,18 @@ module.exports = function (opts) {
         // Authy stuff that can be used outside...
     };
 
-    function privateFunction(pickle, jar) {
-        // This will be NOT available 'outside'.
-    };
+    var default_answer = JSON.stringify([
+      {
+        "action": "talk",
+        "text": "Welcome to a Voice API I V R. Press 1 for maybe and 2 for not sure followed by the hash key",
+        "voiceName": "Amy"
+      },
+      {
+        "action": "input",
+        "submitOnHash": "true",
+        "eventUrl": ["https://example.com/ivr"]
+      }
+    ]);
 
     return module;
 };
