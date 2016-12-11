@@ -50,7 +50,7 @@ module.exports = function (opts) {
         var file = current_files[req.query.id].file;
         var filename = file.originalname;
 
-        res.setHeader('Content-disposition', 'attachment; filename='+filename);
+        res.setHeader('Content-disposition', 'attachment; filename=' + filename);
         res.send(file.buffer);
 
         if (doDelete) {
@@ -64,7 +64,6 @@ module.exports = function (opts) {
     router.post('/tmp', function (req, res) {
         var errors = [];
         var requestBody = req.body;
-
         upload(req, res, function (err) {
             winston.info(req.file);
             if (err || !req.file) {
@@ -87,6 +86,8 @@ module.exports = function (opts) {
 
                 winston.debug(JSON.stringify(current_files));
                 res.setHeader('Content-Type', 'application/json');
+                res.status(201);
+
                 res.send(JSON.stringify(
                     {
                         id: id,

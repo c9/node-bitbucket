@@ -9,12 +9,12 @@ module.exports = function (opts, callback) {
     var request = require('request');
 
     function getBaseUrl() {
-        return protocol + "://" + host + ":" + port;
+        return protocol + "://" + host + ":" + port + '/api/v1';
     }
 
     module.files = {
         view: function (opts, callback) {
-            var url = getBaseUrl() + "/file/tmp/" + opts.id;
+            var url = getBaseUrl() + "/files/tmp?id=" + opts.id;
             request.get(
                 {
                     url: url,
@@ -27,7 +27,7 @@ module.exports = function (opts, callback) {
                 });
         },
         get: function (opts, callback) {
-            var url = getBaseUrl() + "/file/tmp";
+            var url = getBaseUrl() + "/files/tmp";
             request.get(
                 {
                     url: url,
@@ -44,7 +44,7 @@ module.exports = function (opts, callback) {
             winston.debug(getBaseUrl);
             winston.debug(protocol);
             winston.debug(port);
-            var url = getBaseUrl() + "/file/tmp"
+            var url = getBaseUrl() + "/files/tmp"
             winston.debug(url);
             var formData = {
                 // avatar: new Buffer([1, 2, 3]),//'avatar',

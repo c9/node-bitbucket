@@ -11,6 +11,7 @@ var init = process.env.INIT || false;
 const NEXMO_API = process.env.NEXMO_API || '123';
 const NEXMO_SECRET = process.env.NEXMO_SECRET || '123';
 const NEXMO_BASE_URL = process.env.NEXMO_BASE_URL || 'http://localhost:3100';
+const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'info'; 
 
 const low = require('lowdb');
 const fs = require('fs');
@@ -30,9 +31,9 @@ var winston = logger = new winston.Logger({
             colorize: false
         }),
         new winston.transports.Console({
-            level: 'debug',
+            level: CONSOLE_LOG_LEVEL,
             handleExceptions: true,
-            json: false,
+            json: true,
             colorize: true
         }),
         new Papertrail({
@@ -59,13 +60,13 @@ const MONGO_CONNECTION = process.env.MONGO_CONNECTION || 'mongodb://localhost:27
 
 MongoClient.connect(MONGO_CONNECTION, function (err, db) {
     var collection = db.collection('documents');
-    var voice = require('./voice.js')({db:db,express:express,winston:winston,
+    var voice = require('./v1/voice.js')({db:db,express:express,winston:winston,
         app:app, nexmo: {
             api_key:NEXMO_API,api_secret:NEXMO_SECRET,
             base_url: NEXMO_BASE_URL
             }
         });
-    app.use('/voice',voice.router);
+    app.use('api/v1/voice',voice.router);
     // Insert some documents
     collection.insertMany([
         { a: 1 }, { a: 2 }, { a: 3 }
@@ -75,19 +76,6 @@ MongoClient.connect(MONGO_CONNECTION, function (err, db) {
         winston.info("Inserted 3 documents into the document collection");
     });
 });
-
-
-
-if (init) {
-    winston.info('start init');
-
-    db.defaults({ settings: {} })
-        .value();
-
-    db.set('settings.nexmo_api', NEXMO_API).value();
-    db.set('settings.nexmo_secret', NEXMO_SECRET).value();
-
-}
 
 winston.info(db.getState());
 
@@ -110,11 +98,11 @@ app.use(morgan('combined', { stream: logger.stream }));
 
 var opts = { db: db, app: app };
 
-var ping = require('./ping.js')(opts);
+var ping = require('./v1/ping.js')({});
+var fileapi = require('./v1/files/main.js')({winston:winston});
 
-var fileapi = require('./files/main.js')({winston:winston});
-
-app.use('/file',fileapi.router);
+app.use('/api/v1/files',fileapi.router);
+app.use('/api/v1/ping',ping.router);
 
 
 app.listen(port, ip, function () {
@@ -138,3 +126,7 @@ cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
     }, function (error, response, body) {
     });
 });
+
+
+
+winston.log("info","api/v1/ping routes",ping.router.stack);

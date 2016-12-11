@@ -6,7 +6,7 @@ describe("API", function() {
 
   describe("Ping endpoint tests", function() {
 
-    var url = "http://localhost:3000/ping";
+    var url = "http://localhost:3000/api/v1/ping";
     it("returns status 200", function(done) {
       request(url, function(error, response, body) {
         expect(response.statusCode).to.equal(200);
@@ -16,7 +16,7 @@ describe("API", function() {
 
     it("returns has success in response body", function(done) {
       request(url, function(error, response, body) {
-        expect(response.body).to.equal('Success');
+        expect(JSON.parse(response.body).status).to.equal('success');
         done();
       });
     });

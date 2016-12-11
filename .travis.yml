@@ -4,6 +4,7 @@ node_js:
 env:
 - NODE_ENV=TEST
 script:
-  - cd nodeserver
   - npm install
+  - npm start
+  - sleep 1
   - npm test
