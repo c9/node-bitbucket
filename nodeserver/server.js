@@ -11,7 +11,8 @@ var init = process.env.INIT || false;
 const NEXMO_API = process.env.NEXMO_API || '123';
 const NEXMO_SECRET = process.env.NEXMO_SECRET || '123';
 const NEXMO_BASE_URL = process.env.NEXMO_BASE_URL || 'http://localhost:3100';
-const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'info'; 
+const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'info';
+const VOICE_API_BASE_URL = process.env.VOICE_API_BASE_URL || 'http://localhost:3000/api/v1/voice';
 
 const low = require('lowdb');
 const fs = require('fs');
@@ -33,7 +34,7 @@ var winston = logger = new winston.Logger({
         new winston.transports.Console({
             level: CONSOLE_LOG_LEVEL,
             handleExceptions: true,
-            json: true,
+            json: false,
             colorize: true
         }),
         new Papertrail({
@@ -47,7 +48,6 @@ var winston = logger = new winston.Logger({
     exitOnError: false
 });
 
-const db = low('db.json');
 const PROTOCOL = process.env.PROTOCOL || 'http';
 const ENDPOINT_PORT = process.env.ENDPOINT_PORT || port;
 const HOST = process.env.HOST || 'localhost';
@@ -58,28 +58,27 @@ const MongoClient = require('mongodb').MongoClient;
 
 const MONGO_CONNECTION = process.env.MONGO_CONNECTION || 'mongodb://localhost:27017/voice';
 
+
+//voice application setup
+var main_application;
 MongoClient.connect(MONGO_CONNECTION, function (err, db) {
-    var collection = db.collection('documents');
-    var voice = require('./v1/voice.js')({db:db,express:express,winston:winston,
-        app:app, nexmo: {
-            api_key:NEXMO_API,api_secret:NEXMO_SECRET,
-            base_url: NEXMO_BASE_URL
-            }
-        });
-    app.use('api/v1/voice',voice.router);
-    // Insert some documents
-    collection.insertMany([
-        { a: 1 }, { a: 2 }, { a: 3 }
-    ], function (err, result) {
-        winston.info(err);
-        winston.info(JSON.stringify(result.ops));
-        winston.info("Inserted 3 documents into the document collection");
-    });
+    mongo_db = db;
+    addVoiceRouter();
+
 });
 
-winston.info(db.getState());
-
-
+function addVoiceRouter() {
+    var voice = require('./v1/voice.js')({
+        db: mongo_db, express: express, winston: winston,
+        app: app, nexmo: {
+            api_key: NEXMO_API, api_secret: NEXMO_SECRET,
+            base_url: NEXMO_BASE_URL
+        },
+        base_url:VOICE_API_BASE_URL,
+        main_application: main_application
+    });
+    app.use('/api/v1/voice', voice.router);
+}
 
 var morgan = require('morgan');
 
@@ -96,13 +95,13 @@ logger.stream = {
 app.use(morgan('combined', { stream: logger.stream }));
 
 
-var opts = { db: db, app: app };
 
 var ping = require('./v1/ping.js')({});
-var fileapi = require('./v1/files/main.js')({winston:winston});
+var fileapi = require('./v1/files/main.js')({ winston: winston });
 
-app.use('/api/v1/files',fileapi.router);
-app.use('/api/v1/ping',ping.router);
+app.use('/api/v1/files', fileapi.router);
+app.use('/api/v1/ping', ping.router);
+app.use('/ping', ping.router);
 
 
 app.listen(port, ip, function () {
@@ -126,7 +125,3 @@ cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
     }, function (error, response, body) {
     });
 });
-
-
-
-winston.log("info","api/v1/ping routes",ping.router.stack);

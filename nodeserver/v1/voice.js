@@ -1,9 +1,12 @@
 module.exports = function (opts) {
     var http = require('http');
     var url = require('url');
+    var request = require("request");
+
     var express = opts.express || require('express');
     var app = opts.app; //express app
     var winston = opts.winston || require('winston');
+    var base_url = opts.base_url;
 
     var router = express.Router();
     var nexmo = opts.nexmo;
@@ -13,47 +16,63 @@ module.exports = function (opts) {
     module.router = router;
 
     module.opts = opts;
-    const db = module.db = opts.db;
+    const db = opts.db;
 
-    var request = require("request");
+    var applicationsCollection = db.collection('applications');
+    applicationsCollection.findOne({ title: "main_voice_application" }, function (err, document) {
+        if (!document) {
+            createApplication({ name: 'main_voice_application' }, function (err, application) {
+                applicationsCollection.insert({ "title": "main_voice_application", nexmo_application: application }, function (err, result) {
+                    if (err) {
+                        winston.log('error', err);
+                    }
+                    else {
+                        winston.log('info', 'main_application_inserted:', result);
+                        main_application = result.ops[0];
+                        winston.log('info', 'main_voice_application:', JSON.stringify(main_application));
+                    }
+                })
+            })
 
-    var options = {
-        method: 'POST',
-        url: nexmo.base_url + '/applications/',
-        qs:
-        {
-            api_key: nexmo.api_key,
-            api_secret: nexmo.api_secret,
-            name: 'test',
-            type: 'voice',
-            event_url: '1',
-            answer_url: '1'
-        },
-        headers: {}
-    };
-
-    request(options, function (error, response, body) {
-        if (error) {
-            winston.log('error', error);
         }
-
         else {
-            var logRequest = {
-                // options: JSON.stringify(options),
-                // responseBody: body,
-                url: options.url,
-                method: options.method,
-                responseStatusCode: response.statusCode
-            };
-            winston.log('info',JSON.stringify(logRequest));
-            var collection = db.collection('nexmo_request_log');
-            collection.insert(logRequest,
-            function (err) {
-                if (err) winston.error(err);
-            });
+            main_application = document;
+            winston.log('info', 'main_voice_application:', JSON.stringify(main_application));
         }
-
     });
+
+    function createApplication(opts, callback) {
+        var name = opts.name;
+        var options = {
+            method: 'POST',
+            url: nexmo.base_url + '/applications/',
+            qs:
+            {
+                api_key: nexmo.api_key,
+                api_secret: nexmo.api_secret,
+                name: name,
+                type: 'voice',
+                event_url: base_url + '/events',
+                answer_url: base_url + '/answers'
+            },
+            headers: {}
+        };
+        request(options, function (error, response, body) {
+            if (error) {
+                winston.log('error', error);
+                callback(error);
+            }
+            else {
+                winston.log('info', response.statusCode);
+                winston.log('info', response.headers);
+                winston.log('info', body);
+                callback(error, JSON.parse(body));
+            }
+
+        });
+    }
+
+
 
 
 
@@ -68,6 +87,21 @@ module.exports = function (opts) {
     var staticRoot = __dirname + '/public';
 
     router.use(express.static(staticRoot));
+
+
+    router.post('/events',function(req,res) {
+        winston.log('info','headers', JSON.stringify(req.headers));
+        winston.log('info', req.body);
+        res.status(201);
+        res.send('Success');
+    });
+
+    router.get('/answers',function(req,res) {
+        winston.log('info','headers', JSON.stringify(req.headers));
+        winston.log('info', req.body);
+        res.status(200);
+        res.send('Success');
+    });
 
 
     router.get('/ivr', function (req, res) {
