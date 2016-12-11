@@ -3,8 +3,12 @@ node_js:
   - 6
 env:
 - NODE_ENV=TEST
+services:
+  - mongodb
 script:
   - npm install
   - npm start
   - sleep 1
   - npm test
+  before_script:
+  - sleep 1

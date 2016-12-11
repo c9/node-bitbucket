@@ -13,6 +13,7 @@ const NEXMO_SECRET = process.env.NEXMO_SECRET || '123';
 const NEXMO_BASE_URL = process.env.NEXMO_BASE_URL || 'http://localhost:3100';
 const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'info';
 const VOICE_API_BASE_URL = process.env.VOICE_API_BASE_URL || 'http://localhost:3000/api/v1/voice';
+const PAPERTRAIL_LEVEL = process.env.PAPERTRAIL_LEVEL || 'warn';
 
 const low = require('lowdb');
 const fs = require('fs');
@@ -41,7 +42,7 @@ var winston = logger = new winston.Logger({
             host: 'logs5.papertrailapp.com',
             port: 26785,
             program: 'nodeserver',
-            level: 'warn',
+            level: PAPERTRAIL_LEVEL,
         })
 
     ],
