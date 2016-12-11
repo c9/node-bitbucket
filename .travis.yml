@@ -7,7 +7,7 @@ services:
   - mongodb
 script:
   - npm install
-  - npm start
+  - npm start &
   - sleep 1
   - npm test
 before_script:
