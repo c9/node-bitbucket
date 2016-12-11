@@ -9,7 +9,7 @@ var ip = process.env.IP || '0.0.0.0';
 var init = process.env.INIT || false;
 
 const NEXMO_API_KEY = process.env.NEXMO_API_KEY || '123';
-const NEXMO_API_SECRET = process.env.NEXMO_SECRET || '123';
+const NEXMO_API_SECRET = process.env.NEXMO_API_SECRET || '123';
 const NEXMO_BASE_URL = process.env.NEXMO_BASE_URL || 'http://localhost:3100';
 const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'info';
 const VOICE_API_BASE_URL = process.env.VOICE_API_BASE_URL || 'http://localhost:3000/api/v1/voice';
