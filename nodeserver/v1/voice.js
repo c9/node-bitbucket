@@ -7,6 +7,7 @@ module.exports = function (opts) {
     var app = opts.app; //express app
     var winston = opts.winston || require('winston');
     var base_url = opts.base_url;
+    var event_url = base_url + '/events';
 
     var router = express.Router();
     var nexmo = opts.nexmo;
@@ -118,8 +119,8 @@ module.exports = function (opts) {
 
     router.post('/events', function (req, res) {
         winston.log('info', 'events');
-        winston.log('info',req.url);
-        winston.log('info','queryParams:',JSON.stringify(req.query));
+        winston.log('info', req.url);
+        winston.log('info', 'queryParams:', JSON.stringify(req.query));
         winston.log('info', 'headers', JSON.stringify(req.headers));
         winston.log('info', JSON.stringify(req.body));
         res.set('content-type', 'application/json');
@@ -159,16 +160,37 @@ module.exports = function (opts) {
     };
 
     var default_answer = JSON.stringify([
-      {
-        "action": "talk",
-        "text": "Welcome to a Voice API I V R. Press 1 for maybe and 2 for not sure followed by the hash key",
-        "voiceName": "Amy"
-      },
-      {
-        "action": "input",
-        "submitOnHash": "true",
-        "eventUrl": ["https://example.com/ivr"]
-      }
+        {
+            "action": "talk",
+            "text": "Welcome to a Voice API I V R. Press 1 for maybe and 2 for not sure followed by the hash key",
+            "voiceName": "Amy"
+        },
+        {
+            "action": "input",
+            "submitOnHash": "true",
+            "eventUrl": [event_url]
+        }
+    ]);
+
+    default_answer = JSON.stringify([
+        {
+            "action": "talk",
+            "text": "Please leave a message after the tone, then press #. We will get back to you as soon as we can",
+            "voiceName": "Emma"
+        },
+        {
+            "action": "record",
+            "eventUrl": [
+                event_url
+            ],
+            "endOnSilence": "3",
+            "endOnKey": "#",
+            "beepStart": "true"
+        },
+        {
+            "action": "talk",
+            "text": "Thank you for your message. Goodbye"
+        }
     ]);
 
     return module;
