@@ -131,8 +131,8 @@ module.exports = function (opts) {
     router.get('/answers', function (req, res) {
         winston.log('info', 'answers');
         winston.log('info', 'headers', JSON.stringify(req.headers));
+        winston.log('info', 'queryParams:', JSON.stringify(req.query));
         winston.log('info', JSON.stringify(req.body));
-
         res.status(200);
         res.set('Content-Type', 'application/json');
         res.send(default_answer);
