@@ -36,7 +36,7 @@ var winston = logger = new winston.Logger({
         new winston.transports.Console({
             level: CONSOLE_LOG_LEVEL,
             handleExceptions: true,
-            json: false,
+            json: true,
             colorize: true
         }),
         new Papertrail({
@@ -104,6 +104,8 @@ var fileapi = require('./v1/files/main.js')({ winston: winston });
 app.use('/api/v1/files', fileapi.router);
 app.use('/api/v1/ping', ping.router);
 app.use('/ping', ping.router);
+
+require('./dashboard/app.js')({HOST:HOST,PORT:port,winston:winston,app:app})
 
 
 app.listen(port, ip, function () {
