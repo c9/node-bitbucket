@@ -22,6 +22,7 @@
     "multer": "^1.2.0",
     "node-cron": "^1.1.2",
     "path": "^0.12.7",
+    "socket.io": "^1.7.2",
     "url": "^0.11.0",
     "winston": "^2.3.0",
     "winston-papertrail": "^1.0.4"
