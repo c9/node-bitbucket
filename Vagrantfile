@@ -1,72 +1,98 @@
-require 'yaml'
-require 'fileutils'
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# VBoxManage.exe setextradata loopback_default_1468417291272_18380 "VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled" "1" //run on windows host
+# C:\Program Files\Oracle\VirtualBox
+# sudo service ntp stop
+# sudo date "+%Y-%m-%d %H:%M:%S" -s "2016-07-12"
+# sudo ntpd -gqx
+# sudo service ntp start
 
-domains = {
-  frontend: 'y2aa-frontend.dev',
-  backend:  'y2aa-backend.dev'
-}
-
-config = {
-  local: './vagrant/config/vagrant-local.yml',
-  example: './vagrant/config/vagrant-local.example.yml'
-}
-
-# copy config from example if local config not exists
-FileUtils.cp config[:example], config[:local] unless File.exist?(config[:local])
-# read config
-options = YAML.load_file config[:local]
-
-# check github token
-if options['github_token'].nil? || options['github_token'].to_s.length != 40
-  puts "You must place REAL GitHub token into configuration:\n/yii2-app-advancded/vagrant/config/vagrant-local.yml"
-  exit
-end
-
-# vagrant configurate
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
 Vagrant.configure(2) do |config|
-  # select the box
-  config.vm.box = 'ubuntu/trusty64'
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
 
-  # should we ask about box updates?
-  config.vm.box_check_update = options['box_check_update']
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://atlas.hashicorp.com/search.
+  #config.vm.box = "hashicorp/precise64"
 
-  config.vm.provider 'virtualbox' do |vb|
-    # machine cpus count
-    vb.cpus = options['cpus']
-    # machine memory size
-    vb.memory = options['memory']
-    # machine name (for VirtualBox UI)
-    vb.name = options['machine_name']
+  config.vm.box = "ubuntu/trusty64"
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  config.vm.network "forwarded_port", guest: 3306, host: 3308
+  config.vm.network "forwarded_port", guest: 80, host: 85
+  config.vm.network :forwarded_port, guest: 22, host: 22
+  config.vm.network :forwarded_port, guest: 3000, host: 3000
+  config.vm.network :forwarded_port, guest: 3100, host: 3100
+  config.vm.network :forwarded_port, guest: 27017, host: 27017
+  
+
+
+
+
+
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  # config.vm.network "private_network", ip: "192.168.33.10"
+
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  # config.vm.network "public_network"
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+	config.vm.synced_folder ".", "/vagrant"
+
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  config.vm.provider "virtualbox" do |v|
+    v.name = "russapi"
+
+  #   # Display the VirtualBox GUI when booting the machine
+  #  v.gui = true
+  #
+  #   # Customize the amount of memory on the VM:
+     v.memory = "1500"
   end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
 
-  # machine name (for vagrant console)
-  config.vm.define options['machine_name']
+  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
+  # such as FTP and Heroku are also available. See the documentation at
+  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
+  # config.push.define "atlas" do |push|
+  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
+  # end
 
-  # machine name (for guest machine console)
-  config.vm.hostname = options['machine_name']
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  config.vm.provision "shell", inline: <<-SHELL
 
-  # network settings
-  config.vm.network 'private_network', ip: options['ip']
+   SHELL
 
-  # sync: folder 'yii2-app-advanced' (host machine) -> folder '/app' (guest machine)
-  config.vm.synced_folder './', '/app', owner: 'vagrant', group: 'vagrant'
+    config.vm.provision :shell, path: "./provision/init.sh"
+    config.vm.provision :shell, path: "./provision/bootstrap.sh"
+    config.vm.provision :shell, path: "./provision/composer.sh"
+    config.vm.provision :shell, path: "./provision/node/node.sh"
+    config.vm.provision :shell, path: "./provision/node/casperjs.sh"
+    config.vm.provision :shell, path: "./provision/swap.sh"
 
-  # disable folder '/vagrant' (guest machine)
-  config.vm.synced_folder '.', '/vagrant', disabled: true
-
-  # hosts settings (host machine)
-  config.vm.provision :hostmanager
-  config.hostmanager.enabled            = true
-  config.hostmanager.manage_host        = true
-  config.hostmanager.ignore_private_ip  = false
-  config.hostmanager.include_offline    = true
-  config.hostmanager.aliases            = domains.values
-
-  # provisioners
-  config.vm.provision 'shell', path: './vagrant/provision/once-as-root.sh', args: [options['timezone']]
-  config.vm.provision 'shell', path: './vagrant/provision/once-as-vagrant.sh', args: [options['github_token']], privileged: false
-  config.vm.provision 'shell', path: './vagrant/provision/always-as-root.sh', run: 'always'
-
-  # post-install message (vagrant console)
-  config.vm.post_up_message = "Frontend URL: http://#{domains[:frontend]}\nBackend URL: http://#{domains[:backend]}"
 end

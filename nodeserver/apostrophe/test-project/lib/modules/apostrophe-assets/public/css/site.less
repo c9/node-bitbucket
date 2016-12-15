@@ -1,0 +1,36 @@
+@import "utils/reset.less";
+
+body
+{
+  .karla;
+  background-color: @apos-light
+}
+
+.main-content
+{
+  margin: 200px auto;
+  padding: 20px;
+  max-width: 500px;
+  color: @apos-white;
+  background-color: @apos-primary;
+  .apos-drop-shadow;
+
+  // Basic styles needed so we don't get bug reports on the rich text editor. -Tom
+
+  h3 { font-size: 24px; margin-bottom: 12px; }
+
+  h4 { font-size: 20px; margin-bottom: 10px; }
+
+  strong {
+    font-weight: bold;
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  .login-link {
+    float: right;
+    color: @apos-white;
+  }
+}

@@ -96,6 +96,9 @@ logger.stream = {
 // setup the logger
 app.use(morgan('combined', { stream: logger.stream }));
 
+app.use(express.static(path.join(__dirname, 'public/')));
+
+
 
 
 var ping = require('./v1/ping.js')({});

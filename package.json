@@ -8,7 +8,7 @@
     "chai": "*"
   },
   "scripts": {
-    "start": "node nodeserver/server.js",
+    "start": "yes | node nodeserver/apostrophe/test-project/app.js apostrophe-users:add admin admin & node nodeserver/apostrophe/test-project/app.js",
     "test": "./node_modules/mocha/bin/mocha ./nodeserver/test/* --reporter spec"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "socket.io": "^1.7.2",
     "url": "^0.11.0",
     "winston": "^2.3.0",
-    "winston-papertrail": "^1.0.4"
+    "winston-papertrail": "^1.0.4",
+    "apostrophe": "^2.0.0"
   }
 }
