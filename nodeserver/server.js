@@ -109,11 +109,10 @@ app.use('/api/v1/files', fileapi.router);
 app.use('/api/v1/ping', ping.router);
 app.use('/ping', ping.router);
 
-require('./dashboard/app.js')({HOST:HOST,PORT:port,winston:winston,app:app})
-
-
-app.listen(port, ip, function () {
-});
+//contains listen for io to work
+require('./dashboard/app.js')({HOST:HOST,PORT:port,winston:winston,app:app});
+// app.listen(port, ip, function () {
+// });
 
 var request = require('request');
 var cron = require('node-cron');
