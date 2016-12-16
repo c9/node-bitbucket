@@ -8,7 +8,7 @@
     "chai": "*"
   },
   "scripts": {
-    "start": "yes | node nodeserver/apostrophe/test-project/app.js apostrophe-users:add admin admin & node nodeserver/apostrophe/test-project/app.js",
+    "start": "node nodeserver/server.js",
     "test": "./node_modules/mocha/bin/mocha ./nodeserver/test/* --reporter spec"
   },
   "dependencies": {

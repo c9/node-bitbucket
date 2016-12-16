@@ -30,8 +30,8 @@ Vagrant.configure(2) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  config.vm.network "forwarded_port", guest: 3306, host: 3308
-  config.vm.network "forwarded_port", guest: 80, host: 85
+  #config.vm.network "forwarded_port", guest: 3306, host: 3308
+  #config.vm.network "forwarded_port", guest: 80, host: 85
   config.vm.network :forwarded_port, guest: 22, host: 22
   config.vm.network :forwarded_port, guest: 3000, host: 3000
   config.vm.network :forwarded_port, guest: 3100, host: 3100
@@ -56,6 +56,7 @@ Vagrant.configure(2) do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
 	config.vm.synced_folder ".", "/vagrant"
+  #config.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02","mfsymlinks"]
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.

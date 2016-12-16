@@ -59,6 +59,7 @@ const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 300;
 const MongoClient = require('mongodb').MongoClient;
 
 const MONGO_CONNECTION = process.env.MONGO_CONNECTION || 'mongodb://localhost:27017/voice';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017';
 
 
 //voice application setup

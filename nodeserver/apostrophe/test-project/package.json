@@ -13,6 +13,10 @@
   "author": "P'unk Avenue",
   "license": "MIT",
   "dependencies": {
-    "apostrophe": "^2.0.0"
+    "apostrophe": "^2.0.0",
+    "camelcase": "^4.0.0",
+    "cliui": "^3.2.0",
+    "lodash": "^4.17.2",
+    "yargs": "^6.5.0"
   }
 }
