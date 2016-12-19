@@ -70,12 +70,12 @@ app.use(function (req, res, next) {
             "endpoint": query.answer_url,
             "http_method": "GET"
           }
-        ],
-        "keys": {
+        ]
+      };
+      req.body["keys"] = {
           "public_key": public_key,
           "private_key": private_key
-        }
-      };
+        };
       console.log(req.body);
     }
   }
