@@ -14,6 +14,11 @@
 //https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk
 //npm config set msvs_version 2013 --global
 
+
+
+
+var jwt = require('jsonwebtoken');
+
 const PORT = process.env.PORT || 3100;
 // server.js
 const exec = require('child_process').exec;
@@ -28,11 +33,11 @@ exec('cp ' + __dirname + '/default-db.json ' + __dirname + '/db.json', (error, s
 
 var fs = require('fs');
 
-fs.readFile(__dirname+'/private.pem', 'ascii', function (err,data) {
+fs.readFile(__dirname + '/private.pem', 'ascii', function (err, data) {
   private_key = data;
 });
 
-fs.readFile(__dirname+'/public.pem', 'ascii', function (err,data) {
+fs.readFile(__dirname + '/public.pem', 'ascii', function (err, data) {
   public_key = data;
 });
 
@@ -44,7 +49,7 @@ var router = jsonServer.router('db.json')
 var middlewares = jsonServer.defaults();
 var url = require('url');
 
-app.use(middlewares)
+app.use(middlewares);
 
 
 app.use(function (req, res, next) {
@@ -73,11 +78,35 @@ app.use(function (req, res, next) {
         ]
       };
       req.body["keys"] = {
-          "public_key": public_key,
-          "private_key": private_key
-        };
-      console.log(req.body);
+        "public_key": public_key,
+        "private_key": private_key
+      };
     }
+  }
+  else if (url_parts.pathname.indexOf('/calls') !== -1) {
+    if (req.headers.authorization) {
+      var token = req.headers.authorization.substring(7);
+      console.log(token);
+      console.log(req.headers.authorization)
+      var alg = 'HS256';
+      jwt.verify(token, public_key,
+      // {algorithm:alg}, 
+      function(err, decoded) {
+        if (err) {
+          console.log(err);
+          res.sendStatus(401);
+          return;
+        }
+        else {
+          next();
+        }
+      });
+    }
+    else {
+      res.sendStatus(401);
+    }
+
+    return;
   }
   next();
 
@@ -86,12 +115,17 @@ app.use(function (req, res, next) {
 app.use(router);
 
 
-app.render = function (req, res) {
+router.render = function (req, res) {
   var url_parts = url.parse(req.url, true);
   if (url_parts.pathname === '/applications') {
     if (req.method === 'POST') {
     }
-
+  }
+  if (url_parts.pathname.indexOf('/calls') !== -1) {
+    res.jsonp({
+      "_embedded": { "calls": res.locals.data }
+    });
+    return;
   }
   res.jsonp(res.locals.data);
 }
@@ -109,6 +143,47 @@ module.exports = {
   }
 }
 
+
+//basic get format /v1/calls
+// {
+//   "count": 100,
+//   "page_size": 10,
+//   "record_index": 20,
+//   "_links": {
+//     "self": {
+//       "href": "/calls?page_size=10&record_index=20&order=asc"
+//     }
+//   },
+//   "_embedded": {
+//     "calls": [
+//       {
+//         "_links": {
+//           "self": {
+//             "href": "/calls/63f61863-4a51-4f6b-86e1-46edebcf9356"
+//           }
+//         },
+//         "uuid": "63f61863-4a51-4f6b-86e1-46edebcf9356",
+//         "conversation_uuid": "63f61863-4a51-4f6b-86e1-46edebio0123",
+//         "to": [{
+//           "type": "phone",
+//           "number": "441632960960"
+//         }],
+//         "from": {
+//           "type": "phone",
+//           "number": "441632960961"
+//         },
+//         "status": "completed",
+//         "direction": "outbound",
+//         "rate": "0.39",
+//         "price": "23.40",
+//         "duration": "60",
+//         "start_time": "2015-02-04T22:45:00Z",
+//         "end_time": "2015-02-04T23:45:00Z",
+//         "network": "65512"
+//       },
+//       ...
+//     ]
+//   }
 
 //api short-circuits it's up to the ui to decide what a good request looks like before sending it
 //POST 400
