@@ -1,2 +1,7 @@
-require('./mocks/nexmo/server.js');
+process.env = require('./params.json').env;
+
+console.log(process.env);
+
+
+
 require('./server.js');

@@ -42,7 +42,6 @@ module.exports = function (opts) {
                                 winston.log('info', 'main_application_inserted:', result);
                                 main_application = result.ops[0];
                                 winston.log('info', 'main_voice_application:', JSON.stringify(main_application));
-                                assignToken();
                             }
                         })
                     }
@@ -52,7 +51,6 @@ module.exports = function (opts) {
         }
         else {
             main_application = document;
-            assignToken();
             winston.log('info', 'main_voice_application:', JSON.stringify(main_application));
         }
     });
@@ -117,72 +115,102 @@ module.exports = function (opts) {
     });
 
 
-    function assignToken() {
-        createToken(main_application.nexmo_application,function(error,token) {
+    function assignToken(callback) {
+        console.log(main_application);
+        createToken(main_application.nexmo_application, function (error, token) {
             main_token = token;
+            callback(null, token);
         })
     }
 
-    function createToken(application,callback) {
+    function createToken(application, callback) {
         var payload = {
             jti: uuid.v1(),
             application_id: application.id,
-            iat: parseInt(Date.now()/1000),
+            iat: parseInt(Date.now() / 1000),
         };
         var options = {
             algorithm: 'RS256'
-        }
+        };
         var secret = application.keys.private_key;
-        var body = {
-        header: {
-            typ: 'JWT',
-            alg: 'RS256'
-        },
-        body: {
-            jti: uuid.v1(),
-            application_id: application.id,
-            iat: parseInt(Date.now()/1000),
-            // exp: 1434699071,
-        }
-        }
-        var token = jwt.sign(payload,secret,options);
+        var token = jwt.sign(payload, secret, options);
         winston.info(token);
-        callback(null,token);
+        callback(null, token);
 
     }
 
-    router.get('/calls',function(req,res) {
-        var options = {
-            method: 'GET',
-            url: nexmo.base_url + '/calls/',
-            qs:
-            {
-                api_key: nexmo.api_key,
-                api_secret: nexmo.api_secret
-            },
-            headers: {
-                'Authorization': 'Bearer '.main_token
-            }
-        };
-        winston.log('info', 'get calls:', options);
-        request(options, function (error, response, body) {
-            if (error) {
-                winston.log('error', error);
-                res.status(500);
-                res.send(error);
-            }
-            else {
-                var lvl = 'info';
-                if (!(response.statusCode < 400)) {
-                    lvl = 'error';
-                }
-                winston.log(lvl, response.statusCode);
-                winston.log(lvl, response.headers);
-                winston.log(lvl, body);
-                res.status(response.statusCode);
-                res.send(body);
-            }
 
+        router.get('/calls/:callId', function (req, res) {
+        assignToken(function (err, token) {
+            var options = {
+                method: 'GET',
+                url: nexmo.base_url + '/calls/'+req.params.callId,
+                qs:
+                {
+                    api_key: nexmo.api_key,
+                    api_secret: nexmo.api_secret
+                },
+                headers: {
+                    'Authorization': 'Bearer '+token
+                }
+            };
+            winston.log('info', 'get calls:', options);
+            request(options, function (error, response, body) {
+                if (error) {
+                    winston.log('error', error);
+                    res.status(500);
+                    res.send(error);
+                }
+                else {
+                    var lvl = 'info';
+                    if (!(response.statusCode < 400)) {
+                        lvl = 'error';
+                    }
+                    winston.log(lvl, response.statusCode);
+                    winston.log(lvl, response.headers);
+                    winston.log(lvl, body);
+                    res.status(response.statusCode);
+                    res.send(body);
+                }
+
+            });
+        });
+    });
+
+    router.get('/calls', function (req, res) {
+        assignToken(function (err, token) {
+            var options = {
+                method: 'GET',
+                url: nexmo.base_url + '/calls/',
+                qs:
+                {
+                    api_key: nexmo.api_key,
+                    api_secret: nexmo.api_secret
+                },
+                headers: {
+                    'Authorization': 'Bearer '+token
+                }
+            };
+            winston.log('info', 'get calls:', options);
+            request(options, function (error, response, body) {
+                if (error) {
+                    winston.log('error', error);
+                    res.status(500);
+                    res.send(error);
+                }
+                else {
+                    var lvl = 'info';
+                    if (!(response.statusCode < 400)) {
+                        lvl = 'error';
+                    }
+                    winston.log(lvl, response.statusCode);
+                    winston.log(lvl, response.headers);
+                    winston.log(lvl, body);
+                    res.status(response.statusCode);
+                    res.send(body);
+                }
+
+            });
         });
     });
 

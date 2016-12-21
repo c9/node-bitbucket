@@ -13,3 +13,4 @@ environments/prod/
 node_modules
 db.json
 .vagrant
+params.json

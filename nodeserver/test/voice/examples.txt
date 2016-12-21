@@ -19,3 +19,331 @@ Dec 11 14:20:02 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info {"reason"
 Dec 11 14:20:12 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info status 
 Dec 11 14:20:12 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info headers {"host":"coderuss.herokuapp.com","connection":"close","accept":"*/*","user-agent":"Jakarta Commons-HttpClient/3.1","x-request-id":"35b4da00-3c5e-4d6e-8c49-29edef47374c","x-forwarded-for":"169.54.104.168","x-forwarded-proto":"https","x-forwarded-port":"443","via":"1.1 vegur","connect-time":"0","x-request-start":"1481494812522","total-route-time":"0"} 
 Dec 11 14:20:12 adb30195-f5b0-4814-9141-0ba4e523fa9f nodeserver:  info {} 
+
+
+
+
+
+{
+  "page_size": 10,
+  "record_index": 0,
+  "count": 7,
+  "_links": {
+    "self": {
+      "href": "/v1/calls?page_size=10&record_index=0"
+    },
+    "first": {
+      "href": "/v1/calls?page_size=10"
+    },
+    "last": {
+      "href": "/v1/calls?page_size=10"
+    }
+  },
+  "_embedded": {
+    "calls": [
+      {
+        "uuid": "4cc2994e-c350-42bd-aa05-5c651174def4",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "4c2ddf75-2874-42b1-b51a-d32812fd2d02",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/4cc2994e-c350-42bd-aa05-5c651174def4"
+          }
+        }
+      },
+      {
+        "uuid": "c1eb395f-e18e-4763-83f3-3ee6d87620b5",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "6595ca11-363e-4787-affa-2f29a0df1c6c",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/c1eb395f-e18e-4763-83f3-3ee6d87620b5"
+          }
+        }
+      },
+      {
+        "uuid": "dc38be2a-95f0-4fd1-a4be-504abc04b875",
+        "status": "completed",
+        "direction": "inbound",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/dc38be2a-95f0-4fd1-a4be-504abc04b875"
+          }
+        }
+      },
+      {
+        "uuid": "2051b14b-bcfd-4356-89a8-3e5d95f777da",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "0d1bd572-b5d2-4e29-a4f6-7b1e2533e14b",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/2051b14b-bcfd-4356-89a8-3e5d95f777da"
+          }
+        }
+      },
+      {
+        "uuid": "df44d19c-1493-4df7-a6bd-aeee3d8f607c",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "b9abfb5c-1e0f-4a54-8a74-72d2f05cd848",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/df44d19c-1493-4df7-a6bd-aeee3d8f607c"
+          }
+        }
+      },
+      {
+        "uuid": "a2ba27da-4e26-4957-b563-a75f4722a2de",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "91330ca7-b158-452d-8166-484c5c63235e",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/a2ba27da-4e26-4957-b563-a75f4722a2de"
+          }
+        }
+      },
+      {
+        "uuid": "b87466b8-17ca-4aa0-af20-6a1a46978a44",
+        "status": "completed",
+        "direction": "inbound",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/b87466b8-17ca-4aa0-af20-6a1a46978a44"
+          }
+        }
+      }
+    ]
+  }
+}
+
+
+{
+  "page_size": 10,
+  "record_index": 0,
+  "count": 8,
+  "_links": {
+    "self": {
+      "href": "/v1/calls?page_size=10&record_index=0"
+    },
+    "first": {
+      "href": "/v1/calls?page_size=10"
+    },
+    "last": {
+      "href": "/v1/calls?page_size=10"
+    }
+  },
+  "_embedded": {
+    "calls": [
+      {
+        "uuid": "56a18bd4-2c62-495a-a6fa-a76ef7590b68",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "aad7737a-3945-4ee8-9f24-e8bc9d499af6",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/56a18bd4-2c62-495a-a6fa-a76ef7590b68"
+          }
+        }
+      },
+      {
+        "uuid": "dc38be2a-95f0-4fd1-a4be-504abc04b875",
+        "status": "completed",
+        "direction": "inbound",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/dc38be2a-95f0-4fd1-a4be-504abc04b875"
+          }
+        }
+      },
+      {
+        "uuid": "4cc2994e-c350-42bd-aa05-5c651174def4",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "4c2ddf75-2874-42b1-b51a-d32812fd2d02",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/4cc2994e-c350-42bd-aa05-5c651174def4"
+          }
+        }
+      },
+      {
+        "uuid": "b87466b8-17ca-4aa0-af20-6a1a46978a44",
+        "status": "completed",
+        "direction": "inbound",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/b87466b8-17ca-4aa0-af20-6a1a46978a44"
+          }
+        }
+      },
+      {
+        "uuid": "c1eb395f-e18e-4763-83f3-3ee6d87620b5",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "6595ca11-363e-4787-affa-2f29a0df1c6c",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/c1eb395f-e18e-4763-83f3-3ee6d87620b5"
+          }
+        }
+      },
+      {
+        "uuid": "2051b14b-bcfd-4356-89a8-3e5d95f777da",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "0d1bd572-b5d2-4e29-a4f6-7b1e2533e14b",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/2051b14b-bcfd-4356-89a8-3e5d95f777da"
+          }
+        }
+      },
+      {
+        "uuid": "df44d19c-1493-4df7-a6bd-aeee3d8f607c",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "b9abfb5c-1e0f-4a54-8a74-72d2f05cd848",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/df44d19c-1493-4df7-a6bd-aeee3d8f607c"
+          }
+        }
+      },
+      {
+        "uuid": "a2ba27da-4e26-4957-b563-a75f4722a2de",
+        "status": "completed",
+        "direction": "inbound",
+        "conversation_uuid": "91330ca7-b158-452d-8166-484c5c63235e",
+        "to": {
+          "type": "phone",
+          "number": "12032661668"
+        },
+        "from": {
+          "type": "phone",
+          "number": "anonymous"
+        },
+        "_links": {
+          "self": {
+            "href": "/v1/calls/a2ba27da-4e26-4957-b563-a75f4722a2de"
+          }
+        }
+      }
+    ]
+  }
+}
