@@ -24,6 +24,7 @@
     "multer": "^1.2.0",
     "node-cron": "^1.1.2",
     "node-uuid": "^1.4.7",
+    "nodemailer": "^2.7.0",
     "path": "^0.12.7",
     "socket.io": "^1.7.2",
     "url": "^0.11.0",
