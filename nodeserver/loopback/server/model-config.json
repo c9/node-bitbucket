@@ -31,5 +31,9 @@
   "Role": {
     "dataSource": "db",
     "public": false
+  },
+  "FitbitUser": {
+    "dataSource": "db",
+    "public": true
   }
 }

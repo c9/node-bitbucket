@@ -1,0 +1,26 @@
+{
+  "name": "FitbitUser",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "fitbit_user_id": {
+      "type": "string"
+    },
+    "refresh_token": {
+      "type": "string"
+    },
+    "access_token": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "index": {"unique": true}
+    }
+  },
+  "validations": [],
+  "acls": [],
+  "methods": {}
+}
