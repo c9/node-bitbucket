@@ -17,10 +17,16 @@
     },
     "email": {
       "type": "string",
-      "index": {"unique": true}
+      "index": {
+        "unique": true
+      }
+    },
+    "ip": {
+      "type": "string"
     }
   },
   "validations": [],
+  "relations": {},
   "acls": [],
   "methods": {}
 }
