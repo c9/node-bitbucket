@@ -9,12 +9,9 @@ module.exports = function (app) {
     var Role = app.models.Role;
     var RoleMapping = app.models.RoleMapping;
     var Team = app.models.Team;
-    var User = app.models.user;
+    var User = app.models.User;
 
-    RoleMapping.find({},function(err,mappings) {
-        console.log(mappings);
-    });
-    return;
+
 
     // Role.destroyAll({}, function () {
         // User.destroyAll({}, function () {
@@ -48,30 +45,33 @@ module.exports = function (app) {
                     })
                 }
                 else {
-                    users[0].roles(null,
-                    function(err, roles) {
-                        console.log(roles);
-                        return;
-                        if (roles.length < 1) {
-                            Role.create({
-                            name: 'admin'
-                        }, function (err, role) {
-                            if (err) throw err;
-
-                            console.log('Created role:', role);
-
-                            //make bob an admin
-                            role.principals.create({
-                                principalType: RoleMapping.USER,
-                                principalId: user.id
-                            }, function (err, principal) {
-                                if (err) throw err;
-
-                                console.log('Created principal:', principal);
-                            });
-                        });
-                        }
+                    RoleMapping.find({},function(err,mappings) {
+                        console.log(mappings);
                     });
+    // users[0].roles(null,
+                    // function(err, roles) {
+                    //     console.log(roles);
+                    //     return;
+                    //     if (roles.length < 1) {
+                    //         Role.create({
+                    //         name: 'admin'
+                    //     }, function (err, role) {
+                    //         if (err) throw err;
+
+                    //         console.log('Created role:', role);
+
+                    //         //make bob an admin
+                    //         role.principals.create({
+                    //             principalType: RoleMapping.USER,
+                    //             principalId: user.id
+                    //         }, function (err, principal) {
+                    //             if (err) throw err;
+
+                    //             console.log('Created principal:', principal);
+                    //         });
+                    //     });
+                    //     }
+                    // });
                 }
             // })
         // })

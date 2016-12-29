@@ -33,7 +33,7 @@
     "dataSource": "db",
     "public": true
   },
-  "user": {
+  "User": {
     "dataSource": "db",
     "public": true
   }
