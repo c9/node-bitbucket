@@ -1,4 +1,4 @@
-var request = require('request');
+var request = require('supertest');
 var https = require('https');
 var fs = require('fs');
 var path = require('path');
@@ -6,50 +6,8 @@ var path = require('path');
 var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-var chai = require('chai');
-var should = chai.should();
 
 
-
-describe('GET /users', function() {
-  it('respond with json', function(done) {
-    var x = {
-      "name": "123",
-      "test2": 123
-    };
-    // x.should.be.a('string','rest response on this property is of type string');
-    x.should.be.deep.equal({
-      "name": "123",
-      "test2": 123
-    });
-    done();
-  });
-});
-
-describe('request(url)', function() {
-  it('should be supported', function(done) {
-    var app = express();
-    var s;
-
-    app.get('/', function(req, res) {
-      res.send('hello');
-    });
-
-    s = app.listen(function() {
-      var url = 'http://localhost:' + s.address().port;
-      // console.log(url);
-      request
-      .get({
-      'uri': url},function(err,res,body) {
-        body.should.be.equal('hello');
-        res.statusCode.should.be.equal(200);
-        done();
-      });
-    });
-  });
-});
-
-return;
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -71,7 +29,7 @@ describe('GET /users', function() {
   });
 });
 
-return;
+// return;
 
 describe('request(url)', function() {
   it('should be supported', function(done) {
