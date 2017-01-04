@@ -1,8 +1,8 @@
 test:
-	@NODE_TLS_REJECT_UNAUTHORIZED=0 ./node_modules/mocha/bin/mocha \
-		--require should \
-        --require cookie
-		--reporter spec \
-		--check-leaks
+	@cd "$0" && npm install
+	@NODE_ENV=test node ./server/server.js &
+	@sleep 2
+	@./node_modules/mocha/bin/mocha \
+		--reporter spec
 
 .PHONY: test

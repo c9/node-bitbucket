@@ -1,0 +1,131 @@
+extends ../layouts/default
+
+block pageHeader
+  ol.breadcrumb
+    li
+      a(href="/tickets") Tickets
+    li.active
+      Detais
+
+  .page-header
+    h1=ticket.title
+      small #
+        =ticket.id
+
+block content
+  .row
+
+    .col-md-1.input-lg.text-muted  owner:
+    .col-md-3.input-lg=ticket.owner_id
+
+    .col-md-1.input-lg.text-muted  category:
+    .col-md-3.input-lg=ticket.category
+
+    .col-md-1.input-lg.text-muted  status:
+    .col-md-3.input-lg
+      !=helper.genLabelByStatus(ticket.status)
+
+    .col-md-1.input-lg.text-muted  updated:
+    .col-md-3.input-lg
+      !=helper.genDateTag(ticket.updated_at)
+    .col-md-1.input-lg.text-muted  created:
+    .col-md-3.input-lg
+      !=helper.genDateTag(ticket.created_at)
+    .col-md-1.input-lg.text-muted  attempts:
+    .col-md-3.input-lg=ticket.attempts
+
+
+    .col-md-9.text-right
+      button.btn.btn-default(data-toggle="modal", data-target="#myModal")
+        i.fa.fa-edit
+        !=" Add Comment"
+
+
+    .col-md-1.text-right
+      if ticket.status == "processing"
+        form.abandon(action="/tickets/#{ticket.id}/giveup", method="POST")
+          input(type="hidden", name="name", value="admin")
+          input(type="hidden", name="reason", value="admin give up this ticket on web interface")
+          button.btn.btn-warning(type='submit')
+            i.fa.fa-trash-o
+            !=" Give Up"
+      else
+        button.btn.btn-warning(disabled="true")
+          i.fa.fa-trash-o
+          !=" Give Up"
+
+    .col-md-1.text-right
+
+      if ticket.status == "pending"
+        button.btn.btn-danger(data-toggle="modal", data-target="#myModal2")
+          i.fa.fa-trash-o
+          !=" Abandon"
+
+        //form.abandon(action="/tickets/#{ticket.id}/abandon", method="POST")
+          //button.btn.btn-danger(type='submit')
+            //i.fa.fa-trash-o
+            //!=" Abandon"
+      else
+        button.btn.btn-danger(disabled="true")
+          i.fa.fa-trash-o
+          !=" Abandon"
+
+
+
+  h2
+    small Content
+  .well
+    pre
+      !=helper.syntaxHighlight(JSON.stringify(ticket.content,undefined, 4))
+
+  h2
+    small History
+
+  ul.list-group
+    each comment in ticket.comments
+      li.list-group-item
+        .row
+          .col-md-2.text-right
+            span.label(class="label-#{comment.kind}")=comment.name
+          .col-md-8=comment.content
+          .col-md-2
+            !=helper.genDateTag(comment.date)
+
+  #myModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    form.comment(action="/tickets/#{ticket.id}/comment", method="POST")
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+            h4#myModalLabel.modal-title Add Comment
+          .modal-body
+
+            .form-group
+              .controls
+                input.input-lg.form-control#commnent-content(type='text', name="content", placeholder='Comment')
+
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Close
+            button.btn.btn-primary(type='submit') Save changes
+
+
+  #myModal2.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel2', aria-hidden='true')
+    form.abandon(action="/tickets/#{ticket.id}/abandon", method="POST")
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+            h4#myModalLabel2.modal-title Abandon Ticket
+
+          .modal-body
+            h3 Are you sure to abandon this ticket?
+
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Close
+            button.btn.btn-danger(type='submit')
+              i.fa.fa-trash-o
+              !=" Abandon"
+
+
+
+

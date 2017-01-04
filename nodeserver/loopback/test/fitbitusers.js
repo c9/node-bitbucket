@@ -10,6 +10,10 @@ var chai = require('chai');
 var should = chai.should();
 
 
+console.log(process.env.NODE_ENV);
+
+
+
 
 describe('GET /users', function() {
   it('respond with json', function(done) {
@@ -25,6 +29,24 @@ describe('GET /users', function() {
     done();
   });
 });
+
+describe('loopback app start', function() {
+  it('should be supported', function(done) {
+    var app = express();
+    var s;
+
+    var server = require('./../server/server.js');
+    done();
+    return;
+
+    s = require('./../server/server.js').start(function() {
+      console.log(this);
+      done();
+    });
+  });
+});
+
+return;
 
 describe('request(url)', function() {
   it('should be supported', function(done) {

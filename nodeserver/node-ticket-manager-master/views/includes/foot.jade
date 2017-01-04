@@ -1,0 +1,13 @@
+
+script(src='/js/jquery.prettydate.js?#{VERSION}', type='text/javascript')
+//script(src='/js/jquery.prettydate-cn.js?#{VERSION}', type='text/javascript')
+
+// active jQuery timeago
+script(type='text/javascript').
+  if(jQuery){
+    jQuery(document).ready(function() {
+      if(jQuery(".timeago").length > 0) jQuery(".timeago").prettyDate();
+    });
+  }
+
+

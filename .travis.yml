@@ -6,6 +6,7 @@ env:
 services:
   - mongodb
 script:
+  - cd nodeserver/loopback
   - npm install
   - npm start &
   - sleep 1
