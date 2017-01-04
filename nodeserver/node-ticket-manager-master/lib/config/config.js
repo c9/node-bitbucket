@@ -20,20 +20,20 @@
       app: {
         name: 'Ticket System - Test'
       },
-      basicAuth: {
-        username: "test",
-        password: "123"
-      }
+      // basicAuth: {
+      //   username: "test",
+      //   password: "123"
+      // }
     },
     production: {
       db: 'mongodb://localhost/ticketman',
       app: {
         name: 'Ticket System'
       },
-      basicAuth: {
-        username: "production",
-        password: "123"
-      }
+      // basicAuth: {
+      //   username: "production",
+      //   password: "123"
+      // }
     }
   };
 
