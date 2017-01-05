@@ -1,7 +1,7 @@
 
 var request = require('request');
 
-var params = require('../params.js');
+var env = require('../params.js').env;
 
 var parsers = require('www-authenticate').parsers;
 
@@ -11,10 +11,10 @@ var crypto = require('crypto');
 var www_authenticate = require('www-authenticate');
 
 
-const FTP_HOST = params.env.FTP_HOST;
-const FTP_BASE = params.env.FTP_BASE;
-const FTP_USER = params.env.FTP_USER;
-const FTP_PASSWORD = params.env.FTP_PASSWORD;
+const FTP_HOST = env.FTP_HOST;
+const FTP_BASE = env.FTP_BASE;
+const FTP_USER = env.FTP_USER;
+const FTP_PASSWORD = env.FTP_PASSWORD;
 
 var authenticator = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
 

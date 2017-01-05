@@ -15,3 +15,4 @@ db.json
 .vagrant
 params.json
 params*.js*
+.*
