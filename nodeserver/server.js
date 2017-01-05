@@ -7,8 +7,8 @@ app.use(bodyParser.json());
 
 var extend = require('util')._extend;
 var envvars = process.env || {};
-var params = require(__dirname+'/params') || {};
-envvars = extend(envvars,params.env);
+var params = require(__dirname + '/params') || {};
+envvars = extend(envvars, params.env);
 
 
 var port = envvars.PORT || 3000;
@@ -88,7 +88,7 @@ function addVoiceRouter() {
             api_key: NEXMO_API_KEY, api_secret: NEXMO_API_SECRET,
             base_url: NEXMO_BASE_URL
         },
-        base_url:VOICE_API_BASE_URL,
+        base_url: VOICE_API_BASE_URL,
         main_application: main_application
     });
     app.use('/api/v1/voice', voice.router);
@@ -99,7 +99,7 @@ var morgan = require('morgan');
 
 logger.stream = {
     write: function (message, encoding) {
-        logger.log('debug',message);
+        logger.log('debug', message);
     }
 };
 
@@ -124,7 +124,7 @@ app.use('/api/v1/ping', ping.router);
 app.use('/ping', ping.router);
 
 //contains listen for io to work
-require('./dashboard/app.js')({HOST:HOST,PORT:port,winston:winston,app:app});
+require('./dashboard/app.js')({ HOST: HOST, PORT: port, winston: winston, app: app });
 
 var request = require('request');
 var cron = require('node-cron');
@@ -148,106 +148,134 @@ cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
 
 
 //proxy 
-    var https = require('https');
-    var http = require('http');
-    var proxy = require('http-proxy').createProxyServer();
-    request_body_array = [];
+var https = require('https');
+var http = require('http');
+var proxy = require('http-proxy').createProxyServer();
+request_body_array = [];
 
 
-    var privateKey = fs.readFileSync(__dirname + '/certs/localhost.key', 'utf8');
-    var certificate = fs.readFileSync(__dirname + '/certs/localhost.crt', 'utf8');
-    var credentials = { key: privateKey, cert: certificate };
+var privateKey = fs.readFileSync(__dirname + '/certs/localhost.key', 'utf8');
+var certificate = fs.readFileSync(__dirname + '/certs/localhost.crt', 'utf8');
+var credentials = { key: privateKey, cert: certificate };
 
-    var uuid = require('node-uuid');
-    // https.
-    http.createServer(
-        //credentials, 
+var uuid = require('node-uuid');
+// https.
+    http.
+    createServer(
+    // credentials,
     function (req, res) {
+        var proxyReq = req;
+        var proxyRes = res;
 
+        // if (req && req.headers['user-agent'] && req.headers['user-agent'].indexOf('Datadog Agent/5.9.1') != -1) {
+        //     res.end();
+        //     return;
+        // }
 
-            // if (req && req.headers['user-agent'] && req.headers['user-agent'].indexOf('Datadog Agent/5.9.1') != -1) {
-            //     res.end();
-            //     return;
-            // }
+        var proxy_uuid = uuid.v1()
+        // req.headers['proxy-uuid'] = proxy_uuid;
 
-            var proxy_uuid = uuid.v1()
-            // req.headers['proxy-uuid'] = proxy_uuid;
+        // var latest_request_body = [];
+        // req.on('data', function (chunk) {
+        //     latest_request_body.push(chunk);
+        // }).on('end', function () {
+        //     var requestBodyStr = Buffer.concat(latest_request_body).toString();
+        //     request_body_array[proxy_uuid] = requestBodyStr;
+        //     winston.info('request_body:', request_body_array[proxy_uuid]);
+        // });
 
-            // var latest_request_body = [];
-            // req.on('data', function (chunk) {
-            //     latest_request_body.push(chunk);
-            // }).on('end', function () {
-            //     var requestBodyStr = Buffer.concat(latest_request_body).toString();
-            //     request_body_array[proxy_uuid] = requestBodyStr;
-            //     winston.info('request_body:', request_body_array[proxy_uuid]);
-            // });
+        var url = require('url');
+        var path = url.parse(req.url, true).pathname;
+        if (path.indexOf('/private/Downloads') !== -1) {
+            var www_authenticate = require('www-authenticate');
+            var authenticator = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
+            
+            var options = {
+                url: FTP_BASE + path,
+                method: 'GET',
+                path: path,
+                rejectUnauthorized: false,
+                headers: proxyReq.headers
+            };
+            request(options,
+                function (err, res, body) {
+                    console.log(res.statusCode);
+                    console.log(res.headers);
+                    console.log(body);
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    if (res.statusCode === 401) {
+                        authenticator.get_challenge(res);
+                        authenticator.authenticate_request_options(options);
+                        proxyReq.headers['authorization'] = options.headers['authorization'];
+                    }
 
-            var url = require('url');
-            if (url.parse(req.url,true).pathname.indexOf('/private/Downloads') !== -1) {
-                var target = FTP_BASE;
-                winston.log('info', 'target:' + target);
-                var auth = 'Basic ' + new Buffer(FTP_USER + ':' + FTP_PASSWORD).toString('base64');
-                req.headers['Authoriztion'] = auth;
+                    console.log(options);
+                    console.log(req.headers);
 
-            //    console.log(req.headers);
-                // req.headers['host'] = FTP_HOST;
-               console.log(req.headers);
+                    var target = FTP_BASE;
 
-            //    req.headers.host = ''
-                proxy.web(req, res, {
-                    target: target,
-                    secure: false
-                },function(err) {
-                    winston.log('error',err);
-                    res.writeHead(502);
-                    res.end("There was an error. Please try again");
-                });
-                return;
-            }
-            else {
-                var target = "http://localhost:" + app.get('port');
-                winston.log('info', 'target:' + target);
-                console.log(req.headers);
-                proxy.web(req, res, {
-                    target: target,
-                    secure: false
-                },function(err) {
-                    winston.log('error',err);
-                    res.writeHead(502);
-                    res.end("There was an error. Please try again");
-                });
-            }
+                    console.log(req.headers);
+
+                    proxy.web(proxyReq, proxyRes, {
+                        target: target,
+                        secure: false
+                    }, function (err) {
+                        winston.log('error', err);
+                        proxyRes.writeHead(502);
+                        proxyRes.end("There was an error. Please try again");
+                    });
+                }
+            );
+
+            return;
         }
+        else {
+            var target = "http://localhost:" + app.get('port');
+            winston.log('info', 'target:' + target);
+            console.log(req.headers);
+            proxy.web(req, res, {
+                target: target,
+                secure: false
+            }, function (err) {
+                winston.log('error', err);
+                res.writeHead(502);
+                res.end("There was an error. Please try again");
+            });
+        }
+    }
     ).listen(PORT, function () {
         winston.log('info', 'listening on port:' + PORT);
     });
 
 
 
-    proxy.on('proxyRes', function (res, req) {
-        var lvl = 'info';
+proxy.on('proxyRes', function (res, req) {
+    var lvl = 'info';
 
-        console.log(res.headers);
+    console.log(res.headers);
 
-        var host = req.headers.host;
-        var data = [];
-        res.headers['proxy-uuid'] = req.headers['proxy-uuid'];
+    var host = req.headers.host;
+    var data = [];
+    res.headers['proxy-uuid'] = req.headers['proxy-uuid'];
 
-        res.on('data', function (chunk) {
-            data.push(chunk);
-        });
-        // res.on('end', function () {
-        //     if (res.headers['content-encoding'] == 'gzip') {
-        //         zlib.unzip(Buffer.concat(data), (err, buffer) => {
-        //             if (!err) {
-        //                 logRequestResponse(req, buffer.toString(), res);
-        //             } else {
-        //                 // handle error
-        //             }
-        //         })
-        //     }
-        //     else {
-        //         logRequestResponse(req, Buffer.concat(data).toString(), res);
-        //     }
-        // });
+    res.on('data', function (chunk) {
+        data.push(chunk);
     });
+    // res.on('end', function () {
+    //     if (res.headers['content-encoding'] == 'gzip') {
+    //         zlib.unzip(Buffer.concat(data), (err, buffer) => {
+    //             if (!err) {
+    //                 logRequestResponse(req, buffer.toString(), res);
+    //             } else {
+    //                 // handle error
+    //             }
+    //         })
+    //     }
+    //     else {
+    //         logRequestResponse(req, Buffer.concat(data).toString(), res);
+    //     }
+    // });
+});
