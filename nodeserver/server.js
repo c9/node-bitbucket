@@ -5,16 +5,27 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 3000;
-var ip = process.env.IP || '0.0.0.0';
-var init = process.env.INIT || false;
+var extend = require('util')._extend;
+var envvars = process.env || {};
+var params = require(__dirname+'/params') || {};
+envvars = extend(envvars,params.env);
 
-const NEXMO_API_KEY = process.env.NEXMO_API_KEY || '123';
-const NEXMO_API_SECRET = process.env.NEXMO_API_SECRET || '123';
-const NEXMO_BASE_URL = process.env.NEXMO_BASE_URL || 'http://localhost:3100';
-const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'info';
-const VOICE_API_BASE_URL = process.env.VOICE_API_BASE_URL || 'http://localhost:3000/api/v1/voice';
-const PAPERTRAIL_LEVEL = process.env.PAPERTRAIL_LEVEL || 'warn';
+
+var port = envvars.PORT || 3000;
+const PORT = port;
+var ip = envvars.IP || '0.0.0.0';
+var init = envvars.INIT || false;
+
+const NEXMO_API_KEY = envvars.NEXMO_API_KEY || '123';
+const NEXMO_API_SECRET = envvars.NEXMO_API_SECRET || '123';
+const NEXMO_BASE_URL = envvars.NEXMO_BASE_URL || 'http://localhost:3100';
+const CONSOLE_LOG_LEVEL = envvars.CONSOLE_LOG_LEVEL || 'info';
+const VOICE_API_BASE_URL = envvars.VOICE_API_BASE_URL || 'http://localhost:3000/api/v1/voice';
+const PAPERTRAIL_LEVEL = envvars.PAPERTRAIL_LEVEL || 'warn';
+const FTP_BASE = envvars.FTP_BASE || 'http://localhost';
+const FTP_HOST = envvars.FTP_HOST || 'http://localhost';
+const FTP_PASSWORD = envvars.FTP_PASSWORD || 'http://localhost';
+const FTP_USER = envvars.FTP_USER || 'http://localhost';
 
 const low = require('lowdb');
 const fs = require('fs');
@@ -50,16 +61,16 @@ var winston = logger = new winston.Logger({
     exitOnError: false
 });
 
-const PROTOCOL = process.env.PROTOCOL || 'http';
-const ENDPOINT_PORT = process.env.ENDPOINT_PORT || port;
-const HOST = process.env.HOST || 'localhost';
+const PROTOCOL = envvars.PROTOCOL || 'http';
+const ENDPOINT_PORT = envvars.ENDPOINT_PORT || port;
+const HOST = envvars.HOST || 'localhost';
 const BASE_URL = PROTOCOL + "://" + HOST + ':' + ENDPOINT_PORT;
-const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 300;
+const CRON_TIMER_SECONDS = envvars.CRON_TIMER_SECONDS || 300;
 
 const MongoClient = require('mongodb').MongoClient;
 
-const MONGO_CONNECTION = process.env.MONGO_CONNECTION || 'mongodb://localhost:27017/voice';
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const MONGO_CONNECTION = envvars.MONGO_CONNECTION || 'mongodb://localhost:27017/voice';
+const MONGO_URI = envvars.MONGO_URI || 'mongodb://localhost:27017';
 
 
 //voice application setup
@@ -104,15 +115,16 @@ app.use(express.static(path.join(__dirname, 'public/')));
 
 var ping = require('./v1/ping.js')({});
 var fileapi = require('./v1/files/main.js')({ winston: winston });
+var ftp = require('./v1/ftp/main.js')({ winston: winston });
 
 app.use('/api/v1/files', fileapi.router);
 app.use('/api/v1/ping', ping.router);
+// app.use('/api/v1/ftp', ftp.router); //not important
+
 app.use('/ping', ping.router);
 
 //contains listen for io to work
 require('./dashboard/app.js')({HOST:HOST,PORT:port,winston:winston,app:app});
-// app.listen(port, ip, function () {
-// });
 
 var request = require('request');
 var cron = require('node-cron');
@@ -132,3 +144,110 @@ cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
     }, function (error, response, body) {
     });
 });
+
+
+
+//proxy 
+    var https = require('https');
+    var http = require('http');
+    var proxy = require('http-proxy').createProxyServer();
+    request_body_array = [];
+
+
+    var privateKey = fs.readFileSync(__dirname + '/certs/localhost.key', 'utf8');
+    var certificate = fs.readFileSync(__dirname + '/certs/localhost.crt', 'utf8');
+    var credentials = { key: privateKey, cert: certificate };
+
+    var uuid = require('node-uuid');
+    // https.
+    http.createServer(
+        //credentials, 
+    function (req, res) {
+
+
+            // if (req && req.headers['user-agent'] && req.headers['user-agent'].indexOf('Datadog Agent/5.9.1') != -1) {
+            //     res.end();
+            //     return;
+            // }
+
+            var proxy_uuid = uuid.v1()
+            // req.headers['proxy-uuid'] = proxy_uuid;
+
+            // var latest_request_body = [];
+            // req.on('data', function (chunk) {
+            //     latest_request_body.push(chunk);
+            // }).on('end', function () {
+            //     var requestBodyStr = Buffer.concat(latest_request_body).toString();
+            //     request_body_array[proxy_uuid] = requestBodyStr;
+            //     winston.info('request_body:', request_body_array[proxy_uuid]);
+            // });
+
+            var url = require('url');
+            if (url.parse(req.url,true).pathname.indexOf('/private/Downloads') !== -1) {
+                var target = FTP_BASE;
+                winston.log('info', 'target:' + target);
+                var auth = 'Basic ' + new Buffer(FTP_USER + ':' + FTP_PASSWORD).toString('base64');
+                req.headers['Authoriztion'] = auth;
+
+            //    console.log(req.headers);
+                // req.headers['host'] = FTP_HOST;
+               console.log(req.headers);
+
+            //    req.headers.host = ''
+                proxy.web(req, res, {
+                    target: target,
+                    secure: false
+                },function(err) {
+                    winston.log('error',err);
+                    res.writeHead(502);
+                    res.end("There was an error. Please try again");
+                });
+                return;
+            }
+            else {
+                var target = "http://localhost:" + app.get('port');
+                winston.log('info', 'target:' + target);
+                console.log(req.headers);
+                proxy.web(req, res, {
+                    target: target,
+                    secure: false
+                },function(err) {
+                    winston.log('error',err);
+                    res.writeHead(502);
+                    res.end("There was an error. Please try again");
+                });
+            }
+        }
+    ).listen(PORT, function () {
+        winston.log('info', 'listening on port:' + PORT);
+    });
+
+
+
+    proxy.on('proxyRes', function (res, req) {
+        var lvl = 'info';
+
+        console.log(res.headers);
+
+        var host = req.headers.host;
+        var data = [];
+        res.headers['proxy-uuid'] = req.headers['proxy-uuid'];
+
+        res.on('data', function (chunk) {
+            data.push(chunk);
+        });
+        // res.on('end', function () {
+        //     if (res.headers['content-encoding'] == 'gzip') {
+        //         zlib.unzip(Buffer.concat(data), (err, buffer) => {
+        //             if (!err) {
+        //                 logRequestResponse(req, buffer.toString(), res);
+        //             } else {
+        //                 // handle error
+        //             }
+        //         })
+        //     }
+        //     else {
+        //         logRequestResponse(req, Buffer.concat(data).toString(), res);
+        //     }
+        // });
+    });

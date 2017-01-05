@@ -17,9 +17,6 @@ module.exports = function (opts) {
 
   var start = Date.now();
 
-
-  app.set('port', port);
-
   var cron = require('node-cron');
 
   cron.schedule('*/' + 1 + ' * * * * *', function () {
@@ -115,8 +112,11 @@ module.exports = function (opts) {
     return Object.keys(visitorsData).length;
   }
 
-  http.listen(app.get('port'), function () {
-    console.log('listening on *:' + app.get('port'));
+s = http.listen(0, function () {
+    console.log('listening on *:' + s.address().port);
+    console.log(s.address());
+    app.set('port', s.address().port);
+
   });
 
 
