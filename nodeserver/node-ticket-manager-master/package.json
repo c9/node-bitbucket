@@ -36,7 +36,7 @@
     "connect-flash": "0.1.1",
     "mongoose": "latest",
     "underscore": "1.5.2",
-    "mongoose-times": "*",
+    "mongoose-times": "*", 
     "mongoose-paginator": "*",
     "mongoose-trashable": "*",
     "commander": ">=1.0.1",
