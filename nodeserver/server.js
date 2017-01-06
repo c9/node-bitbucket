@@ -7,7 +7,15 @@ app.use(bodyParser.json());
 
 var extend = require('util')._extend;
 var envvars = process.env || {};
-var params = require(__dirname + '/params') || {};
+
+var params = {};
+try {
+    params = require(__dirname + '/params');
+}
+catch(e) {
+}
+var envparams = params.env || {};
+
 envvars = extend(envvars, params.env);
 
 
