@@ -1,7 +1,11 @@
 <div id="app-4">
     <ol>
-        <li v-for="todo in todos">
-            {{ todo.text }}
+        <li v-for="(todo,index) in todos">
+            <div :data-index="index">
+                {{ todo.text }}
+                <button :data-index="index" v-on:click="deleteTodo">Delete</button>
+
+            </div>
         </li>
     </ol>
 </div>
@@ -10,7 +14,26 @@
     var app = new Vue({
         el: '#app-4',
         data: {
-            todos: []
+            todos: [],
+        },
+        methods: {
+            deleteTodo: function (event) {
+                console.log(event.target);
+                console.log(this);
+                console.log('delete');
+                var key = event.target.getAttribute('data-index')
+                var todo = this.todos.splice(key, 1)[0];
+                console.log(todo);
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 //&& this.status == 200
+                    ) {
+                        app.todos = JSON.parse(this.responseText);
+                    }
+                };
+                xhttp.open("DELETE", "/v1/todos/"+ todo._id);
+                xhttp.send();
+            },
         }
     });
     var xhttp = new XMLHttpRequest();
