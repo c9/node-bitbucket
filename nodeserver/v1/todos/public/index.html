@@ -1,28 +1,26 @@
 <div id="app-4">
-  <ol>
-    <li v-for="todo in todos">
-      {{ todo.text }}
-    </li>
-  </ol>
+    <ol>
+        <li v-for="todo in todos">
+            {{ todo.text }}
+        </li>
+    </ol>
 </div>
 <script src="vue.js"></script>
 <script>
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 //&& this.status == 200
-    ) {
-        var app4 = new Vue({
+    var app = new Vue({
         el: '#app-4',
         data: {
-            todos: JSON.parse(this.responseText)
+            todos: []
         }
-        })
-    }
+    });
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 //&& this.status == 200
+        ) {
+            app.todos = JSON.parse(this.responseText);
+        }
     };
     xhttp.open("GET", "/v1/todos", true);
     xhttp.send();
-function reqListener () {
-  console.log(this.responseText);
-}
 
 </script>
