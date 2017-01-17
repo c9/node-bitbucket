@@ -24,9 +24,12 @@ module.exports = function (opts) {
 
     router.get('/', function (req, res) {
         res.send(JSON.stringify([{
-            meta: {
-                message: "File not found"
-            }
+            text: "hello",
+            created: Date.now()
+        },
+        {
+            text: "task 2",
+            created: Date.now()
         }]));
         return;       
 

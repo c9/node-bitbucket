@@ -7,14 +7,22 @@
 </div>
 <script src="vue.js"></script>
 <script>
-var app4 = new Vue({
-  el: '#app-4',
-  data: {
-    todos: [
-      { text: 'Learn JavaScript' },
-      { text: 'Learn Vue' },
-      { text: 'Build something awesome' }
-    ]
-  }
-})
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 //&& this.status == 200
+    ) {
+        var app4 = new Vue({
+        el: '#app-4',
+        data: {
+            todos: JSON.parse(this.responseText)
+        }
+        })
+    }
+    };
+    xhttp.open("GET", "/v1/todos", true);
+    xhttp.send();
+function reqListener () {
+  console.log(this.responseText);
+}
+
 </script>
