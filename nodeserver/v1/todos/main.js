@@ -7,7 +7,7 @@ module.exports = function (opts) {
     var inspect = require('util').inspect;
     var current_files = {};
     var doDelete = true;
-    var     ObjectID = require('mongodb').ObjectID;
+    var ObjectID = require('mongodb').ObjectID;
 
     var expiry = opts.expiry || 86400000; //24 hours
 
@@ -26,11 +26,7 @@ module.exports = function (opts) {
 
 
     router.get('/', function (req, res) {
-        var options = {
-            "limit": 20,
-            "sort": "created"
-        }
-        todos.find({}, options).toArray((function (err, results) {
+        todos.find().sort({ "is_complete": 1, "due": 1 }).toArray((function (err, results) {
             if (err) {
                 winston.error(err);
             }
@@ -42,7 +38,32 @@ module.exports = function (opts) {
     });
 
     router.post('/', function (req, res) {
-        // winston.debug(req);
+        winston.debug('request params=' + JSON.stringify(req.params));
+        winston.debug('request body=' + JSON.stringify(req.body));
+        var todoObj = {
+            text: req.body.text,
+            created: Date.now(),
+            due: Date.now() + 1000 * 60 * 60 * 5,
+            reminder: Date.now() + 1000 * 60 * 30
+        };
+        todos.insert(todoObj);
+        res.status(201).end();
+        return;
+    });
+
+    router.post('/:id/complete', function (req, res) {
+        winston.debug('request params=' + JSON.stringify(req.params));
+        winston.debug('request body=' + JSON.stringify(req.body));
+
+        todos.updateOne({ _id: ObjectID(req.params.id) },
+            { $set: { is_complete: 1,completed: Date.now() } });
+
+        res.status(201).end();
+        return;
+    });
+
+
+    router.post('/:id', function (req, res) {
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
         todos.insert(req.body);
@@ -51,18 +72,16 @@ module.exports = function (opts) {
     });
 
     router.delete('/:id', function (req, res) {
-        // winston.debug(req);
-        // todos.delete({_id:id});
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
-        todos.remove({_id: ObjectID(req.params.id)},{w:1}, function (error, result) {
+        todos.remove({ _id: ObjectID(req.params.id) }, { w: 1 }, function (error, result) {
             if (error) {
-                winston.error(error);
+                // winston.error(error);
             }
             winston.debug(result.result);
         });
 
-         res.status(201).end();
+        res.status(201).end();
 
 
     });

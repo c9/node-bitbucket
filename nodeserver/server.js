@@ -12,7 +12,7 @@ var params = {};
 try {
     params = require(__dirname + '/params');
 }
-catch(e) {
+catch (e) {
 }
 var envparams = params.env || {};
 
@@ -87,8 +87,18 @@ var main_application;
 MongoClient.connect(MONGO_CONNECTION, function (err, db) {
     mongo_db = db;
     addVoiceRouter();
-
+    addTodosRouter();
 });
+
+function addTodosRouter() {
+    const todos = mongo_db.collection('todos');
+    app.use("/v1/todos/public", express.static(__dirname + "/v1/todos/public"));
+
+    app.use('/v1/todos', require('./v1/todos/main.js')({
+        winston: logger,
+        todos: todos
+    }).router);
+}
 
 function addVoiceRouter() {
     var voice = require('./v1/voice.js')({
@@ -168,7 +178,7 @@ var certificate = fs.readFileSync(__dirname + '/certs/localhost.crt', 'utf8');
 var credentials = { key: privateKey, cert: certificate };
 
 var uuid = require('node-uuid');
-    http.
+http.
     createServer(
     function (req, res) {
         var proxyReq = req;
@@ -181,7 +191,7 @@ var uuid = require('node-uuid');
         if (path.indexOf('/private/Downloads') !== -1) {
             var www_authenticate = require('www-authenticate');
             var authenticator = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
-            
+
             var options = {
                 url: FTP_BASE + path,
                 method: 'GET',
