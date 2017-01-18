@@ -1,6 +1,7 @@
 var bodyParser = require('body-parser');
 var express = require('express');
 
+
 var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -18,16 +19,16 @@ var envparams = params.env || {};
 
 envvars = extend(envvars, params.env);
 
+require('dotenv').config();
+const PORT = process.env.PORT;
 
-var port = envvars.PORT || 3000;
-const PORT = port;
 var ip = envvars.IP || '0.0.0.0';
 var init = envvars.INIT || false;
 
+const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL;
 const NEXMO_API_KEY = envvars.NEXMO_API_KEY || '123';
 const NEXMO_API_SECRET = envvars.NEXMO_API_SECRET || '123';
 const NEXMO_BASE_URL = envvars.NEXMO_BASE_URL || 'http://localhost:3100';
-const CONSOLE_LOG_LEVEL = envvars.CONSOLE_LOG_LEVEL || 'info';
 const VOICE_API_BASE_URL = envvars.VOICE_API_BASE_URL || 'http://localhost:3000/api/v1/voice';
 const PAPERTRAIL_LEVEL = envvars.PAPERTRAIL_LEVEL || 'warn';
 const FTP_BASE = envvars.FTP_BASE || 'http://localhost';
@@ -47,7 +48,6 @@ var winston = logger = new winston.Logger({
             level: 'info',
             filename: path.join(__dirname, 'access.log'),
             handleExceptions: true,
-            json: true,
             maxsize: 5242880, //5MB
             maxFiles: 5,
             colorize: false
@@ -55,7 +55,6 @@ var winston = logger = new winston.Logger({
         new winston.transports.Console({
             level: CONSOLE_LOG_LEVEL,
             handleExceptions: true,
-            json: true,
             colorize: true
         }),
         new Papertrail({
@@ -70,10 +69,16 @@ var winston = logger = new winston.Logger({
     exitOnError: false
 });
 
+winston.info("console_log_level:"+CONSOLE_LOG_LEVEL);
+
+process.on('uncaughtException', function (err) {
+    logger.error('uncaughtException', { message : err.message, stack : err.stack }); // logging with MetaData
+    process.exit(1); // exit with failure
+});
+
 const PROTOCOL = envvars.PROTOCOL || 'http';
-const ENDPOINT_PORT = envvars.ENDPOINT_PORT || port;
 const HOST = envvars.HOST || 'localhost';
-const BASE_URL = PROTOCOL + "://" + HOST + ':' + ENDPOINT_PORT;
+// const BASE_URL = PROTOCOL + "://" + HOST + ':' + ENDPOINT_PORT;
 const CRON_TIMER_SECONDS = envvars.CRON_TIMER_SECONDS || 300;
 
 const MongoClient = require('mongodb').MongoClient;
@@ -143,26 +148,26 @@ app.use('/api/v1/ping', ping.router);
 app.use('/ping', ping.router);
 
 //contains listen for io to work
-require('./dashboard/app.js')({ HOST: HOST, PORT: port, winston: winston, app: app });
+// require('./dashboard/app.js')({ HOST: HOST, PORT: port, winston: winston, app: app });
 
 var request = require('request');
 var cron = require('node-cron');
 
-cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
-    var url = BASE_URL + '/ping';
-    request.get({
-        headers: { 'X-PING': 'PING' },
-        url: url,
-        followRedirect: false
-    }, function (error, response, body) {
-    });
-    request.post({
-        headers: { 'X-PING': 'PING' },
-        url: url,
-        followRedirect: false
-    }, function (error, response, body) {
-    });
-});
+// cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
+//     var url = BASE_URL + '/ping';
+//     request.get({
+//         headers: { 'X-PING': 'PING' },
+//         url: url,
+//         followRedirect: false
+//     }, function (error, response, body) {
+//     });
+//     request.post({
+//         headers: { 'X-PING': 'PING' },
+//         url: url,
+//         followRedirect: false
+//     }, function (error, response, body) {
+//     });
+// });
 
 
 
@@ -234,7 +239,7 @@ http.
         }
         else {
             var target = "http://localhost:" + app.get('port');
-            winston.log('info', 'target:' + target);
+            winston.log('debug', 'target:' + target);
             proxy.web(proxyReq, proxyRes, {
                 target: target,
                 secure: false
@@ -246,7 +251,7 @@ http.
         }
     }
     ).listen(PORT, function () {
-        winston.log('info', 'listening on port:' + PORT);
+        winston.log('info', 'proxy to main server on port:' + PORT);
     });
 
 
@@ -263,4 +268,10 @@ proxy.on('proxyRes', function (res, req) {
     // res.on('data', function (chunk) {
     //     data.push(chunk);
     // });
+});
+
+
+var mainAppServer = app.listen(0,function() {
+    winston.info('main application listening on port: ' + mainAppServer.address().port);
+    app.set('port',mainAppServer.address().port)
 });
