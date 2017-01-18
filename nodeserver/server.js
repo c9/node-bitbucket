@@ -20,12 +20,12 @@ var envparams = params.env || {};
 envvars = extend(envvars, params.env);
 
 require('dotenv').config();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 var ip = envvars.IP || '0.0.0.0';
 var init = envvars.INIT || false;
 
-const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL;
+const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'debug';
 const NEXMO_API_KEY = envvars.NEXMO_API_KEY || '123';
 const NEXMO_API_SECRET = envvars.NEXMO_API_SECRET || '123';
 const NEXMO_BASE_URL = envvars.NEXMO_BASE_URL || 'http://localhost:3100';
