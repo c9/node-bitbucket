@@ -19,6 +19,13 @@ module.exports = function (opts) {
 
     var todos = opts.todos;
 
+    var io = opts.io;
+
+  io.on('connection', function (socket) {
+    socket.emit('info', { data: 'connected' });
+  });
+
+  io.emit('info','hello');
 
     module.router = router;
 
@@ -66,6 +73,16 @@ module.exports = function (opts) {
     router.post('/:id', function (req, res) {
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
+        todos.insert(req.body);
+        res.status(201).end();
+        return;
+    });
+
+    router.post('/reminder', function (req, res) {
+        winston.debug('request params=' + JSON.stringify(req.params));
+        winston.debug('request body=' + JSON.stringify(req.body));
+        io.emit('info','hello');
+
         todos.insert(req.body);
         res.status(201).end();
         return;

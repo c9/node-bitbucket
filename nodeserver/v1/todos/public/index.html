@@ -1,11 +1,46 @@
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
-  var socketUrl = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
-  var socket = io(socketUrl);
-  socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-  });
+    // var socketUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+    var socket = io();
+    socket.on('news', function (data) {
+        console.log(data);
+        // var notification = new Notification(JSON.stringify(data));
+        socket.emit('my other event', { my: 'data' });
+    });
+
+    socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('my other event', { my: 'data' });
+
+    });
+
+(function() {
+        if (!("Notification" in window)) {
+            // alert("This browser does not support desktop notification");
+        }
+        else if (Notification.permission !== 'granted' 
+        && Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                // If the user accepts, let's create a notification
+                if (permission === "granted") {
+                    var notification = new Notification("You have subscribed");
+                }
+            });
+        }
+})();
+</script>
+
+
+<script>
+    // var socketUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+    var socket = io('/v1/todos');
+    socket.on('reminder', function (data) {
+        var notification = new Notification(JSON.stringify(data));
+    });
+
+    socket.on('info', function (data) {
+        console.log(JSON.stringify(data));
+    });
 </script>
 
 

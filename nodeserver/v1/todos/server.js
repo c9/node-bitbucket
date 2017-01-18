@@ -30,13 +30,13 @@ MongoClient.connect(MONGO_URI, function (err, db) {
 
   });
 
-  const nsp = io.of('/v1/todods');
+  const nsp = io.of('/v1/todos');
 
   app.use('/v1/todos', require('./main.js')({
     winston: logger,
     todos: todos,
     io: nsp
-  }).router)
+  }).router);
 
 
 
