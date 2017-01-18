@@ -69,10 +69,10 @@ var winston = logger = new winston.Logger({
     exitOnError: false
 });
 
-winston.info("console_log_level:"+CONSOLE_LOG_LEVEL);
+winston.info("console_log_level:" + CONSOLE_LOG_LEVEL);
 
 process.on('uncaughtException', function (err) {
-    logger.error('uncaughtException', { message : err.message, stack : err.stack }); // logging with MetaData
+    logger.error('uncaughtException', { message: err.message, stack: err.stack }); // logging with MetaData
     process.exit(1); // exit with failure
 });
 
@@ -91,6 +91,23 @@ const MONGO_URI = envvars.MONGO_URI || 'mongodb://localhost:27017';
 var main_application;
 MongoClient.connect(MONGO_CONNECTION, function (err, db) {
     mongo_db = db;
+
+    var server = require('http').Server(app);
+
+    io = require('socket.io')(server);
+
+    // server.listen(0, function () {
+    // winston.info('todo app listening on port' + server.address().port);
+
+    // });
+
+    var server = server.listen(0, function () {
+        winston.info('main application listening on port: ' + server.address().port);
+        app.set('port', server.address().port)
+    });
+
+    todosnsp = io.of('/v1/todos');
+
     addVoiceRouter();
     addTodosRouter();
 });
@@ -101,7 +118,8 @@ function addTodosRouter() {
 
     app.use('/v1/todos', require('./v1/todos/main.js')({
         winston: logger,
-        todos: todos
+        db: mongo_db,
+        io: todosnsp
     }).router);
 }
 
@@ -271,7 +289,5 @@ proxy.on('proxyRes', function (res, req) {
 });
 
 
-var mainAppServer = app.listen(0,function() {
-    winston.info('main application listening on port: ' + mainAppServer.address().port);
-    app.set('port',mainAppServer.address().port)
-});
+
+
