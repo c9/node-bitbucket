@@ -15,6 +15,9 @@ const MONGO_URI = process.env.MONGO_URI;
 const TODOS_APP_PORT = process.env.TODOS_APP_PORT;
 
 
+var passport = require('passport');
+
+
 //voice application setup
 MongoClient.connect(MONGO_URI, function (err, db) {
   const database = db;
@@ -23,9 +26,25 @@ MongoClient.connect(MONGO_URI, function (err, db) {
 
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
+  app.use(passport.initialize());
+  app.use(passport.session());
+  passport.serializeUser(function (user, done) {
+    done(null, user);
+  });
+
+  passport.deserializeUser(function (user, done) {
+    done(null, user);
+  });
+
+
+  passport.authenticate('local');
 
 
   app.use("/v1/todos/public", express.static(__dirname + "/public"));
+
+  app.use("/public", express.static(__dirname + "/../../public"));
+
+
   var server = require('http').Server(app);
   const io = require('socket.io')(server);
 

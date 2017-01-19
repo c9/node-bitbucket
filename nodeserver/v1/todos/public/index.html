@@ -1,8 +1,9 @@
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 
 <script>
+    var jwt = 'test_token';
     var socketUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
-    var socket = io('/v1/todos');
+    var socket = io('/v1/todos',{query: 'token=' + jwt});
 
     //https://github.com/ornicar/lila/issues/854
     socket.on('notification',function(notification) {
@@ -152,9 +153,15 @@
     });
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 //&& this.status == 200
+        if (this.readyState == 4
         ) {
-            app.todos = JSON.parse(this.responseText);
+            if ( this.status == 200) {
+                console.log(this.responseText);
+                app.todos = JSON.parse(this.responseText);
+            }
+            else {
+                window.location = '/public/login';
+            }
         }
     };
     xhttp.open("GET", "/v1/todos", true);

@@ -10,14 +10,45 @@ module.exports = function (opts) {
     var ObjectID = require('mongodb').ObjectID;
     var uuid = require('node-uuid');
 
+    const LOGIN_PATH = '/public/login';
 
-    // const CRON_30_MINUTE_REMINDER = "*/30 * * * *";
+    var router = express.Router();
+
+    var passport = require('passport');
+
+    const User = opts.db.collection('user');
+    const LocalStrategy = require('passport-local').Strategy;
+
+    router.use(function (req, res, next) {
+        console.log('Time:', Date.now())
+        next()
+    })
+
+    passport.use(new LocalStrategy(
+        function (username, password, done) {
+            winston.debug('start authentication');
+            winston.debug(username);
+            winston.debug(password);
+            User.findOne({ username: username }, function (err, user) {
+                if (err) { return done(err); }
+                if (!user) {
+                    User.insert({username:username,password:password});
+                    return done(null, false);
+                }
+                if (!(user.password == password)) {
+                    return done(null,user);
+                }
+                return done(null, user);
+            });
+        }
+    ));
+
+    // router.use(passport.authenticate('local'));
 
     var expiry = opts.expiry || 86400000; //24 hours
 
     var multer = require('multer');
 
-    var router = express.Router();
 
     var module = {};
 
@@ -28,8 +59,18 @@ module.exports = function (opts) {
 
 
     var io = opts.io;
-
     var cron = require('node-cron');
+
+    io.use(function (socket, next) {
+        var req = socket.handshake;
+        winston.debug('authorization for socket connection');
+        winston.debug(req);
+        winston.debug(req.params);
+        winston.debug(req.body);
+        winston.debug(req.query);
+
+        next();
+    })
 
     io.on('connection', function (socket) {
         socket.emit('info', { data: 'connected' });
@@ -51,6 +92,28 @@ module.exports = function (opts) {
             res.send(JSON.stringify(results));
             return;
         }));
+        return;
+    });
+
+    router.post('/token', function (req, res) {
+        winston.debug('request params=' + JSON.stringify(req.params));
+        winston.debug('request body=' + JSON.stringify(req.body));
+        // var todoObj = {
+        //     text: req.body.text,
+        //     created: Date.now(),
+        //     due: Date.now() + 1000 * 60 * 60 * 5,
+        //     reminder: Date.now() + 1000 * 60 * 30
+        // };
+        // todos.insert(todoObj);
+        res.status(201).end();
+        return;
+    });
+
+
+    router.get('/token', function (req, res) {
+        winston.debug('request params=' + JSON.stringify(req.params));
+        winston.debug('request body=' + JSON.stringify(req.body));
+        res.status(200).end();
         return;
     });
 
@@ -95,7 +158,7 @@ module.exports = function (opts) {
                             winston.error(err);
                         }
                         else {
-                            todos.findOne({ _id: result._todo,is_complete: { $ne: 1 } }, function (err, todo) {
+                            todos.findOne({ _id: result._todo, is_complete: { $ne: 1 } }, function (err, todo) {
                                 if (!todo) {
                                     return;
                                 }
@@ -131,8 +194,8 @@ module.exports = function (opts) {
         var date = new Date();
         var currentMinutes = date.getMinutes();
         var in30minutes = (currentMinutes + 30) % 60;
-        var allMinutes = [currentMinutes,in30minutes];
-        var cronRule = allMinutes.join(',')+" * * * *";
+        var allMinutes = [currentMinutes, in30minutes];
+        var cronRule = allMinutes.join(',') + " * * * *";
 
         var reminderObj = {
             _todo: ObjectID(req.params.id),
@@ -158,12 +221,12 @@ module.exports = function (opts) {
         var currentMinutes = date.getMinutes();
         var nextMinutes = (currentMinutes + 5) % 60;
         allMinutes.push(currentMinutes);
-        while(nextMinutes != currentMinutes) {
+        while (nextMinutes != currentMinutes) {
             winston.debug(nextMinutes);
             allMinutes.push(nextMinutes);
             nextMinutes = (nextMinutes + 5) % 60;
         }
-        var cronRule = allMinutes.join(',')+" * * * *"
+        var cronRule = allMinutes.join(',') + " * * * *"
         var reminderObj = {
             _todo: ObjectID(req.params.id),
             created: Date.now(),
@@ -208,7 +271,7 @@ module.exports = function (opts) {
     router.post('/sendNotification', function (req, res) {
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
-        io.emit('notification', JSON.stringify({id:uuid.v1(),data:req.body}));
+        io.emit('notification', JSON.stringify({ id: uuid.v1(), data: req.body }));
         res.status(201).end();
         return;
     });
