@@ -109,7 +109,7 @@ MongoClient.connect(MONGO_CONNECTION, function (err, db) {
 
     todosnsp = io.of('/v1/todos');
 
-    // addVoiceRouter();
+    addVoiceRouter();
     addTodosRouter();
     addLoginRouter();
 });

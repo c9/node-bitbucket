@@ -17,7 +17,6 @@ const TODOS_APP_PORT = process.env.TODOS_APP_PORT;
 
 
 
-//voice application setup
 MongoClient.connect(MONGO_URI, function (err, db) {
   const database = db;
   const todos = database.collection('todos');
