@@ -108,7 +108,8 @@ module.exports = function (opts) {
         function (req, res) {
             winston.debug(req.isAuthenticated());
             if (!req.isAuthenticated()) {
-                res.redirect('/public/login');
+                return res.redirect('/public/login');
+                
             }
             winston.debug(req.user);
             res.send(JSON.stringify({ user: req.user }));

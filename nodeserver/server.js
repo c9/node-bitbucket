@@ -127,9 +127,8 @@ function addLoginRouter() {
         passport: passport
     }).router);
 
-    app.use("/v1/todos/public", express.static(__dirname + "/public"));
 
-    app.use("/public", express.static(__dirname + "/../../public"));
+    app.use("/public", express.static(__dirname + "/public"));
 }
 
 function addTodosRouter() {
