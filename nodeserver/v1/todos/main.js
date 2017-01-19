@@ -14,34 +14,25 @@ module.exports = function (opts) {
 
     var router = express.Router();
 
-    var passport = require('passport');
+    var bcrypt = require('bcrypt');
+
 
     const User = opts.db.collection('user');
-    const LocalStrategy = require('passport-local').Strategy;
 
     router.use(function (req, res, next) {
-        console.log('Time:', Date.now())
-        next()
+        winston.debug('authentication status');
+        winston.debug(req.isAuthenticated());
+        winston.debug(req.user);
+        // if (!req.isAuthenticated()) {
+        //     res.status(400);
+        //     res.end();
+        //     return;
+        // }
+        next();
     })
 
-    passport.use(new LocalStrategy(
-        function (username, password, done) {
-            winston.debug('start authentication');
-            winston.debug(username);
-            winston.debug(password);
-            User.findOne({ username: username }, function (err, user) {
-                if (err) { return done(err); }
-                if (!user) {
-                    User.insert({username:username,password:password});
-                    return done(null, false);
-                }
-                if (!(user.password == password)) {
-                    return done(null,user);
-                }
-                return done(null, user);
-            });
-        }
-    ));
+
+
 
     // router.use(passport.authenticate('local'));
 
@@ -84,7 +75,11 @@ module.exports = function (opts) {
 
 
     router.get('/', function (req, res) {
-        todos.find().sort({ "is_complete": 1, "due": 1 }).toArray((function (err, results) {
+        todos.find({
+            "user_id": req.isAuthenticated() ? req.user._id : null
+        }).sort({
+            "is_complete": 1, "due": 1,
+        }).toArray((function (err, results) {
             if (err) {
                 winston.error(err);
             }
@@ -124,7 +119,8 @@ module.exports = function (opts) {
             text: req.body.text,
             created: Date.now(),
             due: Date.now() + 1000 * 60 * 60 * 5,
-            reminder: Date.now() + 1000 * 60 * 30
+            reminder: Date.now() + 1000 * 60 * 30,
+            user_id: req.isAuthenticated() ? req.user._id : null
         };
         todos.insert(todoObj);
         res.status(201).end();
