@@ -3,7 +3,7 @@ node_js:
   - 6
 env:
 - NODE_ENV=TEST
-- EXPRESS_SESSION_SECRET=1234
+- CXX=g++-4.8
 services:
   - mongodb
 script:
@@ -13,3 +13,10 @@ script:
   - npm test
 before_script:
   - sleep 1
+addons: 
+  apt: 
+    sources: 
+      - ubuntu-toolchain-r-test 
+    packages: 
+      - gcc-4.8
+      - g++-4.8
