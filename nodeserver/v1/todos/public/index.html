@@ -1,48 +1,25 @@
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-<script>
-    // var socketUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
-    var socket = io();
-    socket.on('news', function (data) {
-        console.log(data);
-        // var notification = new Notification(JSON.stringify(data));
-        socket.emit('my other event', { my: 'data' });
-    });
-
-    socket.on('news', function (data) {
-        console.log(data);
-        socket.emit('my other event', { my: 'data' });
-    });
-
-(function() {
-        if (!("Notification" in window)) {
-            // alert("This browser does not support desktop notification");
-        }
-        else if (Notification.permission !== 'granted' 
-        && Notification.permission !== 'denied') {
-            Notification.requestPermission(function (permission) {
-                // If the user accepts, let's create a notification
-                if (permission === "granted") {
-                    var notification = new Notification("You have subscribed");
-                }
-            });
-        }
-})();
-</script>
-
 
 <script>
     var socketUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
     var socket = io('/v1/todos');
 
-    socket.on('reminder',function(data) {
-        var data = JSON.parse(data);
-        console.log(data);
-        console.log(data.text);
-        var notification = new Notification(data.text);
+    //https://github.com/ornicar/lila/issues/854
+    socket.on('notification',function(notification) {
+        var lastNotificationId = localStorage.getItem('lastNotificationId');
+        var notification = JSON.parse(notification);
+
+        if (notification.id != lastNotificationId) {
+            lastNotificationId = localStorage.setItem('lastNotificationId',notification.id);
+        }
+        else {
+            console.log(notification);
+            var notification = new Notification(notification.data.text);
             notification.onclick = function () {
                 window.open(socketUrl + '/v1/todos/public');
             };
-    })
+        }
+    });
 
     socket.on('info', function (data) {
         console.log(JSON.stringify(data));
@@ -63,7 +40,9 @@
 
                 <button :data-index="index" v-on:click="deleteTodo">Delete</button>
                 <button v-if="!todo.is_complete" :data-index="index" v-on:click="add30minutereminder">Add 30 minute reminder</button>
+                <button v-if="!todo.is_complete" :data-index="index" v-on:click="add5minutereminder">Add 5 minute reminder</button>
                 <button v-if="!todo.is_complete" :data-index="index" v-on:click="complete">Complete</button>
+
             </div>
         </li>
     </ol>
@@ -144,6 +123,15 @@
                 console.log(todo);
                 var xhttp = new XMLHttpRequest();
                 xhttp.open("POST", "/v1/todos/" + todo._id + "/add30minutereminder");
+                xhttp.send();
+                location.reload();
+            },
+                        add5minutereminder: function(event) {
+                var key = event.target.getAttribute('data-index')
+                var todo = this.todos[key];
+                console.log(todo);
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/v1/todos/" + todo._id + "/add5minutereminder");
                 xhttp.send();
                 location.reload();
             }

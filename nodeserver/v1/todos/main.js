@@ -8,8 +8,10 @@ module.exports = function (opts) {
     var current_files = {};
     var doDelete = true;
     var ObjectID = require('mongodb').ObjectID;
+    var uuid = require('node-uuid');
 
-    const CRON_30_MINUTE_REMINDER = "*/1800 * * * * *";
+
+    // const CRON_30_MINUTE_REMINDER = "*/30 * * * *";
 
     var expiry = opts.expiry || 86400000; //24 hours
 
@@ -93,15 +95,20 @@ module.exports = function (opts) {
                             winston.error(err);
                         }
                         else {
-                            todos.findOne({ _id: result._todo,is_complete: { $ne: 1 } }, function (err, result) {
-                                if (!result) {
+                            todos.findOne({ _id: result._todo,is_complete: { $ne: 1 } }, function (err, todo) {
+                                if (!todo) {
                                     return;
                                 }
                                 if (err) {
                                     winston.error(err);
                                 }
                                 else {
-                                    io.emit('reminder', JSON.stringify(result));
+                                    var result = {
+                                        id: uuid.v1(),
+                                        type: "todo",
+                                        data: todo
+                                    }
+                                    io.emit('notification', JSON.stringify(result));
                                     winston.debug(result); // output all records
                                 }
                             });
@@ -121,10 +128,46 @@ module.exports = function (opts) {
     router.post('/:id/add30minutereminder', function (req, res) {
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
+        var date = new Date();
+        var currentMinutes = date.getMinutes();
+        var in30minutes = (currentMinutes + 30) % 60;
+        var allMinutes = [currentMinutes,in30minutes];
+        var cronRule = allMinutes.join(',')+" * * * *";
+
         var reminderObj = {
             _todo: ObjectID(req.params.id),
             created: Date.now(),
-            reminder: CRON_30_MINUTE_REMINDER
+            reminder: cronRule
+        };
+
+
+
+        todo_reminders.insertOne(reminderObj, function (error, result) {
+            winston.debug('result:' + JSON.stringify(result));
+            addScheduledReminder(result.insertedId);
+        });
+        res.status(201).end();
+        return;
+    });
+
+    router.post('/:id/add5minutereminder', function (req, res) {
+        winston.debug('request params=' + JSON.stringify(req.params));
+        winston.debug('request body=' + JSON.stringify(req.body));
+        var date = new Date();
+        var allMinutes = [];
+        var currentMinutes = date.getMinutes();
+        var nextMinutes = (currentMinutes + 5) % 60;
+        allMinutes.push(currentMinutes);
+        while(nextMinutes != currentMinutes) {
+            winston.debug(nextMinutes);
+            allMinutes.push(nextMinutes);
+            nextMinutes = (nextMinutes + 5) % 60;
+        }
+        var cronRule = allMinutes.join(',')+" * * * *"
+        var reminderObj = {
+            _todo: ObjectID(req.params.id),
+            created: Date.now(),
+            reminder: cronRule
         };
 
         todo_reminders.insertOne(reminderObj, function (error, result) {
@@ -157,6 +200,15 @@ module.exports = function (opts) {
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
         io.emit('info', JSON.stringify(req.body));
+        res.status(201).end();
+        return;
+    });
+
+
+    router.post('/sendNotification', function (req, res) {
+        winston.debug('request params=' + JSON.stringify(req.params));
+        winston.debug('request body=' + JSON.stringify(req.body));
+        io.emit('notification', JSON.stringify({id:uuid.v1(),data:req.body}));
         res.status(201).end();
         return;
     });

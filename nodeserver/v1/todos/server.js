@@ -22,6 +22,7 @@ MongoClient.connect(MONGO_URI, function (err, db) {
   const app = express();
 
   app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
 
 
   app.use("/v1/todos/public", express.static(__dirname + "/public"));
