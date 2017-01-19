@@ -43,59 +43,6 @@ MongoClient.connect(MONGO_URI, function (err, db) {
     passport: passport
   }).router);
 
-  // const LocalStrategy = require('passport-local').Strategy;
-
-  // passport.use(new LocalStrategy(
-  //   function (username, password, done) {
-  //    winston.debug('start authentication');
-  //     winston.debug('start authentication');
-  //     winston.debug(username);
-  //     winston.debug(password);
-  //     User.findOne({ username: username }, function (err, user) {
-  //       if (err) { return done(err); }
-  //       if (!user) {
-  //         User.insert({ username: username, password: password });
-  //         return done(null, user);
-  //       }
-  //       if (!(user.password == password)) {
-  //         winston.debug('password does not match')
-  //         return done(null, user);
-  //       }
-  //       winston.debug('user found password match');
-  //       return done(null, user);
-  //     });
-  //   }
-  // ));
-
-  // const User = database.collection('user');
-
-  // passport.serializeUser(function (user, done) {
-  //   winston.debug('serializeUser');
-  //   winston.debug(user);
-  //   done(null, user._id);
-  // });
-
-  // passport.deserializeUser(function (id, done) {
-  //   winston.debug('deserializeUser');
-  //   winston.debug(id);
-  //   User.findOne({ _id: ObjectID(id) }, function (err, user) {
-  //     winston.debug(user);
-  //     if (err) {
-  //       winston.error(err);
-  //     }
-  //     done(err, user);
-  //   });
-  // });
-
-  // app.post('/login', 
-  //   passport.authenticate('local', { failureRedirect: '/login' }),
-  //   function(req, res) {
-  //     res.redirect('/');
-  //   });
-
-  //login end
-
-
   app.use("/v1/todos/public", express.static(__dirname + "/public"));
 
   app.use("/public", express.static(__dirname + "/../../public"));

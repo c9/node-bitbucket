@@ -1,11 +1,6 @@
 var bodyParser = require('body-parser');
 var express = require('express');
 
-
-var app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
 var extend = require('util')._extend;
 var envvars = process.env || {};
 
@@ -20,6 +15,17 @@ var envparams = params.env || {};
 envvars = extend(envvars, params.env);
 
 require('dotenv').config();
+
+
+var app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(require('cookie-parser')());
+
+app.use(require('express-session')({ 
+    secret: process.env.EXPRESS_SESSION_SECRET, 
+    resave: false, saveUninitialized: false }));
+
 const PORT = process.env.PORT || 3000;
 
 var ip = envvars.IP || '0.0.0.0';
@@ -90,16 +96,11 @@ const MONGO_URI = envvars.MONGO_URI || 'mongodb://localhost:27017';
 //voice application setup
 var main_application;
 MongoClient.connect(MONGO_CONNECTION, function (err, db) {
-    mongo_db = db;
+    database = mongo_db = db;
 
     var server = require('http').Server(app);
 
     io = require('socket.io')(server);
-
-    // server.listen(0, function () {
-    // winston.info('todo app listening on port' + server.address().port);
-
-    // });
 
     var server = server.listen(0, function () {
         winston.info('main application listening on port: ' + server.address().port);
@@ -108,9 +109,28 @@ MongoClient.connect(MONGO_CONNECTION, function (err, db) {
 
     todosnsp = io.of('/v1/todos');
 
-    addVoiceRouter();
+    // addVoiceRouter();
     addTodosRouter();
+    addLoginRouter();
 });
+
+function addLoginRouter() {
+    var passport = require('passport');
+
+
+    app.use(passport.initialize());
+    app.use(passport.session());
+
+    app.use('/v1', require(__dirname + '/v1/login/main.js')({
+        winston: logger,
+        database: database,
+        passport: passport
+    }).router);
+
+    app.use("/v1/todos/public", express.static(__dirname + "/public"));
+
+    app.use("/public", express.static(__dirname + "/../../public"));
+}
 
 function addTodosRouter() {
     const todos = mongo_db.collection('todos');

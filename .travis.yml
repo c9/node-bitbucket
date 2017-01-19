@@ -3,6 +3,7 @@ node_js:
   - 6
 env:
 - NODE_ENV=TEST
+- EXPRESS_SESSION_SECRET=1234
 services:
   - mongodb
 script:
