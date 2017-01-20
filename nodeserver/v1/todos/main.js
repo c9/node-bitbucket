@@ -75,9 +75,10 @@ module.exports = function (opts) {
 
 
     router.get('/', function (req, res) {
-        todos.find({
+        var query = {
             "user_id": req.isAuthenticated() ? req.user._id : null
-        }).sort({
+        };
+        todos.find(query).sort({
             "is_complete": 1, "due": 1,
         }).toArray((function (err, results) {
             if (err) {
