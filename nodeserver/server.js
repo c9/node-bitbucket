@@ -22,9 +22,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(require('cookie-parser')());
 
-app.use(require('express-session')({ 
-    secret: process.env.EXPRESS_SESSION_SECRET, 
-    resave: false, saveUninitialized: false }));
+app.use(require('express-session')({
+    secret: process.env.EXPRESS_SESSION_SECRET,
+    resave: false, saveUninitialized: false
+}));
 
 const PORT = process.env.PORT || 3000;
 
@@ -94,6 +95,10 @@ const MONGO_URI = envvars.MONGO_URI || 'mongodb://localhost:27017';
 
 
 //voice application setup
+var passport = require('passport');
+
+app.use(passport.initialize());
+app.use(passport.session());
 var main_application;
 MongoClient.connect(MONGO_CONNECTION, function (err, db) {
     database = mongo_db = db;
@@ -108,23 +113,19 @@ MongoClient.connect(MONGO_CONNECTION, function (err, db) {
     });
 
     todosnsp = io.of('/v1/todos');
+    addLoginRouter();
 
     addVoiceRouter();
     addTodosRouter();
-    addLoginRouter();
 });
 
 function addLoginRouter() {
-    var passport = require('passport');
-
-
-    app.use(passport.initialize());
-    app.use(passport.session());
 
     app.use('/v1', require(__dirname + '/v1/login/main.js')({
         winston: logger,
         database: database,
-        passport: passport
+        passport: passport,
+        // app: app
     }).router);
 
 
@@ -138,7 +139,9 @@ function addTodosRouter() {
     app.use('/v1/todos', require('./v1/todos/main.js')({
         winston: logger,
         db: mongo_db,
-        io: todosnsp
+        io: todosnsp,
+        // app: app
+
     }).router);
 }
 

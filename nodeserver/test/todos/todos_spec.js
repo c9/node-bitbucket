@@ -16,8 +16,8 @@ describe("todos endpoints", function () {
           'content-type': 'application/json'
         },
         body: JSON.stringify({
-          "username": "admin",
-          "password": "admin"
+          "username": "admin12345",
+          "password": "admin12345"
         }), //sets header to application/json and parses body as json
         uri: loginurl
       }, function (error, response, body) {
