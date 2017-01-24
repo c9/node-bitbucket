@@ -92,6 +92,7 @@ module.exports = function (opts) {
         });
     });
 
+    //http://passportjs.org/docs/authenticate
     router.post('/login', function (req, res, next) {
         return passport.authenticate('local', function (err, user, info) {
             if (err) { return next(err); }
@@ -99,12 +100,16 @@ module.exports = function (opts) {
             winston.debug(user);
 
             if (user !== false) {
-                res.setHeader('Content-Type', 'application/json; charset=utf-8');
-                res.status(201);
-                return res.end(JSON.stringify({
-                    "message": 'Success',
-                    status: "success"
-                }));
+                req.logIn(user, function (err) {
+                    if (err) { return next(err); }
+                    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+                    res.status(201);
+                    return res.send(JSON.stringify({
+                        "message": 'Success',
+                        status: "success"
+                    }));
+                });
+                return;
             }
             else {
                 res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -122,17 +127,6 @@ module.exports = function (opts) {
         })(req, res, next);
     });
 
-    // router.post('/login',
-    //     passport.authenticate('local'),
-    //     function (req, res) {
-    //         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    //         res.status(201);
-    //         res.end(JSON.stringify({
-    //             "message": 'Success',
-    //             status: "success"
-    //         }));
-    //     });
-
     router.get('/logout',
         function (req, res) {
             req.logout();
@@ -147,7 +141,7 @@ module.exports = function (opts) {
 
             }
             winston.debug(req.user);
-            res.send(JSON.stringify({ user: req.user }));
+            res.send(JSON.stringify(req.user ));
             res.end();
         });
 

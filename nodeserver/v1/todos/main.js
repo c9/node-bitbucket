@@ -85,6 +85,8 @@ module.exports = function (opts) {
                 winston.error(err);
             }
             winston.debug(results); // output all records
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
             res.send(JSON.stringify(results));
             return;
         }));
@@ -123,9 +125,14 @@ module.exports = function (opts) {
             reminder: Date.now() + 1000 * 60 * 30,
             user_id: req.isAuthenticated() ? req.user._id : null
         };
-        todos.insert(todoObj);
-        res.status(201).end();
-        return;
+        todos.insertOne(todoObj, function (error, result) {
+            todoObj._id = result.insertedId;
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.status(201).send(JSON.stringify(todoObj)).end();
+            return;
+        });
+
+
     });
 
     router.post('/:id/complete', function (req, res) {
