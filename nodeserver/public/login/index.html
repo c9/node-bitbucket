@@ -1,6 +1,58 @@
-<form action="/v1/login" method="POST">
+<form id="login" action="/v1/login" method="POST">
     <input name="username">
     <input type="password" name="password">
     <input type="submit">
-
 </form>
+
+
+<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+
+        // process the form
+        $('#login').submit(function (event) {
+            // get the form data
+            // there are many ways to get this data using jQuery (you can use the class or id also)
+            var formData = {
+                'username': $('input[name=username]').val(),
+                'password': $('input[name=password]').val(),
+            };
+
+            // process the form
+            $.ajax({
+                type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                url: '/v1/login', // the url where we want to POST
+                data: formData, // our data object
+                dataType: 'text', // what type of data do we expect back from the server
+                success: function (data) {
+                    console.log('success');
+                    console.log(data);
+                    window.location = "/v1/profile";
+                },
+                error: function (xhr, status, error) {
+                    console.log('error');
+
+                    console.log(status);
+                    console.log(error);
+                },
+                done: function () {
+                    console.log('done');
+                }
+            })
+            // .done(function (data) {
+            //     console.log("redirect on success");
+            //     // log data to the console so we can see
+            //     console.log(data);
+            //     window.location = "/v1/profile";
+
+            //     // here we will handle errors and validation messages
+            // });
+
+            // stop the form from submitting the normal way and refreshing the page
+            event.preventDefault();
+            // location.reload();
+        });
+
+    });
+
+</script>

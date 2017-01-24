@@ -92,11 +92,46 @@ module.exports = function (opts) {
         });
     });
 
-    router.post('/login',
-        passport.authenticate('local', { failureRedirect: '/login' }),
-        function (req, res) {
-            res.redirect('profile');
-        });
+    router.post('/login', function (req, res, next) {
+        return passport.authenticate('local', function (err, user, info) {
+            if (err) { return next(err); }
+
+            winston.debug(user);
+
+            if (user !== false) {
+                res.setHeader('Content-Type', 'application/json; charset=utf-8');
+                res.status(201);
+                return res.end(JSON.stringify({
+                    "message": 'Success',
+                    status: "success"
+                }));
+            }
+            else {
+                res.setHeader('Content-Type', 'application/json; charset=utf-8');
+                res.status(401);
+                return res.end(JSON.stringify({
+                    "message": 'Unauthorized',
+                    status: "unauthorized"
+                }));
+            }
+            if (!user) { return res.redirect('/login'); }
+            req.logIn(user, function (err) {
+                if (err) { return next(err); }
+                return res.redirect('/users/' + user.username);
+            });
+        })(req, res, next);
+    });
+
+    // router.post('/login',
+    //     passport.authenticate('local'),
+    //     function (req, res) {
+    //         res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    //         res.status(201);
+    //         res.end(JSON.stringify({
+    //             "message": 'Success',
+    //             status: "success"
+    //         }));
+    //     });
 
     router.get('/logout',
         function (req, res) {
@@ -109,7 +144,7 @@ module.exports = function (opts) {
             winston.debug(req.isAuthenticated());
             if (!req.isAuthenticated()) {
                 return res.redirect('/public/login');
-                
+
             }
             winston.debug(req.user);
             res.send(JSON.stringify({ user: req.user }));
