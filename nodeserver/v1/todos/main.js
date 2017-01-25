@@ -242,6 +242,12 @@ module.exports = function (opts) {
             winston.debug('result:' + JSON.stringify(result));
             addScheduledReminder(result.insertedId);
         });
+        res.setHeader('content-type', 'application/json; charset=utf-8');
+        res.status(201);
+        return res.send(JSON.stringify({
+            "message": 'Added a 5 minute reminder',
+            status: "success"
+        }));
         res.status(201).end();
         return;
     });

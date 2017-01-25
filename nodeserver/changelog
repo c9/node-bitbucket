@@ -1,0 +1,3 @@
+* added todos
+* added login and authenticated todos. stores user_id
+* fix socket connection through proxy
