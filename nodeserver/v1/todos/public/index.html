@@ -3,7 +3,7 @@
 <script>
     var jwt = 'test_token';
     var socketUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
-    var socket = io('/v1/todos',{query: 'token=' + jwt});
+    var socket = io('/v1/todos');//,{query: 'token=' + jwt});
 
     //https://github.com/ornicar/lila/issues/854
     socket.on('notification',function(notification) {

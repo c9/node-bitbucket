@@ -29,6 +29,8 @@ app.use(require('express-session')({
 
 const PORT = process.env.PORT || 3000;
 
+const PROXIED_PORT = process.env.PROXIED_PORT || 0;
+
 var ip = envvars.IP || '0.0.0.0';
 var init = envvars.INIT || false;
 
@@ -107,6 +109,21 @@ winston.loggers.add('todos', {
     }
 });
 
+winston.loggers.add('proxy-server', {
+    console: {
+        level: 'debug',
+        colorize: true
+    },
+    papertrail: {
+        host: 'logs5.papertrailapp.com',
+        port: 26785,
+        program: 'nodeserver',
+        level: PAPERTRAIL_LEVEL,
+    }
+});
+
+var proxyLogger = winston.loggers.get('proxy-server');
+
 winston.info("console_log_level:" + CONSOLE_LOG_LEVEL);
 
 
@@ -135,9 +152,10 @@ MongoClient.connect(MONGO_CONNECTION, function (err, db) {
 
     io = require('socket.io')(server);
 
-    var server = server.listen(0, function () {
+    var server = server.listen(PROXIED_PORT, function () {
         winston.info('main application listening on port: ' + server.address().port);
-        app.set('port', server.address().port)
+        app.set('port', server.address().port);
+        setupProxy();
     });
 
     todosnsp = io.of('/v1/todos');
@@ -190,140 +208,185 @@ app.use(express.static(path.join(__dirname, 'public/')));
 
 
 
+function setupProxy() {
+    var ping = require('./v1/ping.js')({});
+    var fileapi = require('./v1/files/main.js')({ winston: winston });
+    var ftp = require('./v1/ftp/main.js')({ winston: winston });
 
-var ping = require('./v1/ping.js')({});
-var fileapi = require('./v1/files/main.js')({ winston: winston });
-var ftp = require('./v1/ftp/main.js')({ winston: winston });
+    app.use('/api/v1/files', fileapi.router);
+    app.use('/api/v1/ping', ping.router);
+    // app.use('/api/v1/ftp', ftp.router); //not important
 
-app.use('/api/v1/files', fileapi.router);
-app.use('/api/v1/ping', ping.router);
-// app.use('/api/v1/ftp', ftp.router); //not important
+    app.use('/ping', ping.router);
 
-app.use('/ping', ping.router);
+    //contains listen for io to work
+    // require('./dashboard/app.js')({ HOST: HOST, PORT: port, winston: winston, app: app });
 
-//contains listen for io to work
-// require('./dashboard/app.js')({ HOST: HOST, PORT: port, winston: winston, app: app });
+    var request = require('request');
+    var cron = require('node-cron');
 
-var request = require('request');
-var cron = require('node-cron');
-
-// cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
-//     var url = BASE_URL + '/ping';
-//     request.get({
-//         headers: { 'X-PING': 'PING' },
-//         url: url,
-//         followRedirect: false
-//     }, function (error, response, body) {
-//     });
-//     request.post({
-//         headers: { 'X-PING': 'PING' },
-//         url: url,
-//         followRedirect: false
-//     }, function (error, response, body) {
-//     });
-// });
-
-
-
-//proxy 
-var https = require('https');
-var http = require('http');
-var proxy = require('http-proxy').createProxyServer();
-request_body_array = [];
+    // cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
+    //     var url = BASE_URL + '/ping';
+    //     request.get({
+    //         headers: { 'X-PING': 'PING' },
+    //         url: url,
+    //         followRedirect: false
+    //     }, function (error, response, body) {
+    //     });
+    //     request.post({
+    //         headers: { 'X-PING': 'PING' },
+    //         url: url,
+    //         followRedirect: false
+    //     }, function (error, response, body) {
+    //     });
+    // });
 
 
-var privateKey = fs.readFileSync(__dirname + '/certs/localhost.key', 'utf8');
-var certificate = fs.readFileSync(__dirname + '/certs/localhost.crt', 'utf8');
-var credentials = { key: privateKey, cert: certificate };
 
-var uuid = require('node-uuid');
-http.
-    createServer(
-    function (req, res) {
-        var proxyReq = req;
-        var proxyRes = res;
+    //proxy 
+    var https = require('https');
+    var http = require('http');
+    var httpProxy = require('http-proxy');
+    var proxy = httpProxy.createProxyServer();
 
-        var proxy_uuid = uuid.v1();
+    // var proxyServer = http.createServer(function (req, res) {
+    //   proxy.web(req, res);
+    // });
 
-        var url = require('url');
-        var path = url.parse(proxyReq.url, true).pathname;
-        if (path.indexOf('/private/Downloads') !== -1) {
-            var www_authenticate = require('www-authenticate');
-            var authenticator = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
+    // Listen to the `upgrade` event and proxy the
+    // WebSocket requests as well.
 
-            var options = {
-                url: FTP_BASE + path,
-                method: 'GET',
-                path: path,
-                rejectUnauthorized: false,
-                headers: proxyReq.headers
-            };
-            request(options,
-                function (err, res, body) {
-                    console.log(res.statusCode);
-                    console.log(res.headers);
-                    console.log(body);
-                    if (err) {
-                        console.log(err);
-                        return;
+    request_body_array = [];
+
+
+    var privateKey = fs.readFileSync(__dirname + '/certs/localhost.key', 'utf8');
+    var certificate = fs.readFileSync(__dirname + '/certs/localhost.crt', 'utf8');
+    var credentials = { key: privateKey, cert: certificate };
+
+    var uuid = require('node-uuid');
+
+
+
+    // httpProxy.createServer({
+    //     target: 'ws://localhost:' + app.get('port'),
+    //     ws: true
+    // }).listen(PORT);
+
+    var httpServer = http.
+        createServer(
+        function (req, res) {
+            proxyLogger.debug('proxyrequest', req.headers);
+            var proxyReq = req;
+            var proxyRes = res;
+
+            var proxy_uuid = uuid.v1();
+
+            var url = require('url');
+            var path = url.parse(proxyReq.url, true).pathname;
+            if (path.indexOf('/private/Downloads') !== -1) {
+                var www_authenticate = require('www-authenticate');
+                var authenticator = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
+
+                var options = {
+                    url: FTP_BASE + path,
+                    method: 'GET',
+                    path: path,
+                    rejectUnauthorized: false,
+                    headers: proxyReq.headers
+                };
+                request(options,
+                    function (err, res, body) {
+                        console.log(res.statusCode);
+                        console.log(res.headers);
+                        console.log(body);
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        if (res.statusCode === 401) {
+                            authenticator.get_challenge(res);
+                            authenticator.authenticate_request_options(options);
+                            proxyReq.headers['authorization'] = options.headers['authorization'];
+                        }
+
+                        console.log(options);
+                        console.log(req.headers);
+
+                        var target = FTP_BASE;
+
+                        console.log(req.headers);
+
+                        proxy.web(proxyReq, proxyRes, {
+                            target: target,
+                            secure: false,
+                            // ws: true
+                        }, function (err) {
+                            winston.log('error', err);
+                            proxyRes.writeHead(502);
+                            proxyRes.end("There was an error. Please try again");
+                        });
                     }
-                    if (res.statusCode === 401) {
-                        authenticator.get_challenge(res);
-                        authenticator.authenticate_request_options(options);
-                        proxyReq.headers['authorization'] = options.headers['authorization'];
-                    }
-
-                    console.log(options);
-                    console.log(req.headers);
-
-                    var target = FTP_BASE;
-
-                    console.log(req.headers);
-
-                    proxy.web(proxyReq, proxyRes, {
-                        target: target,
-                        secure: false
-                    }, function (err) {
-                        winston.log('error', err);
-                        proxyRes.writeHead(502);
-                        proxyRes.end("There was an error. Please try again");
-                    });
-                }
-            );
+                );
+            }
+            else {
+                // var target = "http://localhost:" + app.get('port');
+                // winston.log('debug', 'target:' + target);
+                proxy.web(proxyReq, proxyRes, {
+                    target: {
+                        host: 'localhost',
+                        port: app.get('port')
+                    },
+                    secure: false
+                }, function (err) {
+                    winston.log('error', err);
+                    proxyRes.writeHead(502);
+                    proxyRes.end("There was an error. Please try again");
+                });
+            }
         }
-        else {
-            var target = "http://localhost:" + app.get('port');
-            winston.log('debug', 'target:' + target);
-            proxy.web(proxyReq, proxyRes, {
-                target: target,
-                secure: false
-            }, function (err) {
-                winston.log('error', err);
-                proxyRes.writeHead(502);
-                proxyRes.end("There was an error. Please try again");
-            });
+        ).listen(PORT, function () {
+            winston.log('info', 'proxy to main server on port:' + PORT);
+        });
+
+
+    var wsProxy = new httpProxy.createProxyServer({
+        target: {
+            host: 'localhost',
+            port: app.get('port')
         }
-    }
-    ).listen(PORT, function () {
-        winston.log('info', 'proxy to main server on port:' + PORT);
+    });
+
+    httpServer.on('clientError', (err, socket) => {
+        console.log('server clientError', err);
+        socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+    });
+
+    httpServer.on('upgrade', function (req, socket, head) {
+        winston.info('upgrade event');
+        winston.info('head', head);
+        winston.info('haeders', req.headers);
+        wsProxy.ws(req, socket, head, function (err) {
+            winston.log('error', err);
+        });
     });
 
 
 
-proxy.on('proxyRes', function (res, req) {
-    // var lvl = 'info';
+    proxy.on('proxyRes', function (res, req) {
+        // var lvl = 'info';
 
-    // console.log(res.headers);
+        // console.log(res.headers);
 
-    // var host = req.headers.host;
-    // var data = [];
-    // res.headers['proxy-uuid'] = req.headers['proxy-uuid'];
+        // var host = req.headers.host;
+        // var data = [];
+        // res.headers['proxy-uuid'] = req.headers['proxy-uuid'];
 
-    // res.on('data', function (chunk) {
-    //     data.push(chunk);
-    // });
-});
+        // res.on('data', function (chunk) {
+        //     data.push(chunk);
+        // });
+    });
 
 
+}
 
 

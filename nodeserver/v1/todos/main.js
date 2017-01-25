@@ -64,7 +64,7 @@ module.exports = function (opts) {
     })
 
     io.on('connection', function (socket) {
-        winston.debug('emit info',{data:'connected'});
+        winston.debug('emit info', { data: 'connected' });
         socket.emit('info', JSON.stringify({ data: 'connected' }));
     });
 
@@ -86,7 +86,7 @@ module.exports = function (opts) {
                 winston.error(err);
             }
             winston.debug(results); // output all records
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.setHeader('content-type', 'application/json; charset=utf-8');
 
             res.send(JSON.stringify(results));
             return;
@@ -128,7 +128,7 @@ module.exports = function (opts) {
         };
         todos.insertOne(todoObj, function (error, result) {
             todoObj._id = result.insertedId;
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.setHeader('content-type', 'application/json; charset=utf-8');
             res.status(201).send(JSON.stringify(todoObj)).end();
             return;
         });
@@ -276,6 +276,8 @@ module.exports = function (opts) {
     router.post('/sendNotification', function (req, res) {
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
+        res.setHeader('content-type', 'application/json; charset=utf-8');
+        winston.debug(io);
         io.emit('notification', JSON.stringify({ id: uuid.v1(), data: req.body }));
         res.status(201).end();
         return;
@@ -285,12 +287,6 @@ module.exports = function (opts) {
     router.post('/:id', function (req, res) {
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
-        todos.remove({ _id: ObjectID(req.params.id) }, { w: 1 }, function (error, result) {
-            if (error) {
-                // winston.error(error);
-            }
-            winston.debug(result.result);
-        });
         todos.updateOne({ _id: ObjectID(req.params.id) },
             { $set: req.params });
         res.status(201).end();
