@@ -48,24 +48,40 @@ const fs = require('fs');
 const path = require('path');
 var winston = require('winston');
 
+var morgan = require('morgan');
+
+process.on('uncaughtException', function (err) {
+    winston.error('uncaughtException', { message: err.message, stack: err.stack }); // logging with MetaData
+    process.exit(1); // exit with failure
+});
+
+
+winston.stream = {
+    write: function (message, encoding) {
+        winston.log('debug', message);
+    }
+};
+
+app.use(morgan('combined', { stream: winston.stream }));
+
 var Papertrail = require('winston-papertrail').Papertrail;
-var winston = logger = new winston.Logger({
+winston.configure({
     transports: [
         new winston.transports.File({
             level: 'info',
             filename: path.join(__dirname, 'access.log'),
-            handleExceptions: true,
+            // handleExceptions: true,
             maxsize: 5242880, //5MB
             maxFiles: 5,
             colorize: false
         }),
         new winston.transports.Console({
             level: CONSOLE_LOG_LEVEL,
-            handleExceptions: true,
+            // handleExceptions: true,
             colorize: true
         }),
         new Papertrail({
-            handleExceptions: true,
+            // handleExceptions: true,
             host: 'logs5.papertrailapp.com',
             port: 26785,
             program: 'nodeserver',
@@ -73,15 +89,27 @@ var winston = logger = new winston.Logger({
         })
 
     ],
-    exitOnError: false
+});
+
+
+
+
+winston.loggers.add('todos', {
+    console: {
+        level: 'debug',
+        colorize: true
+    },
+    papertrail: {
+        host: 'logs5.papertrailapp.com',
+        port: 26785,
+        program: 'nodeserver',
+        level: PAPERTRAIL_LEVEL,
+    }
 });
 
 winston.info("console_log_level:" + CONSOLE_LOG_LEVEL);
 
-process.on('uncaughtException', function (err) {
-    logger.error('uncaughtException', { message: err.message, stack: err.stack }); // logging with MetaData
-    process.exit(1); // exit with failure
-});
+
 
 const PROTOCOL = envvars.PROTOCOL || 'http';
 const HOST = envvars.HOST || 'localhost';
@@ -122,7 +150,7 @@ MongoClient.connect(MONGO_CONNECTION, function (err, db) {
 function addLoginRouter() {
 
     app.use('/v1', require(__dirname + '/v1/login/main.js')({
-        winston: logger,
+        winston: winston,
         database: database,
         passport: passport,
         // app: app
@@ -137,7 +165,7 @@ function addTodosRouter() {
     app.use("/v1/todos/public", express.static(__dirname + "/v1/todos/public"));
 
     app.use('/v1/todos', require('./v1/todos/main.js')({
-        winston: logger,
+        winston: winston.loggers.get('todos'),
         db: mongo_db,
         io: todosnsp,
         // app: app
@@ -157,20 +185,6 @@ function addVoiceRouter() {
     });
     app.use('/api/v1/voice', voice.router);
 }
-
-var morgan = require('morgan');
-
-
-logger.stream = {
-    write: function (message, encoding) {
-        logger.log('debug', message);
-    }
-};
-
-// create a write stream (in append mode)
-
-// setup the logger
-app.use(morgan('combined', { stream: logger.stream }));
 
 app.use(express.static(path.join(__dirname, 'public/')));
 

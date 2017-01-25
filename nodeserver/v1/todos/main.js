@@ -64,7 +64,8 @@ module.exports = function (opts) {
     })
 
     io.on('connection', function (socket) {
-        socket.emit('info', { data: 'connected' });
+        winston.debug('emit info',{data:'connected'});
+        socket.emit('info', JSON.stringify({ data: 'connected' }));
     });
 
     io.emit('info', 'hello');
