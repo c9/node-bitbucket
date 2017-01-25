@@ -80,7 +80,7 @@ module.exports = function (opts) {
             "user_id": req.isAuthenticated() ? req.user._id : null
         };
         todos.find(query).sort({
-            "is_complete": 1, "due": 1,
+            "is_complete": 1, "created": -1,
         }).toArray((function (err, results) {
             if (err) {
                 winston.error(err);
