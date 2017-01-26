@@ -29,6 +29,12 @@ module.exports = function (opts,callback) {
         resave: false, saveUninitialized: false
     }));
 
+
+
+    require(__dirname + '/app/main.js')({
+    app: app
+    });
+
     const PORT = process.env.PORT || 0;
 
     const PROXIED_PORT = process.env.PROXIED_PORT || 0;
@@ -227,21 +233,21 @@ module.exports = function (opts,callback) {
         var request = require('request');
         var cron = require('node-cron');
 
-        // cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
-        //     var url = BASE_URL + '/ping';
-        //     request.get({
-        //         headers: { 'X-PING': 'PING' },
-        //         url: url,
-        //         followRedirect: false
-        //     }, function (error, response, body) {
-        //     });
-        //     request.post({
-        //         headers: { 'X-PING': 'PING' },
-        //         url: url,
-        //         followRedirect: false
-        //     }, function (error, response, body) {
-        //     });
-        // });
+        cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
+            var url = BASE_URL + '/ping';
+            request.get({
+                headers: { 'X-PING': 'PING' },
+                url: url,
+                followRedirect: false
+            }, function (error, response, body) {
+            });
+            request.post({
+                headers: { 'X-PING': 'PING' },
+                url: url,
+                followRedirect: false
+            }, function (error, response, body) {
+            });
+        });
 
 
 

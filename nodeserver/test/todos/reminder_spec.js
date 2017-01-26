@@ -10,6 +10,8 @@ describe("reminders send socket events", function () {
 
 
   it('successfully start server with mocked time', function (done) {
+    this.timeout(5000); //creating a new server for testing can take longer than 2 seconds
+
     var main = require(__dirname + '/../../main.js')({}, function (port) {
       console.log('server listening on port ' + port);
       baseurl = "http://localhost:" + port;
