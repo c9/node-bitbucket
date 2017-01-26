@@ -5,20 +5,47 @@
     var socketUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
     var socket = io('/v1/todos');//,{query: 'token=' + jwt});
 
-    //https://github.com/ornicar/lila/issues/854
-    socket.on('notification',function(notification) {
+    var canDisplayNotifications = false;
+    (function () {
+        if (!("Notification" in window)) {
+            alert("This browser does not support desktop notification");
+            return;
+        }
+        console.log(Notification.permission);
+        if (Notification.permission == 'granted') {
+            canDisplayNotifications = true;
+            return;
+        }
+        if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                if (permission === "granted") {
+                    canDisplayNotifications = true;
+                }
+            });
+        }
+    })();
+
+    //https://github.com/ornicar/lila/issues/854 
+    socket.on('notification', function (notification) {
         var lastNotificationId = localStorage.getItem('lastNotificationId');
         var notification = JSON.parse(notification);
+        console.log('received notification');
+        console.log(notification);
 
         if (notification.id != lastNotificationId) {
-            lastNotificationId = localStorage.setItem('lastNotificationId',notification.id);
+            localStorage.setItem('lastNotificationId', notification.id);
+            if (canDisplayNotifications) {
+                var notification = new Notification(notification.data.text);
+                notification.onclick = function () {
+                    window.open(socketUrl + '/v1/todos/public');
+                };
+            }
+            else {
+                console.log('permission not given to display notifications');
+            }
         }
         else {
-            console.log(notification);
-            var notification = new Notification(notification.data.text);
-            notification.onclick = function () {
-                window.open(socketUrl + '/v1/todos/public');
-            };
+            console.log('duplicate notification');
         }
     });
 
@@ -78,7 +105,7 @@
             })
                 // using the done promise callback
                 .done(function (data) {
-                    
+
                     // log data to the console so we can see
                     console.log(data);
 
@@ -118,7 +145,7 @@
                 xhttp.send();
                 location.reload();
             },
-            add30minutereminder: function(event) {
+            add30minutereminder: function (event) {
                 var key = event.target.getAttribute('data-index')
                 var todo = this.todos[key];
                 console.log(todo);
@@ -127,7 +154,7 @@
                 xhttp.send();
                 location.reload();
             },
-                        add5minutereminder: function(event) {
+            add5minutereminder: function (event) {
                 var key = event.target.getAttribute('data-index')
                 var todo = this.todos[key];
                 console.log(todo);
@@ -155,7 +182,7 @@
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4
         ) {
-            if ( this.status == 200) {
+            if (this.status == 200) {
                 console.log(this.responseText);
                 app.todos = JSON.parse(this.responseText);
             }
