@@ -48,7 +48,10 @@
     "socket.io": "^1.7.2",
     "url": "^0.11.0",
     "vue": "^2.0.0-beta.1",
+    "webpack": "^1.14.0",
     "webpack-dev-middleware": "^1.9.0",
+    "webpack-dev-server": "^1.16.2",
+    "webpack-hot-middleware": "^2.15.0",
     "winston": "^2.3.0",
     "winston-papertrail": "^1.0.4",
     "www-authenticate": "^0.6.2"
