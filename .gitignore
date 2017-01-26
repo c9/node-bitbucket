@@ -16,3 +16,4 @@ db.json
 params.json
 params*.js*
 .*
+dist/
