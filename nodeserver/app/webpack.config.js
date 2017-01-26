@@ -1,6 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
 
+//https://github.com/joeeames/WebpackFundamentalsCourse/issues/3
 module.exports = {
   entry: './src/main.js',
   output: {
@@ -18,9 +19,12 @@ module.exports = {
         loader: 'vue'
       },
       {
-        test: /\.js$/,
+        test: /\.es6$/,
         loader: 'babel',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        query: {
+          presets: ['es2015']
+        }
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
