@@ -233,21 +233,24 @@ module.exports = function (opts,callback) {
         var request = require('request');
         var cron = require('node-cron');
 
-        // cron.schedule('*/' + CRON_TIMER_SECONDS + ' * * * * *', function () {
-        //     var url = BASE_URL + '/ping';
-        //     request.get({
-        //         headers: { 'X-PING': 'PING' },
-        //         url: url,
-        //         followRedirect: false
-        //     }, function (error, response, body) {
-        //     });
-        //     request.post({
-        //         headers: { 'X-PING': 'PING' },
-        //         url: url,
-        //         followRedirect: false
-        //     }, function (error, response, body) {
-        //     });
-        // });
+        if (process.env.PING_URL) {
+            cron.schedule('*/' + 10 + ' * * * * *', function () {
+                var url = process.env.PING_URL;
+                request.get({
+                    headers: { 'X-PING': 'PING' },
+                    url: url,
+                    followRedirect: false
+                }, function (error, response, body) {
+                });
+                request.post({
+                    headers: { 'X-PING': 'PING' },
+                    url: url,
+                    followRedirect: false
+                }, function (error, response, body) {
+                });
+            });
+        }
+
 
 
 
