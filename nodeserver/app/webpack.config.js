@@ -4,7 +4,7 @@ var webpack = require('webpack')
 //https://github.com/joeeames/WebpackFundamentalsCourse/issues/3
 //https://github.com/jakemmarsh/angularjs-gulp-browserify-boilerplate/issues/126
 module.exports = {
-  entry: './src/main.js',
+  entry: __dirname+'/src/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',

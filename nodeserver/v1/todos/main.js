@@ -154,8 +154,8 @@ module.exports = function (opts) {
             if (err) {
                 winston.error(err);
             }
-            winston.debug('found todo for scheduled reminder');
-            winston.debug(result);
+            winston.info('found todo for scheduled reminder');
+            winston.info(result);
             try {
                 reminder_cron[_id] = cron.schedule(result.reminder, function () {
                     todo_reminders.findOne({ _id: ObjectID(_id) }, (function (err, result) {
@@ -177,7 +177,7 @@ module.exports = function (opts) {
                                         data: todo
                                     }
                                     io.emit('notification', JSON.stringify(result));
-                                    winston.debug(result); // output all records
+                                    winston.info(result); // output all records
                                 }
                             });
 
@@ -239,7 +239,7 @@ module.exports = function (opts) {
         };
 
         todo_reminders.insertOne(reminderObj, function (error, result) {
-            winston.debug('result:' + JSON.stringify(result));
+            winston.info('result:' + JSON.stringify(result));
             addScheduledReminder(result.insertedId);
         });
         res.setHeader('content-type', 'application/json; charset=utf-8');
@@ -283,7 +283,6 @@ module.exports = function (opts) {
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
         res.setHeader('content-type', 'application/json; charset=utf-8');
-        winston.debug(io);
         io.emit('notification', JSON.stringify({ id: uuid.v1(), data: req.body }));
         res.status(201).end();
         return;

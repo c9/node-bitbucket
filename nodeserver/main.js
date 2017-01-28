@@ -1,4 +1,4 @@
-module.exports = function (opts,callback) {
+module.exports = function (opts, callback) {
     var module = {};
     var bodyParser = require('body-parser');
     var express = require('express');
@@ -24,15 +24,17 @@ module.exports = function (opts,callback) {
     app.use(bodyParser.json());
     app.use(require('cookie-parser')());
 
-    app.use(require('express-session')({
+    var session = require('express-session');
+
+    var FileStore = require('session-file-store')(session);
+
+    app.use(session({
+        store: new FileStore(),
         secret: process.env.EXPRESS_SESSION_SECRET,
-        resave: false, saveUninitialized: false
     }));
 
-
-
     require(__dirname + '/app/main.js')({
-    app: app
+        app: app
     });
 
     const PORT = process.env.PORT || 0;
@@ -288,49 +290,72 @@ module.exports = function (opts,callback) {
                 var url = require('url');
                 var path = url.parse(proxyReq.url, true).pathname;
                 if (path.indexOf('/private/Downloads') !== -1) {
-                    var www_authenticate = require('www-authenticate');
-                    var authenticator = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
-
-                    var options = {
-                        url: FTP_BASE + path,
+                    winston.info('start request');
+                    var headers = {
+                            cookie: proxyReq.headers['cookie'] ? proxyReq.headers['cookie'] : null
+                        };
+                    winston.info(headers,'headers');
+                    request({
                         method: 'GET',
-                        path: path,
-                        rejectUnauthorized: false,
-                        headers: proxyReq.headers
-                    };
-                    request(options,
-                        function (err, res, body) {
-                            console.log(res.statusCode);
-                            console.log(res.headers);
-                            console.log(body);
-                            if (err) {
-                                console.log(err);
-                                return;
-                            }
-                            if (res.statusCode === 401) {
-                                authenticator.get_challenge(res);
-                                authenticator.authenticate_request_options(options);
-                                proxyReq.headers['authorization'] = options.headers['authorization'];
-                            }
-
-                            console.log(options);
-                            console.log(req.headers);
-
-                            var target = FTP_BASE;
-
-                            console.log(req.headers);
-
-                            proxy.web(proxyReq, proxyRes, {
-                                target: target,
-                                secure: false,
-                                // ws: true
-                            }, function (err) {
-                                winston.log('error', err);
-                                proxyRes.writeHead(502);
-                                proxyRes.end("There was an error. Please try again");
-                            });
+                        headers: headers,
+                        uri: 'http://0.0.0.0:'+app.get('port')+'/ping/isadmin'
+                    }, function (error, response, body) {
+                        if (error) {
+                            winston.error(error)
+                            proxyRes.writeHead(500);
+                            return proxyRes.end("There was an error. Please try again");
                         }
-                    );
+                        winston.info(body);
+
+                        if (response.statusCode !== 200) {
+                            proxyRes.writeHead(response.statusCode);
+                            return proxyRes.end(response.body)
+                        }
+                        var www_authenticate = require('www-authenticate');
+                        var authenticator = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
+
+                        var options = {
+                            url: FTP_BASE + path,
+                            method: 'GET',
+                            path: path,
+                            rejectUnauthorized: false,
+                            headers: proxyReq.headers
+                        };
+                        request(options,
+                            function (err, res, body) {
+                                console.log(res.statusCode);
+                                console.log(res.headers);
+                                console.log(body);
+                                if (err) {
+                                    console.log(err);
+                                    return;
+                                }
+                                if (res.statusCode === 401) {
+                                    authenticator.get_challenge(res);
+                                    authenticator.authenticate_request_options(options);
+                                    req.headers['authorization'] = options.headers['authorization'];
+                                }
+
+                                console.log(options);
+                                console.log(req.headers);
+
+                                var target = FTP_BASE;
+
+                                console.log(req.headers);
+
+                                proxy.web(proxyReq, proxyRes, {
+                                    target: target,
+                                    secure: false,
+                                    // ws: true
+                                }, function (err) {
+                                    winston.log('error', err);
+                                    proxyRes.writeHead(502);
+                                    proxyRes.end("There was an error. Please try again");
+                                });
+                            }
+                        );
+                    });
+
                 }
                 else {
                     // var target = "http://localhost:" + app.get('port');
