@@ -2,12 +2,9 @@
   "name": "code-russ-node",
   "version": "1.0.0",
   "scripts": {
+    "preinstall": "cd ./nodeserver/public/angular2 && npm install && npm run test",
     "start": "node nodeserver/server.js",
-    "test": "./node_modules/mocha/bin/mocha ./nodeserver/test/* --reporter spec",
-    "dev": "webpack-dev-server --inline --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "predeploy": "npm run build",
-    "deploy": "surge --project . --domain vue-2-simple-routing-example.surge.sh"
+    "test": "./node_modules/mocha/bin/mocha ./nodeserver/test/* --reporter spec"
   },
   "dependencies": {
     "apostrophe": "^2.0.0",

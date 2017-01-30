@@ -33,10 +33,6 @@ module.exports = function (opts, callback) {
         secret: process.env.EXPRESS_SESSION_SECRET,
     }));
 
-    require(__dirname + '/app/main.js')({
-        app: app
-    });
-
     const PORT = process.env.PORT || 0;
 
     const PROXIED_PORT = process.env.PROXIED_PORT || 0;
@@ -196,7 +192,7 @@ module.exports = function (opts, callback) {
             winston: winston.loggers.get('todos'),
             db: mongo_db,
             io: todosnsp,
-            // app: app
+            // app: appW
 
         }).router);
     }
