@@ -2,7 +2,7 @@
   "name": "code-russ-node",
   "version": "1.0.0",
   "scripts": {
-    "preinstall": "cd ./nodeserver/public/angular2 && npm install && npm run test",
+    "preinstall": "./preinstall.sh",
     "start": "node nodeserver/server.js",
     "test": "./node_modules/mocha/bin/mocha ./nodeserver/test/* --reporter spec"
   },
