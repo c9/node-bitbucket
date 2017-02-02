@@ -51,6 +51,9 @@ describe('socket large connection count >>', function () {
                     done();
                 }
             }).on('error', function (error) {
+                if (error.message == 'xhr poll error') {
+                    return;
+                }
                 expect(error, 'no socket error').to.be.null;
                 done();
             }).on('disconnect', function () {

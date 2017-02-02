@@ -4,7 +4,7 @@
   "scripts": {
     "preinstall": "cd nodeserver/public/angular2 && npm install && npm run build",
     "start": "node nodeserver/server.js",
-    "test": "./node_modules/mocha/bin/mocha ./nodeserver/test/* --reporter spec"
+    "test": "./node_modules/mocha/bin/mocha \"./nodeserver/test/**/*.js\" --reporter spec"
   },
   "dependencies": {
     "apostrophe": "^2.0.0",
