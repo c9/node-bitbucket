@@ -4,7 +4,11 @@ var winston = require('winston');
 require('dotenv').config();
 var winston = logger = new (winston.Logger)({
   transports: [
-    new (winston.transports.Console)({ level: 'debug' }),
+    new (winston.transports.Console)({
+      level: 'debug',
+      colorize: true,
+      // json: true 
+    }),
   ]
 });
 
@@ -31,15 +35,24 @@ MongoClient.connect(MONGO_URI, function (err, db) {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
 
-  app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
+  var expressSession = require('express-session');
+
+  var sessionMiddleware = expressSession(
+    {
+      secret: 'keyboard cat',
+      store: new (require("connect-mongo")(expressSession))({
+        url: MONGO_URI
+      })
+    });
+  app.use(sessionMiddleware);
 
   app.use(passport.initialize());
   app.use(passport.session());
 
-  app.use('/v1', require(__dirname+'/../login/main.js')({
+  app.use('/v1', require(__dirname + '/../login/main.js')({
     winston: logger,
     database: database,
-    passport: passport
+    passport: passport,
   }).router);
 
   app.use("/v1/todos/public", express.static(__dirname + "/public"));
@@ -49,6 +62,8 @@ MongoClient.connect(MONGO_URI, function (err, db) {
 
   var server = require('http').Server(app);
   const io = require('socket.io')(server);
+
+
 
   server.listen(TODOS_APP_PORT, function () {
     winston.info('todo app listening on port' + server.address().port);
@@ -60,17 +75,11 @@ MongoClient.connect(MONGO_URI, function (err, db) {
   app.use('/v1/todos', require('./main.js')({
     winston: logger,
     db: database,
-    io: nsp
+    io: nsp,
+    sessionMiddleware: sessionMiddleware
+
   }).router);
 
-
-
-  io.on('connection', function (socket) {
-    socket.emit('news', { hello: 'world' });
-    socket.on('my other event', function (data) {
-      console.log(data);
-    });
-  });
 });
 
 

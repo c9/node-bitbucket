@@ -8,7 +8,7 @@ describe("todos endpoints", function () {
   var loginurl = baseurl + '/v1/login';
   var notificationurl = baseurl + '/v1/todos/sendNotification';
 
-  it("successfully login with admin:admin", function (done) {
+  it("successfully login with admin12345:admin12345", function (done) {
     request({
       method: "POST",
       headers: {
@@ -29,6 +29,29 @@ describe("todos endpoints", function () {
       done();
     });
   });
+
+  it("successfully login with cookieAdmin123456:cookieAdmin123456", function (done) {
+    request({
+      method: "POST",
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        "username": "cookieAdmin123456",
+        "password": "cookieAdmin123456"
+      }), //sets header to application/json and parses body as json
+      uri: loginurl
+    }, function (error, response, body) {
+      console.log(response.headers);
+      expect(error).to.be.equal(null);
+      expect(response.statusCode).to.equal(201);
+      expect(response.headers['content-type']).to.be.equal('application/json; charset=utf-8');
+      expect(response.headers['set-cookie']).not.to.be.undefined;
+      cookieAdmin123456 = response.headers['set-cookie'];
+      done();
+    });
+  });
+
   socketurl = 'http://localhost:3000/v1/todos';
 
   it("successfully receive connected info event", function (done) {
@@ -63,7 +86,7 @@ describe("todos endpoints", function () {
   });
 
 
-  it("successfully receive connected info event", function (done) {
+  it("receive notifications for your own events but not other users", function (done) {
     var socket = require('socket.io-client')(socketurl);
     socket.on('connect', function () {
       console.log('connect');

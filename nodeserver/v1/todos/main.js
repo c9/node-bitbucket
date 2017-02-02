@@ -29,7 +29,90 @@ module.exports = function (opts) {
         //     return;
         // }
         next();
+    });
+
+    var sessionMiddleware = opts.sessionMiddleware;
+
+    var io = opts.io;
+
+    io.use(function (socket, next) {
+        winston.info(socket.request.headers);
+        sessionMiddleware(socket.request, {}, next);
     })
+
+    io.use(function (socket, next) {
+        var req = socket.handshake;
+        winston.debug('authorization for socket connection');
+        winston.debug(req);
+        winston.debug(req.params);
+        winston.debug(req.body);
+        winston.debug(req.query);
+        //   io.on('connection', function (socket) {
+        winston.info('socket connection:');
+        winston.info(socket.request.isAuthenticated());
+        socket.user = 'anon';
+        if (socket.request.session.passport) {
+            if (socket.request.session.passport.user) {
+                socket.user = socket.request.session.passport.user;
+            }
+        }
+
+        next();
+    })
+
+    var indexedSockets = {};
+    var sockets = [];
+    var connectCounter = 0;
+
+    //socket.broadcast.to(id).emit('my message', msg);
+    function broadcastToUserId(user_id, event, msg) {
+        if (!user_id) {
+            user_id = 'anon';
+        }
+
+        var userSockets = indexedSockets[user_id];
+        winston.debug(Object.keys(userSockets));
+        Object.keys(userSockets).forEach(function (key) {
+            var socket = userSockets[key];
+            winston.debug(key);
+            winston.debug(socket.id);
+            socket.emit(event, msg);
+        });
+
+    }
+
+    io.on('connection', function (socket) {
+        socket.on('connect', function () {
+            winston.debug("socket connect ", {
+                socket: {
+                    user: socket.user
+                }
+            });
+            winston.debug("connected count " + connectCounter);
+            connectCounter++;
+        });
+        socket.on('disconnect', function () {
+            winston.debug("socket disconnect ", {
+                socket: {
+                    user: socket.user
+                }
+            })
+            if (indexedSockets[socket.user]) {
+                delete (indexedSockets[socket.user][socket.id]);
+            }
+            else {
+                winston.error('socket connection not properly indexed')
+            }
+            connectCounter--;
+        });
+
+        winston.debug('emit info', { data: 'connected' });
+        socket.emit('info', JSON.stringify({ data: 'connected' }));
+        if (!indexedSockets[socket.user]) {
+            indexedSockets[socket.user] = {};
+        }
+        indexedSockets[socket.user][socket.id] = socket;
+    });
 
 
 
@@ -49,30 +132,31 @@ module.exports = function (opts) {
     const todo_reminders = db.collection('todo_reminder');
 
 
-    var io = opts.io;
     var cron = require('node-cron');
 
-    io.use(function (socket, next) {
-        var req = socket.handshake;
-        winston.debug('authorization for socket connection');
-        winston.debug(req);
-        winston.debug(req.params);
-        winston.debug(req.body);
-        winston.debug(req.query);
-
-        next();
-    })
-
-    io.on('connection', function (socket) {
-        winston.debug('emit info', { data: 'connected' });
-        socket.emit('info', JSON.stringify({ data: 'connected' }));
-    });
-
-    io.emit('info', 'hello');
 
     module.router = router;
 
     var storage = multer.memoryStorage();
+
+    router.post('/ping', function (req, res) {
+        if (req.user) {
+            var username = req.user.username;
+            var user_id = req.user._id;
+        }
+        else {
+            var username = 'anon'
+            var user_id = 'anon';
+        }
+        var result = {
+            id: uuid.v1(),
+            type: "notification",
+            data: { text: "Hello "+username }
+        }
+        broadcastToUserId(user_id, 'notification', JSON.stringify(result));
+        res.status(201).end();
+        return;
+    });
 
 
     router.get('/', function (req, res) {
@@ -176,7 +260,8 @@ module.exports = function (opts) {
                                         type: "todo",
                                         data: todo
                                     }
-                                    io.emit('notification', JSON.stringify(result));
+                                    broadcastToUserId(todo.user_id, 'notification', JSON.stringify(result));
+                                    // io.emit('notification', JSON.stringify(result));
                                     winston.info(result); // output all records
                                 }
                             });

@@ -1,0 +1,1 @@
+* Added authentication by cookie on socket notifications
