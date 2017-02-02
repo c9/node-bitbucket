@@ -8,7 +8,7 @@ var request = require('request');
 var expect = require("chai").expect;
 
 describe('socket large connection count >>', function () {
-    this.timeout(1000 * 60 * 10); //10 minutes
+    this.timeout(0); //10 minutes
     it("open large number of socket connections and get notification event", function (done) {
         var max_socket_count = 100000; //100,000 sockets
         var i = 0;
@@ -53,6 +53,7 @@ describe('socket large connection count >>', function () {
             }).on('error', function (error) {
                 console.log('socket error event');
                 console.log(error);
+                console.log('socketCount:' + socketCount);
                 return;
                 done();
             }).on('disconnect', function () {
@@ -68,6 +69,8 @@ describe('socket large connection count >>', function () {
             }).on('connect_error', function (error) {
                 console.log('socket connect_error event');
                 console.log(error);
+                console.log('socketCount:' + socketCount);
+
                 // expect(error, 'no socket connect_error').to.be.null;
                 // done();
             });
