@@ -7,6 +7,7 @@ addons:
       - g++-4.8
 language: node_js
 node_js:
+  - 7
   - 6
 env:
 - NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
