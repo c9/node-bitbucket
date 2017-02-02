@@ -50,7 +50,10 @@ module.exports = function (opts, callback) {
     var ip = envvars.IP || '0.0.0.0';
     var init = envvars.INIT || false;
 
-    const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'debug';
+    const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'error';
+    const ACCESS_LOG_LEVEL = process.env.ACCESS_LOG_LEVEL || 'error';
+    const TODO_LOG_LEVEL = process.env.TODO_LOG_LEVEL || 'error';
+    const PROXY_LOG_LEVEL = process.env.PROXY_LOG_LEVEL || 'error';
     const NEXMO_API_KEY = envvars.NEXMO_API_KEY || '123';
     const NEXMO_API_SECRET = envvars.NEXMO_API_SECRET || '123';
     const NEXMO_BASE_URL = envvars.NEXMO_BASE_URL || 'http://localhost:3100';
@@ -86,7 +89,7 @@ module.exports = function (opts, callback) {
 
     transports = [
         new winston.transports.File({
-            level: 'info',
+            level: ACCESS_LOG_LEVEL,
             filename: path.join(__dirname, 'access.log'),
             maxsize: 5242880, //5MB
             maxFiles: 5,
@@ -144,7 +147,7 @@ module.exports = function (opts, callback) {
     else {
         winston.loggers.add('todos', {
             console: {
-                level: 'debug',
+                level: TODO_LOG_LEVEL,
                 colorize: true
             },
             // papertrail: {
@@ -157,7 +160,7 @@ module.exports = function (opts, callback) {
 
         winston.loggers.add('proxy-server', {
             console: {
-                level: 'debug',
+                level: PROXY_LOG_LEVEL,
                 colorize: true
             },
             // papertrail: {

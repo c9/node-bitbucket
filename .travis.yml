@@ -9,7 +9,7 @@ language: node_js
 node_js:
   - 6
 env:
-- CONSOLE_LOG_LEVEL=warn NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
+- NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
 services:
   - mongodb
 script:
