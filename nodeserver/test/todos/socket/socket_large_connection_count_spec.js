@@ -20,7 +20,9 @@ describe('socket large connection count >>', function () {
 
 
         var createSocket = function () {
-            ioClient(socketurl).on('connect', function (socket) {
+            ioClient(socketurl, {
+                'connect timeout': 500,
+            }).on('connect', function (socket) {
                 socketCount++;
                 console.log("Socket count: " + socketCount)
                 if (socketCount === max_socket_count) {
@@ -48,6 +50,20 @@ describe('socket large connection count >>', function () {
                 if (notificationsReceived == max_socket_count) {
                     done();
                 }
+            }).on('error', function (error) {
+                expect(error, 'no socket error').to.be.null;
+                done();
+            }).on('disconnect', function () {
+                expect(false, 'no disconnect').to.be.true;
+                done();
+            }).on('connect_timeout', function () {
+                expect(false, 'no connect_timeout').to.be.true;
+                done();
+
+            }).on('connect_error', function (error) {
+                console.log('connect error');
+                expect(error, 'no socket connect_error').to.be.null;
+                done();
             });
         }
 
@@ -55,7 +71,9 @@ describe('socket large connection count >>', function () {
 
     });
 
-it("open medium number of socket connections and get notification event", function (done) {
+    return;
+
+    it("open medium number of socket connections and get notification event", function (done) {
         var max_socket_count = 10;
         var i = 0;
         var socketCount = 0;
