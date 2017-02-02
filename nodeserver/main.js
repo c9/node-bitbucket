@@ -83,60 +83,92 @@ module.exports = function (opts, callback) {
     app.use(morgan('combined', { stream: winston.stream }));
 
     var Papertrail = require('winston-papertrail').Papertrail;
+
+    transports = [
+        new winston.transports.File({
+            level: 'info',
+            filename: path.join(__dirname, 'access.log'),
+            maxsize: 5242880, //5MB
+            maxFiles: 5,
+            colorize: false
+        }),
+        new winston.transports.Console({
+            level: CONSOLE_LOG_LEVEL,
+            colorize: true
+        })
+    ]
+
+    if (process.env.PAPERTRAIL_ENABLED) {
+        transports.push(new Papertrail({
+            host: 'logs5.papertrailapp.com',
+            port: 26785,
+            program: 'nodeserver',
+            level: PAPERTRAIL_LEVEL,
+        }))
+    }
+
+
     winston.configure({
-        transports: [
-            new winston.transports.File({
-                level: 'info',
-                filename: path.join(__dirname, 'access.log'),
-                // handleExceptions: true,
-                maxsize: 5242880, //5MB
-                maxFiles: 5,
-                colorize: false
-            }),
-            new winston.transports.Console({
-                level: CONSOLE_LOG_LEVEL,
-                // handleExceptions: true,
+        transports: transports
+    });
+
+
+
+    if (process.env.PAPERTRAIL_ENABLED) {
+        winston.loggers.add('todos', {
+            console: {
+                level: 'debug',
                 colorize: true
-            }),
-            new Papertrail({
-                // handleExceptions: true,
+            },
+            papertrail: {
                 host: 'logs5.papertrailapp.com',
                 port: 26785,
                 program: 'nodeserver',
                 level: PAPERTRAIL_LEVEL,
-            })
+            }
+        });
 
-        ],
-    });
+        winston.loggers.add('proxy-server', {
+            console: {
+                level: 'debug',
+                colorize: true
+            },
+            papertrail: {
+                host: 'logs5.papertrailapp.com',
+                port: 26785,
+                program: 'nodeserver',
+                level: PAPERTRAIL_LEVEL,
+            }
+        });
+    }
+    else {
+        winston.loggers.add('todos', {
+            console: {
+                level: 'debug',
+                colorize: true
+            },
+            // papertrail: {
+            //     host: 'logs5.papertrailapp.com',
+            //     port: 26785,
+            //     program: 'nodeserver',
+            //     level: PAPERTRAIL_LEVEL,
+            // }
+        });
 
+        winston.loggers.add('proxy-server', {
+            console: {
+                level: 'debug',
+                colorize: true
+            },
+            // papertrail: {
+            //     host: 'logs5.papertrailapp.com',
+            //     port: 26785,
+            //     program: 'nodeserver',
+            //     level: PAPERTRAIL_LEVEL,
+            // }
+        });
+    }
 
-
-
-    winston.loggers.add('todos', {
-        console: {
-            level: 'debug',
-            colorize: true
-        },
-        papertrail: {
-            host: 'logs5.papertrailapp.com',
-            port: 26785,
-            program: 'nodeserver',
-            level: PAPERTRAIL_LEVEL,
-        }
-    });
-
-    winston.loggers.add('proxy-server', {
-        console: {
-            level: 'debug',
-            colorize: true
-        },
-        papertrail: {
-            host: 'logs5.papertrailapp.com',
-            port: 26785,
-            program: 'nodeserver',
-            level: PAPERTRAIL_LEVEL,
-        }
-    });
 
     var proxyLogger = winston.loggers.get('proxy-server');
 

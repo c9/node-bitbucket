@@ -10,7 +10,7 @@ var expect = require("chai").expect;
 describe('socket large connection count >>', function () {
     this.timeout(1000 * 60 * 10); //10 minutes
     it("open large number of socket connections and get notification event", function (done) {
-        var max_socket_count = 10000; //10,000 sockets
+        var max_socket_count = 100000; //100,000 sockets
         var i = 0;
         var socketCount = 0;
         var notificationsReceived = 0;
