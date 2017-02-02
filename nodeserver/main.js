@@ -18,20 +18,30 @@ module.exports = function (opts, callback) {
 
     require('dotenv').config();
 
+    const MONGO_URI = envvars.MONGO_URI || 'mongodb://localhost:27017';
+
+
 
     var app = express();
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
     app.use(require('cookie-parser')());
 
-    var session = require('express-session');
+    var expressSession = require('express-session');
 
-    var FileStore = require('session-file-store')(session);
+    var sessionMiddleware = expressSession(
+        {
+            secret: process.env.EXPRESS_SESSION_SECRET,
+            store: new (require("connect-mongo")(expressSession))({
+                url: MONGO_URI
+            })
+        });
+    app.use(sessionMiddleware);
 
-    app.use(session({
-        store: new FileStore(),
-        secret: process.env.EXPRESS_SESSION_SECRET,
-    }));
+    var passport = require('passport');
+
+    app.use(passport.initialize());
+    app.use(passport.session());
 
     const PORT = process.env.PORT || 0;
 
@@ -142,14 +152,8 @@ module.exports = function (opts, callback) {
     const MongoClient = require('mongodb').MongoClient;
 
     const MONGO_CONNECTION = envvars.MONGO_CONNECTION || 'mongodb://localhost:27017/voice';
-    const MONGO_URI = envvars.MONGO_URI || 'mongodb://localhost:27017';
 
 
-    //voice application setup
-    var passport = require('passport');
-
-    app.use(passport.initialize());
-    app.use(passport.session());
     var main_application;
     MongoClient.connect(MONGO_CONNECTION, function (err, db) {
         database = mongo_db = db;
@@ -192,8 +196,7 @@ module.exports = function (opts, callback) {
             winston: winston.loggers.get('todos'),
             db: mongo_db,
             io: todosnsp,
-            // app: appW
-
+            sessionMiddleware: sessionMiddleware
         }).router);
     }
 
@@ -288,13 +291,13 @@ module.exports = function (opts, callback) {
                 if (path.indexOf('/private/Downloads') !== -1) {
                     winston.info('start request');
                     var headers = {
-                            cookie: proxyReq.headers['cookie'] ? proxyReq.headers['cookie'] : null
-                        };
-                    winston.info(headers,'headers');
+                        cookie: proxyReq.headers['cookie'] ? proxyReq.headers['cookie'] : null
+                    };
+                    winston.info(headers, 'headers');
                     request({
                         method: 'GET',
                         headers: headers,
-                        uri: 'http://0.0.0.0:'+app.get('port')+'/ping/isadmin'
+                        uri: 'http://0.0.0.0:' + app.get('port') + '/ping/isadmin'
                     }, function (error, response, body) {
                         if (error) {
                             winston.error(error)

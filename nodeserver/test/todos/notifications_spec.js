@@ -87,7 +87,29 @@ describe("todos endpoints", function () {
 
 
   it("receive notifications for your own events but not other users", function (done) {
-    var socket = require('socket.io-client')(socketurl);
+
+    var socket = require('socket.io-client')(socketurl, {
+      extraHeaders: {
+        Cookie: cookie
+      }
+    });
+
+    var socketAnon = require('socket.io-client')(socketurl);
+
+    socketAnon.on('connect', function () {
+      request({
+        method: "POST",
+        body: JSON.stringify({ "text": "anon" }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        uri: notificationurl
+      }, function (error, response, body) {
+        // console.log(response.headers);
+        // done();
+      });
+    });
+
     socket.on('connect', function () {
       console.log('connect');
     });
@@ -102,8 +124,6 @@ describe("todos endpoints", function () {
         },
         uri: notificationurl
       }, function (error, response, body) {
-        // console.log(response.headers);
-        // done();
       });
     });
 
@@ -111,11 +131,25 @@ describe("todos endpoints", function () {
       console.log('connected');
     });
 
+    var count = 0;
     socket.on('notification', function (data) {
       var data = JSON.parse(data);
       expect(data.data.text).to.be.equal('test');
       socket.close();
-      done();
+      count++;
+      if (count == 2) {
+        done();
+      }
+    });
+
+    socketAnon.on('notification', function (data) {
+      var data = JSON.parse(data);
+      expect(data.data.text,'Anonymous user receives anon message').to.be.equal('anon');
+      socketAnon.close();
+      count++;
+      if (count == 2) {
+        done();
+      }
     });
 
   });

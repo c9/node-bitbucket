@@ -64,6 +64,21 @@ module.exports = function (opts) {
     var sockets = [];
     var connectCounter = 0;
 
+
+/**
+ * Emits an event and message based on the requests user.
+ */
+    function emitOnRequest(req, event, msg) {
+        if (req.user) {
+            var user_id = req.user._id;
+        }
+        else {
+            var user_id = 'anon';
+        }
+
+        broadcastToUserId(user_id,event,msg);
+    }
+
     //socket.broadcast.to(id).emit('my message', msg);
     function broadcastToUserId(user_id, event, msg) {
         if (!user_id) {
@@ -71,6 +86,9 @@ module.exports = function (opts) {
         }
 
         var userSockets = indexedSockets[user_id];
+        if (!userSockets) {
+            return;
+        }
         winston.debug(Object.keys(userSockets));
         Object.keys(userSockets).forEach(function (key) {
             var socket = userSockets[key];
@@ -83,6 +101,7 @@ module.exports = function (opts) {
 
     io.on('connection', function (socket) {
         socket.on('connect', function () {
+            socket.emit('info', JSON.stringify({ data: 'connected' }));
             winston.debug("socket connect ", {
                 socket: {
                     user: socket.user
@@ -368,7 +387,8 @@ module.exports = function (opts) {
         winston.debug('request params=' + JSON.stringify(req.params));
         winston.debug('request body=' + JSON.stringify(req.body));
         res.setHeader('content-type', 'application/json; charset=utf-8');
-        io.emit('notification', JSON.stringify({ id: uuid.v1(), data: req.body }));
+        
+        emitOnRequest(req,'notification',JSON.stringify({ id: uuid.v1(), data: req.body }))
         res.status(201).end();
         return;
     });
