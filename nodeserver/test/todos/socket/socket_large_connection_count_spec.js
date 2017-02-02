@@ -67,7 +67,7 @@ describe('socket large connection count >>', function () {
 
             }).on('connect_error', function (error) {
                 console.log('socket connect_error event');
-                consoel.log(error);
+                console.log(error);
                 // expect(error, 'no socket connect_error').to.be.null;
                 // done();
             });
