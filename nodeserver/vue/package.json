@@ -10,6 +10,7 @@
     "deploy": "surge --project . --domain vue-2-simple-routing-example.surge.sh"
   },
   "dependencies": {
+    "babel": "^6.5.2",
     "vue": "^2.0.0-beta.1"
   },
   "devDependencies": {
