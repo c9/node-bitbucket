@@ -18,6 +18,6 @@ script:
   - npm install
   - npm start &
   - sleep 1
-  - ./node_modules/mocha/bin/mocha \"./nodeserver/tests/$TEST_DIR/**/*.js\" --reporter spec
+  - ./node_modules/mocha/bin/mocha "./nodeserver/tests/$TEST_DIR/**/*.js" --reporter spec
 before_script:
   - sleep 1
