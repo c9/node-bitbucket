@@ -8,7 +8,6 @@ var request = require('request');
 var expect = require("chai").expect;
 
 describe('native node socket test', function () {
-    this.timeout(1000 * 60 * 10); //10 minutes
     it("socket connection test", function (done) {
         const http = require('http');
 
