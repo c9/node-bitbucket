@@ -20,7 +20,7 @@ module.exports = function (opts, callback) {
     process.env.NODE_ENV = process.env.NODE_ENV || 'DEV';
 
 
-    const MONGO_URI = envvars.MONGO_URI || 'mongodb://localhost:27017';
+    const MONGO_URI = envvars.MONGO_URI;
 
 
 
@@ -190,7 +190,7 @@ module.exports = function (opts, callback) {
 
     const MongoClient = require('mongodb').MongoClient;
 
-    const MONGO_CONNECTION = envvars.MONGO_CONNECTION || 'mongodb://localhost:27017/voice';
+    const MONGO_CONNECTION = envvars.MONGO_CONNECTION;
 
 
     var main_application;

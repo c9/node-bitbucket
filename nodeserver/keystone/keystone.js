@@ -26,7 +26,7 @@ keystone.init({
 	'auth': true,
 	'user model': 'User',
 
-	"mongo": process.env.MONGO_URI || 'mongodb://localhost:27017',
+	"mongo": process.env.MONGO_URI,
 	"model prefix": "keystone"
 });
 
