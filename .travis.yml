@@ -9,15 +9,15 @@ language: node_js
 node_js:
   - 7
   - 6
+  - 5
+  - "node"
 env:
-- TEST_DIR=endpoint_tests NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
-- TEST_DIR=load_tests NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
+- NPM_TEST_TYPE=main NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
+- NPM_TEST_TYPE=load NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
 services:
   - mongodb
 script:
   - npm install
   - npm start &
-  - sleep 1
-  - ./node_modules/mocha/bin/mocha "./nodeserver/tests/$TEST_DIR/**/*.js" --reporter spec
-before_script:
-  - sleep 1
+  - sleep 3
+  - npm run test:$NPM_TEST_TYPE

@@ -71,10 +71,13 @@ module.exports = function (opts, callback) {
 
     var morgan = require('morgan');
 
-    process.on('uncaughtException', function (err) {
-        winston.error('uncaughtException', { message: err.message, stack: err.stack }); // logging with MetaData
-        process.exit(1); // exit with failure
-    });
+    if (process.env.NODE_ENV !== 'TEST') {
+        process.on('uncaughtException', function (err) {
+            winston.error('uncaughtException', { message: err.message, stack: err.stack }); // logging with MetaData
+            process.exit(1); // exit with failure
+        });
+    }
+
 
 
     winston.stream = {
