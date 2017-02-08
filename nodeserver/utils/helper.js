@@ -4,7 +4,7 @@ module.exports = function (opts, callback) {
     var host = opts.host || 'localhost';
     var protocol = opts.protocol || 'http';
     var port = opts.port || 3000;
-    var winston = opts.winston || require('winston');
+    // var winston = opts.winston || require('winston');
     var fs = require('fs');
     var request = require('request');
 
@@ -40,12 +40,12 @@ module.exports = function (opts, callback) {
                 });
         },
         post: function (opts, callback) {
-            winston.debug('start post');
-            winston.debug(getBaseUrl);
-            winston.debug(protocol);
-            winston.debug(port);
+            // winston.debug('start post');
+            // winston.debug(getBaseUrl);
+            // winston.debug(protocol);
+            // winston.debug(port);
             var url = getBaseUrl() + "/files/tmp"
-            winston.debug(url);
+            // winston.debug(url);
             var formData = {
                 // avatar: new Buffer([1, 2, 3]),//'avatar',
                 // // Pass a simple key-value pair 

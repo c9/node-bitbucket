@@ -10,14 +10,10 @@ node_js:
   - 7
   - 6
 env:
-- TEST_DIR=endpoint_tests NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
-- TEST_DIR=load_tests NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
+- NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
+- NPM_TEST_TYPE=LOAD NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
 services:
   - mongodb
 script:
   - npm install
-  - npm start &
-  - sleep 1
-  - ./node_modules/mocha/bin/mocha "./nodeserver/tests/$TEST_DIR/**/*.js" --reporter spec
-before_script:
-  - sleep 1
+  - npm test
