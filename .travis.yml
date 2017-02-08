@@ -9,6 +9,8 @@ language: node_js
 node_js:
   - 7
   - 6
+  - 5
+  - "node"
 env:
 - NPM_TEST_TYPE=main NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
 - NPM_TEST_TYPE=load NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
