@@ -17,7 +17,6 @@ describe("Files", function () {
                 expect(data.id).to.be.a('string');
                 test_globals.id = JSON.parse(body).id;
                 expect(response.statusCode).to.equal(201);
-                expect(true).not.to.be.true;
                 console.log(test_globals);
                 done();
             });

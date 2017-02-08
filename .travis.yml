@@ -10,10 +10,12 @@ node_js:
   - 7
   - 6
 env:
-- NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
-- NPM_TEST_TYPE=LOAD NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
+- NPM_TEST_TYPE=main NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
+- NPM_TEST_TYPE=load NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000
 services:
   - mongodb
 script:
   - npm install
-  - npm test
+  - npm start
+  - sleep 3
+  - npm run test:$NPM_TEST_TYPE
