@@ -17,6 +17,8 @@ module.exports = function (opts, callback) {
     envvars = extend(envvars, params.env);
 
     require('dotenv').config();
+    process.env.NODE_ENV = process.env.NODE_ENV || 'DEV';
+
 
     const MONGO_URI = envvars.MONGO_URI || 'mongodb://localhost:27017';
 
@@ -68,29 +70,9 @@ module.exports = function (opts, callback) {
     const fs = require('fs');
     const path = require('path');
     var winston = require('winston');
+    winston.transports.Logsene = require('winston-logsene');
 
-    var morgan = require('morgan');
-
-    if (process.env.NODE_ENV !== 'TEST') {
-        process.on('uncaughtException', function (err) {
-            winston.error('uncaughtException', { message: err.message, stack: err.stack }); // logging with MetaData
-            process.exit(1); // exit with failure
-        });
-    }
-
-
-
-    winston.stream = {
-        write: function (message, encoding) {
-            winston.log('debug', message);
-        }
-    };
-
-    app.use(morgan('combined', { stream: winston.stream }));
-
-    var Papertrail = require('winston-papertrail').Papertrail;
-
-    transports = [
+    var transports = [
         new winston.transports.File({
             level: ACCESS_LOG_LEVEL,
             filename: path.join(__dirname, 'access.log'),
@@ -100,25 +82,56 @@ module.exports = function (opts, callback) {
         }),
         new winston.transports.Console({
             level: CONSOLE_LOG_LEVEL,
-            colorize: true
+            colorize: true,
+            // json: true
         })
-    ]
+    ];
 
-    if (process.env.PAPERTRAIL_ENABLED) {
-        transports.push(new Papertrail({
-            host: 'logs5.papertrailapp.com',
-            port: 26785,
-            program: 'nodeserver',
-            level: PAPERTRAIL_LEVEL,
+    var exceptionHandlers = [    
+        new winston.transports.File({
+            filename: path.join(__dirname, 'exceptions.log'),
+            maxsize: 5242880, //5MB
+            maxFiles: 5,
+            colorize: false
+        }),
+        new winston.transports.Console({
+            colorize: true,
+            json: true
+        })
+    ];
+
+
+
+    if (process.env.LOGSENE_TOKEN) {
+        transports.push(new (winston.transports.Logsene)({
+            token: process.env.LOGSENE_TOKEN,
+            ssl: 'true',
+            type: 'coderuss_' + process.env.NODE_ENV ? process.env.NODE_ENV : 'DEV'
         }))
+        exceptionHandlers.push(new (winston.transports.Logsene)({
+            token: process.env.LOGSENE_TOKEN,
+            ssl: 'true',
+            type: 'coderuss_' + process.env.NODE_ENV
+        }))
+        winston.info('creating logsene transport');
     }
 
+    var mainLogger = new winston.Logger({
+        transports: transports,
+        exceptionHandlers: exceptionHandlers,
+        exitOnError: false
+    })
 
-    winston.configure({
-        transports: transports
-    });
+    var morgan = require('morgan');
 
+    mainLogger.info('setting up morgan logging to winston');
+    mainLogger.stream = {
+        write: function (message, encoding) {
+            mainLogger.log('debug', message);
+        }
+    };
 
+    app.use(morgan('combined', { stream: mainLogger.stream }));
 
     if (process.env.PAPERTRAIL_ENABLED) {
         winston.loggers.add('todos', {
@@ -153,12 +166,6 @@ module.exports = function (opts, callback) {
                 level: TODO_LOG_LEVEL,
                 colorize: true
             },
-            // papertrail: {
-            //     host: 'logs5.papertrailapp.com',
-            //     port: 26785,
-            //     program: 'nodeserver',
-            //     level: PAPERTRAIL_LEVEL,
-            // }
         });
 
         winston.loggers.add('proxy-server', {
@@ -166,12 +173,6 @@ module.exports = function (opts, callback) {
                 level: PROXY_LOG_LEVEL,
                 colorize: true
             },
-            // papertrail: {
-            //     host: 'logs5.papertrailapp.com',
-            //     port: 26785,
-            //     program: 'nodeserver',
-            //     level: PAPERTRAIL_LEVEL,
-            // }
         });
     }
 
@@ -184,7 +185,6 @@ module.exports = function (opts, callback) {
 
     const PROTOCOL = envvars.PROTOCOL || 'http';
     const HOST = envvars.HOST || 'localhost';
-    // const BASE_URL = PROTOCOL + "://" + HOST + ':' + ENDPOINT_PORT;
     const CRON_TIMER_SECONDS = envvars.CRON_TIMER_SECONDS || 300;
 
     const MongoClient = require('mongodb').MongoClient;
@@ -219,7 +219,6 @@ module.exports = function (opts, callback) {
             winston: winston,
             database: database,
             passport: passport,
-            // app: app
         }).router);
 
 
@@ -262,12 +261,8 @@ module.exports = function (opts, callback) {
 
         app.use('/api/v1/files', fileapi.router);
         app.use('/api/v1/ping', ping.router);
-        // app.use('/api/v1/ftp', ftp.router); //not important
 
         app.use('/ping', ping.router);
-
-        //contains listen for io to work
-        // require('./dashboard/app.js')({ HOST: HOST, PORT: port, winston: winston, app: app });
 
         var request = require('request');
         var cron = require('node-cron');
