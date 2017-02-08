@@ -18,6 +18,6 @@ services:
   - mongodb
 script:
   - npm install
-  - npm start
+  - npm start &
   - sleep 3
   - npm run test:$NPM_TEST_TYPE
