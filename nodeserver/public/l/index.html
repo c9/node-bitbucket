@@ -1,64 +1,116 @@
 <!doctype html>
 <html lang="en" data-framework="backbonejs">
-	<head>
-		<meta charset="utf-8">
-		<title>Backbone.js • TodoMVC</title>
-		<link rel="stylesheet" href="node_modules/todomvc-common/base.css">
-		<link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
-	</head>
-	<body>
-		<section class="todoapp">
-			<header class="header">
-				<h1>todos</h1>
-				<input class="new-todo" placeholder="What needs to be done?" autofocus>
-			</header>
-			<section class="main">
-				<input class="toggle-all" id="toggle-all" type="checkbox">
-				<label for="toggle-all">Mark all as complete</label>
-				<ul class="todo-list"></ul>
-			</section>
-			<footer class="footer"></footer>
-		</section>
-		<footer class="info">
-			<p>Double-click to edit a todo</p>
-			<p>Written by <a href="https://github.com/addyosmani">Addy Osmani</a></p>
-			<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
-		</footer>
-		<script type="text/template" id="item-template">
-			<div class="view">
-				<input class="toggle" type="checkbox" <%= completed ? 'checked' : '' %>>
-				<label><%- title %></label>
-				<button class="destroy"></button>
+
+<head>
+	<meta charset="utf-8">
+	<title>Backbone.js • TodoMVC</title>
+	<link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+	<section class="todoapp">
+		<form class="form-horizontal" role="form">
+			<h3>Sign Up!</h3>
+
+			<div class="form-group">
+				<label for="username" class="col-lg-2 control-label">Username</label>
+				<div class="col-lg-10">
+					<input type="text" class="form-control" id="username" name="username" />
+					<span class="help-block hidden"></span>
+				</div>
 			</div>
-			<input class="edit" value="<%- title %>">
-		</script>
-		<script type="text/template" id="stats-template">
-			<span class="todo-count"><strong><%= remaining %></strong> <%= remaining === 1 ? 'item' : 'items' %> left</span>
-			<ul class="filters">
-				<li>
-					<a class="selected" href="#/">All</a>
-				</li>
-				<li>
-					<a href="#/active">Active</a>
-				</li>
-				<li>
-					<a href="#/completed">Completed</a>
-				</li>
-			</ul>
-			<% if (completed) { %>
-			<button class="clear-completed">Clear completed</button>
-			<% } %>
-		</script>
-		<script src="node_modules/todomvc-common/base.js"></script>
-		<script src="node_modules/jquery/dist/jquery.js"></script>
-		<script src="node_modules/underscore/underscore.js"></script>
-		<script src="node_modules/backbone/backbone.js"></script>
-		<script src="node_modules/backbone.localstorage/backbone.localStorage.js"></script>
-		<script src="js/models/todo.js"></script>
-		<script src="js/collections/todos.js"></script>
-		<script src="js/views/todo-view.js"></script>
-		<script src="js/views/app-view.js"></script>
-		<script src="js/routers/router.js"></script>
-		<script src="js/app.js"></script>
-	</body>
+			<!--<div class="form-group">
+				<label for="email" class="col-lg-2 control-label">Email</label>
+				<div class="col-lg-10">
+					<input type="email" class="form-control" id="email" name="email" />
+					<span class="help-block hidden"></span>
+				</div>
+			</div>-->
+			<div class="form-group">
+				<label for="password" class="col-lg-2 control-label">Password</label>
+				<div class="col-lg-10">
+					<input type="password" class="form-control" id="password" name="password" />
+					<span class="help-block hidden"></span>
+				</div>
+			</div>
+			<!--<div class="form-group">
+				<label for="repeatPassword" class="col-lg-2 control-label">Repeat Password</label>
+				<div class="col-lg-10">
+					<input type="password" class="form-control" id="repeatPassword" name="repeatPassword" />
+					<span class="help-block hidden"></span>
+				</div>
+			</div>-->
+			<!--<div class="form-group">
+				<label for="country" class="col-lg-2 control-label">Country</label>
+				<div class="col-lg-10">
+					<select class="form-control" id="country" name="country">
+              <option>Norway</option>
+              <option>Sweeden</option>
+              <option>Denmark</option>
+              <option>Finland</option>
+              <option>Iceland</option>
+            </select>
+					<span class="help-block hidden"></span>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-lg-2 control-label">Gender</label>
+				<div class="col-lg-offset-2 col-lg-10">
+					<label class="radio-inline control-label">
+                <input type="radio" id="genderMale" name="gender" value="male" /> Male
+            </label>
+					<label class="radio-inline control-label">
+                <input type="radio" id="genderFemale" name="gender" value="female" /> Female
+            </label>
+					<span class="help-block hidden"></span>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="age" class="col-lg-2 control-label">Age</label>
+				<div class="col-lg-10">
+					<input type="number" class="form-control" id="age" name="age" />
+					<span class="help-block hidden"></span>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-lg-offset-2 col-lg-10">
+					<div class="checkbox">
+						<label class="control-label">
+                    <input type="checkbox" value="true" id="terms" name="terms" />I agree all your <a href="#">Terms of Services</a>
+
+                </label>
+						<span class="help-block hidden"></span>
+					</div>
+				</div>
+			</div>-->
+			<div class="form-group">
+				<div class="col-lg-offset-2 col-lg-10">
+					<button type="submit" id="signUpButton" class="btn btn-success">Sign Up</button>
+				</div>
+			</div>
+		</form>
+	</section>
+	<footer class="info">
+		<p>Property of coderuss and coderuss international (copyright pending)</p>
+	</footer>
+
+
+
+	<!--<script src="node_modules/todomvc-common/base.js"></script>-->
+	<script src="node_modules/jquery/dist/jquery.js"></script>
+	<script src="node_modules/underscore/underscore.js"></script>
+	<script src="node_modules/backbone/backbone.js"></script>
+	<script src="node_modules/backbone.localstorage/backbone.localStorage.js"></script>
+
+	<script src="js/ext/backbone-validation.js"></script>
+	<!--<script src="js/ext/underscore.js"></script>-->
+
+	<script src="js/models/signup.js"></script>
+
+	<script src="js/views/signup-view.js"></script>
+	<script src="js/routers/router.js"></script>
+
+	<script src="js/app.js"></script>
+</body>
+
 </html>
