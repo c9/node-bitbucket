@@ -11,7 +11,8 @@ screenshots/
 /deploy.sh
 environments/prod/
 node_modules
-!/nodeserver/public/ui/*
+!/nodeserver/public/u/*
+!/nodeserver/public/l/*
 db.json
 .vagrant
 params.json
