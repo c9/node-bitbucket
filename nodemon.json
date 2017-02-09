@@ -1,7 +1,7 @@
 {
   "verbose": true,
   "ignore": ["*.test.js", "fixtures/*","db.json","tests/*","*.pem","*.log",
-      "node_modules/"],
+      "node_modules/","public/"],
   "watch": ["/nodeserver/*"],
   "execMap": {
     "rb": "ruby",
