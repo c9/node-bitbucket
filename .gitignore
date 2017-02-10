@@ -21,3 +21,5 @@ params*.js*
 dist/
 sessions/
 !.gitignore
+errorShots/
+*.log
