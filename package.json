@@ -5,7 +5,9 @@
     "start": "node nodeserver/server.js",
     "test": "./node_modules/mocha/bin/mocha \"./nodeserver/tests/**/*.js\" --reporter spec",
     "test:main": "./node_modules/mocha/bin/mocha \"./nodeserver/tests/main/**/*.js\" --reporter spec",
-    "test:load": "./node_modules/mocha/bin/mocha \"./nodeserver/tests/load/**/*.js\" --reporter spec"
+    "test:load": "./node_modules/mocha/bin/mocha \"./nodeserver/tests/load/**/*.js\" --reporter spec",
+    "wdio:config": "wdio config",
+    "wdio:test": "wdio wdio.conf.js"
   },
   "dependencies": {
     "apostrophe": "^2.0.0",
@@ -55,5 +57,13 @@
     "winston-logsene": "^1.2.1",
     "winston-papertrail": "^1.0.4",
     "www-authenticate": "^0.6.2"
+  },
+  "devDependencies": {
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.4.1",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.1.0",
+    "wdio-mocha-framework": "^0.5.8",
+    "webdriverio": "^4.6.2"
   }
 }
