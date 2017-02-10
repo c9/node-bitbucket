@@ -8,7 +8,7 @@
     "test:load": "./node_modules/mocha/bin/mocha \"./nodeserver/tests/load/**/*.js\" --reporter spec",
     "wdio:config": "wdio config",
     "wdio:test": "wdio wdiotests/wdio.conf.js",
-    "test:wdio:phantomjs" : "wdio wdiotests/phantomjs.wdio.conf.js"
+    "test:wdio:phantomjs": "wdio wdiotests/phantomjs.wdio.conf.js"
   },
   "dependencies": {
     "apostrophe": "^2.0.0",
@@ -66,6 +66,7 @@
     "karma-jasmine": "^1.1.0",
     "wdio-mocha-framework": "^0.5.8",
     "wdio-phantomjs-service": "^0.2.2",
+    "wdio-spec-reporter": "0.0.5",
     "webdriverio": "^4.6.2"
   }
 }

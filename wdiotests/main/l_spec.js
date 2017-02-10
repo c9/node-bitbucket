@@ -1,18 +1,31 @@
 var expect = require('chai').expect;
 
-describe('webdriver.io api page', function() {
-    it('should be able to filter for commands', function () {
-        browser.url('http://webdriver.io/api.html');
+var baseurl = "http://localhost:3000";
+
+const publicurl = baseurl + "/public";
+
+describe('login page', function() {
+    it('should be able to login', function () {
+        browser.url(publicurl+'/l');
         // filtering property commands
-        $('.searchbar input').setValue('getT');
+        $('input[name=\'username\']').setValue('admin12345');
+        $('input[name=\'password\']').setValue('admin12345');
+
+        $('button').click();
+
+        // expect()
+
         // get all results that are displayed
-        var results = $$('.commands.property a').filter(function (link) {
-            return link.isVisible();
+        // var results = $$('.commands.property a').filter(function (link) {
+        //     return link.isVisible();
+        // });
+
+        browser.waitForVisible('form#create-todo');
+        expect(browser.isVisible('form#create-todo'),'todo form is visible').to.be.true;
+
+        var results = $$('form#create-todo').filter(function (form) {
+            return form.isVisible();
         });
-        // assert number of results
-        expect(results.length).to.be.equal(3);
-        // check out second result
-        results[1].click();
-        expect($('.doc h1').getText()).to.be.equal('GETTEXT');
+
     });
 });
