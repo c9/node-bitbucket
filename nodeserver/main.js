@@ -21,10 +21,20 @@ module.exports = function (opts, callback) {
 
 
     const MONGO_URI = envvars.MONGO_URI;
+    const PORT = process.env.PORT || 0;
 
-
+    const PROXIED_PORT = process.env.PROXIED_PORT || 0;
 
     var app = express();
+
+    var server = require('http').Server(app);
+    io = require('socket.io')(server);
+    var server = server.listen(PROXIED_PORT, function () {
+        winston.info('main application listening on port: ' + server.address().port);
+        app.set('port', server.address().port);
+        setupProxy();
+    });
+
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
     app.use(require('cookie-parser')());
@@ -45,12 +55,7 @@ module.exports = function (opts, callback) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    const PORT = process.env.PORT || 0;
-
-    const PROXIED_PORT = process.env.PROXIED_PORT || 0;
-
-    var ip = envvars.IP || '0.0.0.0';
-    var init = envvars.INIT || false;
+    const USERS_LOG_LEVEL = process.env.USERS_LOG_LEVEL || 'error';
 
     const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'error';
     const ACCESS_LOG_LEVEL = process.env.ACCESS_LOG_LEVEL || 'error';
@@ -88,7 +93,7 @@ module.exports = function (opts, callback) {
         })
     ];
 
-    var exceptionHandlers = [    
+    var exceptionHandlers = [
         new winston.transports.File({
             filename: path.join(__dirname, 'exceptions.log'),
             maxsize: 5242880, //5MB
@@ -177,6 +182,13 @@ module.exports = function (opts, callback) {
         });
     }
 
+    winston.loggers.add('users', {
+        console: {
+            level: USERS_LOG_LEVEL,
+            colorize: true
+        },
+    });
+
 
     var proxyLogger = winston.loggers.get('proxy-server');
 
@@ -196,19 +208,14 @@ module.exports = function (opts, callback) {
     var main_application;
     MongoClient.connect(MONGO_CONNECTION, function (err, db) {
         database = mongo_db = db;
-
-        var server = require('http').Server(app);
-
-        io = require('socket.io')(server);
-
-        var server = server.listen(PROXIED_PORT, function () {
-            winston.info('main application listening on port: ' + server.address().port);
-            app.set('port', server.address().port);
-            setupProxy();
-        });
-
         todosnsp = io.of('/v1/todos');
         addLoginRouter();
+
+        app.use('/v1/users', require(__dirname + '/v1/users/main')({
+            winston: winston.loggers.get('users'),
+            database: database,
+            passport: passport,
+        }).router);
 
         addVoiceRouter();
         addTodosRouter();
@@ -356,11 +363,11 @@ module.exports = function (opts, callback) {
                         };
                         request(options,
                             function (err, res, body) {
-                                console.log(res.statusCode);
-                                console.log(res.headers);
-                                console.log(body);
+                                winston.debug(res.statusCode);
+                                winston.debug(res.headers);
+                                winston.debug(body);
                                 if (err) {
-                                    console.log(err);
+                                    winston.error(err);
                                     return;
                                 }
                                 if (res.statusCode === 401) {
@@ -369,12 +376,12 @@ module.exports = function (opts, callback) {
                                     req.headers['authorization'] = options.headers['authorization'];
                                 }
 
-                                console.log(options);
-                                console.log(req.headers);
+                                winston.debug(options);
+                                winston.debug(req.headers);
 
                                 var target = FTP_BASE;
 
-                                console.log(req.headers);
+                                winston.debug(req.headers);
 
                                 proxy.web(proxyReq, proxyRes, {
                                     target: target,
@@ -431,23 +438,6 @@ module.exports = function (opts, callback) {
                 winston.log('error', err);
             });
         });
-
-
-
-        proxy.on('proxyRes', function (res, req) {
-            // var lvl = 'info';
-
-            // console.log(res.headers);
-
-            // var host = req.headers.host;
-            // var data = [];
-            // res.headers['proxy-uuid'] = req.headers['proxy-uuid'];
-
-            // res.on('data', function (chunk) {
-            //     data.push(chunk);
-            // });
-        });
-
 
     }
 
