@@ -23,11 +23,6 @@ module.exports = function (opts) {
         winston.debug('authentication status');
         winston.debug(req.isAuthenticated());
         winston.debug(req.user);
-        // if (!req.isAuthenticated()) {
-        //     res.status(400);
-        //     res.end();
-        //     return;
-        // }
         next();
     });
 
