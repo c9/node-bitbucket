@@ -9,7 +9,7 @@
     "test:main:blanket": "mocha --require blanket --reporter mocha-lcov-reporter ./nodeserver/tests/main/**/*.js --reporter spec && cat ./coverage/lcov.info | coveralls",
     "convert": "jscoverage nodeserver/main.js nodeserver-cov/main.js --exclude .env",
     "coveralls": "coveralls",
-    "coveralls:report": "cat ./coverage/lcov.info | coveralls",
+    "test:coveralls:report": "cat ./coverage/lcov.info | coveralls",
     "test:main:istanbul": "istanbul cover _mocha ./nodeserver/tests/main/**/*.js --reporter spec",
     "wdio:config": "wdio config",
     "wdio:test": "wdio wdiotests/wdio.conf.js",
