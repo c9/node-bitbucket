@@ -4,11 +4,16 @@
   "scripts": {
     "start": "node nodeserver/server.js",
     "test": "./node_modules/mocha/bin/mocha \"./nodeserver/tests/**/*.js\" --reporter spec",
-    "test:main": "./node_modules/mocha/bin/mocha \"./nodeserver/tests/main/**/*.js\" --reporter spec",
-    "test:load": "./node_modules/mocha/bin/mocha \"./nodeserver/tests/load/**/*.js\" --reporter spec",
+    "test:main": "npm run test:main:istanbul",
+    "test:load": "mocha ./nodeserver/tests/load/**/*.js --reporter spec",
+    "test:main:blanket": "mocha --require blanket --reporter mocha-lcov-reporter ./nodeserver/tests/main/**/*.js --reporter spec && cat ./coverage/lcov.info | coveralls",
+    "convert": "jscoverage nodeserver/main.js nodeserver-cov/main.js --exclude .env",
+    "coveralls": "coveralls",
+    "test:main:istanbul": "istanbul cover _mocha ./nodeserver/tests/main/**/*.js --reporter spec",
     "wdio:config": "wdio config",
     "wdio:test": "wdio wdiotests/wdio.conf.js",
-    "test:wdio:phantomjs": "wdio wdiotests/phantomjs.wdio.conf.js"
+    "test:wdio:phantomjs": "wdio wdiotests/phantomjs.wdio.conf.js",
+    "test:main:istanbul:coveralls": "istanbul cover _mocha ./nodeserver/tests/main/**/*.js --reporter spec && cat ./coverage/lcov.info | coveralls"
   },
   "dependencies": {
     "apostrophe": "^2.0.0",
@@ -60,10 +65,15 @@
     "www-authenticate": "^0.6.2"
   },
   "devDependencies": {
+    "blanket": "^1.2.3",
+    "coveralls": "^2.11.16",
+    "istanbul": "^0.4.5",
     "jasmine-core": "^2.5.2",
+    "jscoverage": "^0.6.0",
     "karma": "^1.4.1",
     "karma-chrome-launcher": "^2.0.0",
     "karma-jasmine": "^1.1.0",
+    "mocha-lcov-reporter": "^1.2.0",
     "wdio-mocha-framework": "^0.5.8",
     "wdio-phantomjs-service": "^0.2.2",
     "wdio-spec-reporter": "0.0.5",
