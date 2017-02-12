@@ -1,5 +1,5 @@
 [![Coverage Status](https://coveralls.io/repos/github/coderuss/coderuss/badge.svg?branch=master)](https://coveralls.io/github/coderuss/coderuss?branch=master)
-[Build Status](https://secure.travis-ci.org/coderuss/coderuss.png?branch=master)](https://travis-ci.org/coderuss/coderuss)
+[![Build Status](https://secure.travis-ci.org/coderuss/coderuss.png?branch=master)](https://travis-ci.org/coderuss/coderuss)
 
 Does things
 ===============================
