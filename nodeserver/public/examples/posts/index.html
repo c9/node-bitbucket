@@ -1,0 +1,204 @@
+<html>
+
+<head></head>
+
+<body>
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/2.4.1/backbone.marionette.min.js"></script>
+    <script src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+
+    <ul>
+        <li><a href="#mypage">mypage</a></li>
+        <li><a href="#blog/1">blog</a></li>
+    </ul>
+
+    <div id="publisher"></div>
+    <hr />
+
+    <script>
+        (function ($) {
+
+            var Router = Backbone.Router.extend({
+                routes: {  // ハッシュフラグメントと対応するメソッド名の組を設定する
+                    '': 'index',
+                    'mypage': 'mypage',
+                    'blog(/:id)': 'blog'
+                },
+                index: function index() {
+                    // ハッシュなしでアクセスされたときの処理を書く
+
+                    console.log('index', arguments);
+                },
+                mypage: function mypage() {
+                    // #mypageでアクセスされたときの処理を書く
+                    console.log('mypage', arguments);
+                    $('#output').html('<p>mypage</p>');
+                },
+                blog: function blog(id) {
+                    // #blog（または#blog/123など）でアクセスされたときの処理を書く
+                    console.log('blog', arguments);
+                    $('#output').html('<p>blog</p>');
+                }
+            });
+            var router = new Router();
+            // DOMの生成が完了してからstart()させる
+            $(function () {
+                Backbone.history.start();  // ブラウザのhashChangeの監視を開始する
+            });
+
+            var Post = Backbone.Model.extend({
+                defaults: {
+                    text: "Default post text",
+                    likes: 0
+                }
+            });
+
+            var Posts = Backbone.Collection.extend({
+                model: Post
+            });
+
+
+            var PostView = Backbone.View.extend({
+                tagName: "div",
+                className: "post",
+                //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
+                my_template: _.template("<strong><%= text %></strong>" +
+                    "<a class='like' href='#helloworld'>Like</a>" +
+                    "<a class='like2' href='#helloworld'>Like2</a>" +
+                    "<a class='route' href='/public/examples/routes'>routes</a>"),
+                // template: _.template($("#like_template").html()),
+
+
+                events: {
+                    'click a.like': 'like',
+                    'click a.like2': 'liketwo',
+                },
+
+                initialize: function (post) {
+                    console.log('init');
+                    var view = this;
+                    $.get('/public/examples/templates/like.html', function (data) {
+                        console.log('got data');
+                        view.template = _.template(data);
+
+                        _.bindAll(view, 'render', 'like')
+                        _.bindAll(view, 'render', 'liketwo')
+
+                        view.post = post;
+                        view.post.bind('change', this.render);
+                        view.render();
+                    }, 'html');
+                },
+
+                render: function () {
+                    console.log('render');
+
+                    if (this.template) {
+                        //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
+                        console.log(this.el); //tagName.className by default
+                        this.$el.html(this.template(this.post.toJSON()));
+                    }
+
+
+                    return this;
+                },
+
+                liketwo: function (e) {
+                    console.log(e);
+                    e.preventDefault();
+                    console.debug('likedtwo');
+                    this.post.set({
+                        likes: this.post.get('likes') + 1
+                    });
+                    return false;
+
+                },
+
+                like: function (e) {
+                    e.preventDefault();
+                    console.debug('liked');
+                    this.post.set({
+                        likes: this.post.get('likes') + 1
+                    });
+
+
+                }
+            });
+
+            //this part of code is an example of creating a post and  a post view, on their own
+
+            //=====================
+            var mypost = new Post();
+            mypost.set({
+                text: "Hello, World"
+            });
+
+            var postview = new PostView(mypost);
+
+            $("body").append(postview.render().el);
+
+            //=====================	
+
+
+            //the publisher uses the above code to create a minial status stream
+
+
+            var Publisher = Backbone.View.extend({
+                el: $("#publisher"),
+                textarea: "textarea",
+
+                events: {
+                    'click button': 'newPost'
+                },
+
+                initialize: function () {
+
+
+                    _.bindAll(this, 'render', 'newPost');
+                    this.counter = 0;
+                    this.posts = new Posts();
+
+
+                    this.render();
+                },
+
+                render: function () {
+                    $(this.el).html("<textarea></textarea><br />");
+                    $(this.el).append("<button>Post</button>");
+                    $(this.el).append("<br />");
+                    $(this.el).append("<div id='posts'></div>");
+
+                },
+
+                newPost: function () {
+                    var mypost = new Post();
+                    mypost.set({
+                        text: $(this.textarea).val()
+                    });
+
+                    this.posts.add(mypost);
+
+                    var postview = new PostView(mypost);
+
+                    console.debug(postview.render().el);
+
+                    $("#posts").append(postview.render().el);
+                }
+
+            });
+
+            var pub = new Publisher();
+
+
+        })(jQuery);
+    </script>
+
+    <div id="output"></div>
+
+
+</body>
+
+</html>
