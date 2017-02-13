@@ -65,10 +65,11 @@
                 tagName: "div",
                 className: "post",
                 //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
-                my_template: _.template("<strong><%= text %></strong>"+
-                "<a class='like' href='#helloworld'>Like</a>"+
-                "<a class='like2' href='#helloworld'>Like2</a>"+
-                "<a class='route' href='/public/examples/routes'>routes</a>"),
+                my_template: _.template("<strong><%= text %></strong>" +
+                    "<a class='like' href='#helloworld'>Like</a>" +
+                    "<a class='like2' href='#helloworld'>Like2</a>" +
+                    "<a class='route' href='/public/examples/routes'>routes</a>"),
+                // template: _.template($("#like_template").html()),
 
 
                 events: {
@@ -77,18 +78,30 @@
                 },
 
                 initialize: function (post) {
-                    _.bindAll(this, 'render', 'like')
-                    _.bindAll(this, 'render', 'liketwo')
+                    console.log('init');
+                    var view = this;
+                    $.get('/public/examples/templates/like.html', function (data) {
+                        console.log('got data');
+                        view.template = _.template(data);
 
-                    this.post = post;
-                    this.post.bind('change', this.render);
-                    this.render();
+                        _.bindAll(view, 'render', 'like')
+                        _.bindAll(view, 'render', 'liketwo')
+
+                        view.post = post;
+                        view.post.bind('change', this.render);
+                        view.render();
+                    }, 'html');
                 },
 
                 render: function () {
-                    //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
-                    console.log(this.el); //tagName.className by default
-                    this.$el.html( this.my_template(this.post.toJSON()));
+                    console.log('render');
+
+                    if (this.template) {
+                        //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
+                        console.log(this.el); //tagName.className by default
+                        this.$el.html(this.template(this.post.toJSON()));
+                    }
+
 
                     return this;
                 },
@@ -182,6 +195,7 @@
 
         })(jQuery);
     </script>
+
 
 </body>
 
