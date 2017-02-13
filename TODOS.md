@@ -1,1 +1,1 @@
-* Added authentication by cookie on socket notifications
+* npm install -g generator-backbone

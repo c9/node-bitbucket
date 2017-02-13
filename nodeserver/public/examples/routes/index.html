@@ -1,0 +1,56 @@
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/2.4.1/backbone.marionette.min.js"></script>
+
+<script>
+  var Router = Backbone.Router.extend({
+    routes : {  // ハッシュフラグメントと対応するメソッド名の組を設定する
+        ''           : 'index',
+        'mypage'     : 'mypage',
+        'blog(/:id)' : 'blog'
+    },
+    index : function index() {
+        // ハッシュなしでアクセスされたときの処理を書く
+        console.log('index', arguments);
+    },
+    mypage : function mypage() {
+        // #mypageでアクセスされたときの処理を書く
+        console.log('mypage', arguments);
+        $('#output').html('<p>mypage</p>');
+    },
+    blog : function blog(id) {
+        // #blog（または#blog/123など）でアクセスされたときの処理を書く
+        console.log('blog', arguments);
+        $('#output').html('<p>blog</p>');
+    }
+  });
+  var router = new Router();
+// DOMの生成が完了してからstart()させる
+$(function () {
+    Backbone.history.start();  // ブラウザのhashChangeの監視を開始する
+});
+</script>
+
+</head>
+<body>
+  <h1>Routerの基本形</h1>
+
+  <ul>
+    <li><a href="#mypage">mypage</a></li>
+    <li><a href="#blog/1">blog</a></li>
+  </ul>
+
+  <div id="output"></div>
+
+  <h2>参考</h2>
+  <span>http://yutapon.hatenablog.com/entry/2014/03/02/003937</span>
+
+
+</body>
+</html>

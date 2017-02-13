@@ -25,5 +25,4 @@ services:
 script:
   - npm install
   - npm start &
-  - sleep 3
-  - npm run test:$NPM_TEST_TYPE
+  - sleep 3 && npm run test:$NPM_TEST_TYPE

@@ -23,3 +23,4 @@ sessions/
 !.gitignore
 errorShots/
 *.log
+coverage/
