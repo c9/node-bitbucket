@@ -1,0 +1,116 @@
+<html>
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/2.4.1/backbone.marionette.min.js"></script>
+
+    <script>
+        var Users = Backbone.Collection.extend({
+            model: User
+        });
+
+        var User = Backbone.Model.extend({
+            // defaults: {
+            //     text: "Default post text",
+            //     likes: 0
+            // }
+        }
+        );
+
+
+        var UserView = Backbone.View.extend({
+            tagName: "div",
+            className: "user",
+            //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
+            template: _.template(
+                "<h2>Username</h2><div><%= username %></div>" +
+                "<h2>Email</h2>" +
+                "<div><%= email %></div>"),
+            // template: _.template($("#like_template").html()),
+
+
+            events: {
+                // 'click a.like': 'like',
+                // 'click a.like2': 'liketwo',
+            },
+
+            initialize: function (user) {
+                console.log('init');
+                var view = this;
+                view.user = user;
+                view.user.bind('change', this.render);
+                view.render();
+            },
+
+            render: function () {
+                console.log('render');
+
+                if (this.template) {
+                    //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
+                    console.log(this.el); //tagName.className by default
+                    this.$el.html(this.template(this.user.toJSON()));
+                }
+
+
+                return this;
+            },
+        });
+
+
+
+        var Router = Backbone.Router.extend({
+            routes: {  // ハッシュフラグメントと対応するメソッド名の組を設定する
+                'users(/:id)': 'users'
+            },
+            mypage: function mypage() {
+                // #mypageでアクセスされたときの処理を書く
+                console.log('mypage', arguments);
+                $('#output').html('<p>mypage</p>');
+            },
+            users: function (id) {
+                var user = new User();
+                $.get('/v1/users/' + id, function (data) {
+                    console.log('got data');
+                    console.log(data);
+                    user.set(data);
+
+                    var userview = new UserView(user);
+
+                    console.debug(userview.render().el);
+
+                    $("#user").append(userview.render().el);
+                }, 'json');
+            }
+        });
+
+
+
+        var router = new Router();
+
+
+        // DOMの生成が完了してからstart()させる
+        $(function () {
+            Backbone.history.start();  // ブラウザのhashChangeの監視を開始する
+        });
+    </script>
+
+</head>
+
+<body>
+    <h1>Hello</h1>
+    <ul>
+        <li><a href="#users/me">Profile</a></li>
+    </ul>
+
+    <div id="user"></div>
+
+    <div id="output"></div>
+
+</body>
+
+</html>
