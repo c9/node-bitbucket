@@ -1,0 +1,131 @@
+<html>
+
+<head></head>
+
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script src="http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.6/underscore-min.js"></script>
+    <script src="http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js"></script>
+
+
+    <div id="publisher"></div>
+    <hr />
+    <script>
+        (function ($) {
+
+            var Post = Backbone.Model.extend({
+                defaults: {
+                    text: "Default post text",
+                    likes: 0
+                }
+            });
+
+            var Posts = Backbone.Collection.extend({
+                model: Post
+            });
+
+
+            var PostView = Backbone.View.extend({
+                tagName: "div",
+                className: "post",
+
+
+                events: {
+                    'click a.like': 'like'
+                },
+
+                initialize: function (post) {
+                    _.bindAll(this, 'render', 'like')
+                    this.post = post;
+                    this.post.bind('change', this.render);
+                    this.render();
+                },
+
+                render: function () {
+                    $(this.el).html(this.post.get('text') + " " + this.post.get('likes') + " <a class='like' href='#'>Like</a>");
+                    return this;
+                },
+
+                like: function () {
+                    console.debug('liked');
+                    this.post.set({
+                        likes: this.post.get('likes') + 1
+                    });
+
+
+                }
+            });
+
+            //this part of code is an example of creating a post and  a post view, on their own
+
+            //=====================
+            var mypost = new Post();
+            mypost.set({
+                text: "Hello, World"
+            });
+
+            var postview = new PostView(mypost);
+
+            $("body").append(postview.render().el);
+
+            //=====================	
+
+
+            //the publisher uses the above code to create a minial status stream
+
+
+            var Publisher = Backbone.View.extend({
+                el: $("#publisher"),
+                textarea: "textarea",
+
+                events: {
+                    'click button': 'newPost'
+                },
+
+                initialize: function () {
+
+
+                    _.bindAll(this, 'render', 'newPost');
+                    this.counter = 0;
+                    this.posts = new Posts();
+
+
+                    this.render();
+                },
+
+                render: function () {
+                    $(this.el).html("<textarea></textarea><br />");
+                    $(this.el).append("<button>Post</button>");
+                    $(this.el).append("<br />");
+                    $(this.el).append("<div id='posts'></div>");
+
+                },
+
+                newPost: function () {
+                    var mypost = new Post();
+                    mypost.set({
+                        text: $(this.textarea).val()
+                    });
+
+                    this.posts.add(mypost);
+
+                    var postview = new PostView(mypost);
+
+                    console.debug(postview.render().el);
+
+                    $("#posts").append(postview.render().el);
+                }
+
+            });
+
+            var pub = new Publisher();
+
+
+        })(jQuery);
+
+    </script>
+
+</body>
+
+</html>
