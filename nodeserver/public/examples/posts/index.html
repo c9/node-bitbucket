@@ -32,22 +32,41 @@
 
 
                 events: {
-                    'click a.like': 'like'
+                    'click a.like': 'like',
+                    'click a.like2': 'liketwo',
                 },
 
                 initialize: function (post) {
                     _.bindAll(this, 'render', 'like')
+                    _.bindAll(this, 'render', 'liketwo')
+
                     this.post = post;
                     this.post.bind('change', this.render);
                     this.render();
                 },
 
                 render: function () {
-                    $(this.el).html(this.post.get('text') + " " + this.post.get('likes') + " <a class='like' href='#'>Like</a>");
+                    console.log(this.el); //tagName.className by default
+                    $(this.el).html(this.post.get('text') + " "
+                        + this.post.get('likes')
+                        + " <a class='like' href='#helloworld'>Like</a>"
+                        + " <a class='like2' href='#helloworld'>Like2</a>");
                     return this;
                 },
 
-                like: function () {
+                liketwo: function (e) {
+                    console.log(e);
+                    e.preventDefault();
+                    console.debug('likedtwo');
+                    this.post.set({
+                        likes: this.post.get('likes') + 1
+                    });
+                    return false;
+
+                },
+
+                like: function (e) {
+                    e.preventDefault();
                     console.debug('liked');
                     this.post.set({
                         likes: this.post.get('likes') + 1
@@ -123,7 +142,6 @@
 
 
         })(jQuery);
-
     </script>
 
 </body>
