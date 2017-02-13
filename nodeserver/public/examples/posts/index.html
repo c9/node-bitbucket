@@ -3,16 +3,51 @@
 <head></head>
 
 <body>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-    <script src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
-    <script src="http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.6/underscore-min.js"></script>
-    <script src="http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/2.4.1/backbone.marionette.min.js"></script>
+    <script src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+
+    <ul>
+        <li><a href="#mypage">mypage</a></li>
+        <li><a href="#blog/1">blog</a></li>
+    </ul>
 
     <div id="publisher"></div>
     <hr />
+
     <script>
         (function ($) {
+
+            var Router = Backbone.Router.extend({
+                routes: {  // ハッシュフラグメントと対応するメソッド名の組を設定する
+                    '': 'index',
+                    'mypage': 'mypage',
+                    'blog(/:id)': 'blog'
+                },
+                index: function index() {
+                    // ハッシュなしでアクセスされたときの処理を書く
+
+                    console.log('index', arguments);
+                },
+                mypage: function mypage() {
+                    // #mypageでアクセスされたときの処理を書く
+                    console.log('mypage', arguments);
+                    $('#output').html('<p>mypage</p>');
+                },
+                blog: function blog(id) {
+                    // #blog（または#blog/123など）でアクセスされたときの処理を書く
+                    console.log('blog', arguments);
+                    $('#output').html('<p>blog</p>');
+                }
+            });
+            var router = new Router();
+            // DOMの生成が完了してからstart()させる
+            $(function () {
+                Backbone.history.start();  // ブラウザのhashChangeの監視を開始する
+            });
 
             var Post = Backbone.Model.extend({
                 defaults: {
@@ -29,6 +64,11 @@
             var PostView = Backbone.View.extend({
                 tagName: "div",
                 className: "post",
+                //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
+                my_template: _.template("<strong><%= text %></strong>"+
+                "<a class='like' href='#helloworld'>Like</a>"+
+                "<a class='like2' href='#helloworld'>Like2</a>"+
+                "<a class='route' href='/public/examples/routes'>routes</a>"),
 
 
                 events: {
@@ -46,11 +86,10 @@
                 },
 
                 render: function () {
+                    //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
                     console.log(this.el); //tagName.className by default
-                    $(this.el).html(this.post.get('text') + " "
-                        + this.post.get('likes')
-                        + " <a class='like' href='#helloworld'>Like</a>"
-                        + " <a class='like2' href='#helloworld'>Like2</a>");
+                    this.$el.html( this.my_template(this.post.toJSON()));
+
                     return this;
                 },
 
