@@ -1,153 +1,280 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/2.4.1/backbone.marionette.min.js"></script>
+    <!--https://cdnjs.com/libraries/backbone.routefilter-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.routefilter/0.2.0/backbone.routefilter.js"></script>
 
-    <script>
-        var Users = Backbone.Collection.extend({
-            model: User
-        });
+    <!--https://github.com/powmedia/backbone-forms-->
+    <!-- Setup our templates -->
 
-        var User = Backbone.Model.extend({
-            // defaults: {
-            //     text: "Default post text",
-            //     likes: 0
-            // }
-        }
-        );
-
-
-        var UserView = Backbone.View.extend({
-            tagName: "div",
-            className: "user",
-            //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
-            template: _.template(
-                "<h2>Username</h2><div><%= username %></div>" +
-                "<h2>Email</h2>" +
-                "<div><%= email %></div>"),
-            // template: _.template($("#like_template").html()),
-
-
-            events: {
-                // 'click a.like': 'like',
-                // 'click a.like2': 'liketwo',
-            },
-
-            initialize: function (user) {
-                console.log('init');
-                var view = this;
-                view.user = user;
-                view.user.bind('change', this.render);
-                view.render();
-            },
-
-            render: function () {
-                console.log('render');
-
-                if (this.template) {
-                    //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
-                    console.log(this.el); //tagName.className by default
-                    this.$el.html(this.template(this.user.toJSON()));
-                }
-
-
-                return this;
-            },
-        });
-
-
-
-        var Router = Backbone.Router.extend({
-            routes: {  // ハッシュフラグメントと対応するメソッド名の組を設定する
-                'users(/:id)': 'users',
-                'logout': 'logout'
-            },
-            logout: function () {
-                var request = $.ajax({
-                    type: 'GET',
-                    url: '/v1/logout',
-                    dataType: 'text',
-                    done: function () {
-                        console.log('done');
-                        window.location = '/';
-
-                    },
-                    error: function () {
-                        console.log('error');
-                        window.location = '/';
-                    }
-                });
-            },
-            mypage: function mypage() {
-                // #mypageでアクセスされたときの処理を書く
-                console.log('mypage', arguments);
-                $('#output').html('<p>mypage</p>');
-            },
-            users: function (id) {
-                var user = new User();
-                var request = $.ajax({
-                    type: 'GET', // define the type of HTTP verb we want to use (POST for our form)
-                    url: '/v1/users/' + id, // the url where we want to POST
-                    dataType: 'text', // what type of data do we expect back from the server
-                    success: function (data) {
-                        console.log('success');
-                        console.log(data);
-                        var data = JSON.parse(data);
-
-                        user.set(data);
-
-                        var userview = new UserView(user);
-
-                        $("#user").append(userview.render().el);
-
-                    },
-                    error: function (xhr, status, error) {
-                        console.log(xhr.status);
-                        console.log(xhr.readyState);
-                        console.log(xhr.responseText);
-                        console.log(xhr);
-                        console.log(error);
-                        if (xhr.status == 401) {
-                            window.location = "/public/login?redirect=/";
-                        }
-
-                    },
-                    done: function () {
-                        console.log('done');
-                    }
-                })
-            }
-        });
-
-
-
-        var router = new Router();
-
-
-        // DOMの生成が完了してからstart()させる
-        $(function () {
-            Backbone.history.start();  // ブラウザのhashChangeの監視を開始する
-        });
+    <script id="UserTemplate" type="text/x-handlebars-template">
+        <div class="container">
+            <h2>User</h2>
+            <form>
+                <div class="form-group">
+                    <label for="username">Username <%= username %>:</label>
+                    <input type="username" class="form-control" id="username">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter email" value="<%= email %>">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">Password:</label>
+                    <input type="password" class="form-control" id="pwd" placeholder="Enter password">
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox"> Remember me</label>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
     </script>
 
 </head>
 
+
+<script>
+    //http://stackoverflow.com/questions/4074636/can-i-bind-form-inputs-to-models-in-backbone-js-without-manually-tracking-blur-e
+    var User = Backbone.Model.extend({});
+
+
+    // http://www.9bitstudios.com/2013/10/backbone-js-data-binding/
+    var UserView = Backbone.View.extend({ //div.user
+        tagName: "div",
+        className: "user",
+        //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
+        // template: _.template($('#PersonTemplate').html()),
+
+        // _.template(
+        //     "<h2>Username</h2><div><%= username %></div>" +
+        //     "<h2>Email</h2>" +
+        //     "<div><%= email %></div>"),
+        // template: _.template($("#like_template").html()),
+
+
+        events: {
+            "keyup #email": "emailChanged",
+            "change #username": "usernameChanged",
+
+            // 'click a.like': 'like',
+            // 'click a.like2': 'liketwo',
+        },
+
+        usernameChanged: function () {
+            console.log('username changed');
+
+            console.log($('#username').val());
+            console.log(this.user.toJSON());
+
+            var input = this.inputContent;
+            console.log($('#username').val());
+            this.user.set('username', $('#username').val());
+            console.log(this.user.toJSON());
+
+            // $('#email').html(newName);
+
+            // this.user.set({ content: input.val() });
+            // // var newName = ;
+            // this.user.set('username', $('#username').val());
+            // $('#email').html(newName);
+        },
+
+
+        emailChanged: function () {
+            var newName = $('#email').val();
+
+
+        },
+
+
+        initialize: function (user) {
+            console.log('init');
+            _.bindAll(this, 'usernameChanged');
+
+            // var view = this;
+            this.user = user;
+            // this.user.bind('change', this.render);
+            console.log(this.user);
+            this.render();
+        },
+
+        render: function () {
+            //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
+            console.log('render');
+            var template = $('#UserTemplate').html();
+            console.log(this.user);
+            var userJSON = this.user.toJSON();
+            console.log(userJSON);
+            var compiled = _.template(template)(userJSON);
+            console.log(compiled);
+            this.$el.html(compiled);
+            return this;
+        },
+    });
+
+
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            '': 'index',
+            'users(/:id)': 'users',
+            'logout': 'logout'
+        },
+        //http://danialk.github.io/blog/2013/06/08/backbone-tips-after-and-before-methods-for-router/
+        // https://github.com/boazsender/backbone.routefilter
+        before: function () {
+            console.log('before');
+            $("#main").html('');
+        },
+        index: function () {
+            console.log('index');
+        },
+        logout: function () {
+            var request = $.ajax({
+                type: 'GET',
+                url: '/v1/logout',
+                dataType: 'text',
+                done: function () {
+                    console.log('done');
+                    window.location = '/';
+
+                },
+                error: function () {
+                    console.log('error');
+                    window.location = '/';
+                }
+            });
+        },
+        mypage: function mypage() {
+            // #mypageでアクセスされたときの処理を書く
+            console.log('mypage', arguments);
+            $('#output').html('<p>mypage</p>');
+        },
+        users: function (id) {
+            var user = new User();
+            var request = $.ajax({
+                type: 'GET', // define the type of HTTP verb we want to use (POST for our form)
+                url: '/v1/users/' + id, // the url where we want to POST
+                dataType: 'text', // what type of data do we expect back from the server
+                success: function (data) {
+                    console.log('success');
+                    console.log(data);
+                    var data = JSON.parse(data);
+
+                    user.set(data);
+
+                    var userview = new UserView(user);
+
+                    $("#main").html(userview.render().el);
+
+                    console.log(userview.user);
+
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.status);
+                    console.log(xhr.readyState);
+                    console.log(xhr.responseText);
+                    console.log(xhr);
+                    console.log(error);
+                    if (xhr.status == 401) {
+                        window.location = "/public/login?redirect=/";
+                    }
+
+                },
+                done: function () {
+                    console.log('done');
+                }
+            })
+        }
+    });
+
+
+
+    var router = new Router();
+
+
+    // DOMの生成が完了してからstart()させる
+    $(function () {
+        Backbone.history.start();  // ブラウザのhashChangeの監視を開始する
+    });
+
+</script>
+
+</head>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Coderuss</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="#users/me">Profile</a></li>
+
+
+                <!--<li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>-->
+            </ul>
+            <!--<form class="navbar-form navbar-left">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>-->
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#logout">Logout <span class="sr-only">(current)</span></a></li>
+                <!--<li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                    </ul>
+                </li>-->
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
 <body>
-    <h1>Hello</h1>
-    <ul>
-        <li><a href="#users/me">Profile</a></li>
-        <li><a href="#logout">Logout</a></li>
-    </ul>
 
-    <div id="user"></div>
+    <div id="main"></div>
 
-    <div id="output"></div>
+    <!--<div id="output"></div>-->
 
 </body>
 
