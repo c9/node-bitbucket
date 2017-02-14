@@ -65,7 +65,24 @@
 
         var Router = Backbone.Router.extend({
             routes: {  // ハッシュフラグメントと対応するメソッド名の組を設定する
-                'users(/:id)': 'users'
+                'users(/:id)': 'users',
+                'logout': 'logout'
+            },
+            logout: function () {
+                var request = $.ajax({
+                    type: 'GET',
+                    url: '/v1/logout',
+                    dataType: 'text',
+                    done: function () {
+                        console.log('done');
+                        window.location = '/';
+
+                    },
+                    error: function () {
+                        console.log('error');
+                        window.location = '/';
+                    }
+                });
             },
             mypage: function mypage() {
                 // #mypageでアクセスされたときの処理を書く
@@ -74,17 +91,37 @@
             },
             users: function (id) {
                 var user = new User();
-                $.get('/v1/users/' + id, function (data) {
-                    console.log('got data');
-                    console.log(data);
-                    user.set(data);
+                var request = $.ajax({
+                    type: 'GET', // define the type of HTTP verb we want to use (POST for our form)
+                    url: '/v1/users/' + id, // the url where we want to POST
+                    dataType: 'text', // what type of data do we expect back from the server
+                    success: function (data) {
+                        console.log('success');
+                        console.log(data);
+                        var data = JSON.parse(data);
 
-                    var userview = new UserView(user);
+                        user.set(data);
 
-                    console.debug(userview.render().el);
+                        var userview = new UserView(user);
 
-                    $("#user").append(userview.render().el);
-                }, 'json');
+                        $("#user").append(userview.render().el);
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.status);
+                        console.log(xhr.readyState);
+                        console.log(xhr.responseText);
+                        console.log(xhr);
+                        console.log(error);
+                        if (xhr.status == 401) {
+                            window.location = "/public/login?redirect=/";
+                        }
+
+                    },
+                    done: function () {
+                        console.log('done');
+                    }
+                })
             }
         });
 
@@ -105,6 +142,7 @@
     <h1>Hello</h1>
     <ul>
         <li><a href="#users/me">Profile</a></li>
+        <li><a href="#logout">Logout</a></li>
     </ul>
 
     <div id="user"></div>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<!--https://gist.github.com/bergie/2836052-->
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+
+    <!--https://cdnjs.com/libraries/handlebars.js/-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
+
+    <!-- Setup our templates -->
+    <script id="PersonTemplate" type="text/x-handlebars-template">
+        <div>
+            {{name}} {{age}}
+            <div>
+    </script>
+
+    <!-- 
+	        Note the []  this is important
+		because handlebars and backbone collections
+		dont play well with each other in regards
+		to naming JSON groups 
+	    -->
+    <script id="PeopleTemplate" type="text/x-handlebars-template">
+        <div>
+            {{#each []}} {{this.name}} {{this.age}}
+            <br/> {{/each}}
+            <div>
+    </script>
+    <!-- End templates setup -->
+
+
+    <script>
+        // Stub out the person model
+        var Person = Backbone.Model.extend({
+
+        });
+
+        // Create a collection of persons
+        var People = Backbone.Collection.extend({
+            model: Person,
+        });
+
+        // Define the view for a single person
+        var PersonView = Backbone.View.extend({
+            el: $("#personContainer"),
+
+            render: function () {
+                // This is method that can be called
+                // once an object is init. You could 
+                // also do this in the initialize event
+                var source = $('#PersonTemplate').html();
+                var template = Handlebars.compile(source);
+                var html = template(this.model.toJSON());
+
+                $(this.el).html(html);
+
+                document.getElementById('p2').innerHTML = html;
+
+
+                // console.log(html);
+                // console.log(this.$el);
+                // console.log(this.$el.html());
+            },
+            initialize: function (options) {
+                // Ensure our methods keep the `this` reference to the view itself
+                _.bindAll(this, 'render');
+
+                // If the model changes we need to re-render
+                this.model.bind('change', this.render);
+            },
+        });
+
+        // Define the view for People
+        var PeopleView = Backbone.View.extend({
+            render: function () {
+                // This is method that can be called
+                // once an object is init. You could 
+                // also do this in the initialize event
+                var source = $('#PeopleTemplate').html();
+                var template = Handlebars.compile(source);
+                var html = template(this.collection.toJSON());
+
+                this.$el.html(html);
+            },
+            initialize: function (options) {
+                this.collection = options.collection;
+
+                // Ensure our methods keep the `this` reference to the view itself
+                _.bindAll(this, 'render');
+
+                // Bind collection changes to re-rendering
+                this.collection.bind('reset', this.render);
+                this.collection.bind('add', this.render);
+                this.collection.bind('remove', this.render);
+            },
+
+        });
+
+        //THANKS Rameş Aliyev for the feedback on making this cleaner
+        // https://gist.github.com/4682984
+
+        // Create instance of People Collection
+        // var people = new People();
+
+        // // Create new instances of the person models
+        var person = new Person({ name: "Tim", age: 5 });
+        // var person2 = new Person({ name: "Jill", age: 15 });
+
+        // // Create instances of the views
+        // var personView = new PersonView({
+        //     model: person
+        // });
+        // var peopleView = new PeopleView({
+        //     collection: people
+        // });
+
+        var Router = Backbone.Router.extend({
+            routes: {
+                '': 'index'  // At first we display the index route
+            },
+
+            index: function () {
+                // Initialize a list of people
+                // In this case we provide an array, but normally you'd
+                // instantiate an empty list and call people.fetch()
+                // to get the data from your backend
+                // var people = new models.People([
+                //     {
+                //         firstname: 'Arthur',
+                //         lastname: 'Dent'
+                //     },
+                //     {
+                //         firstname: 'Ford',
+                //         lastname: 'Prefect'
+                //     }
+                // ]);
+
+                // // Pass the collection of people to the view
+                // var view = new views.People({
+                //     collection: people
+                // });
+
+                var view = new PersonView({
+                    model: person
+                });
+
+                setInterval(function() {
+                    console.log(person.toJSON());
+                    person.set({"name": person.get("name") + "1"})
+                    // person.name += '1';
+                    // console.log(person.name);
+                },5000);
+
+                // And render it
+                view.render();
+
+                // Example of adding a new person afterwards
+                // This will fire the 'add' event in the collection
+                // which causes the view to re-render
+                // people.add([
+                //     {
+                //         firstname: 'Zaphod',
+                //         lastname: 'Beeblebrox'
+                //     }
+                // ]);
+            }
+        });
+
+        $(document).ready(function () {
+
+            // Router.start()
+
+            //     // When the document is ready we instantiate the router
+            var router = new Router();
+
+            //     // And tell Backbone to start routing
+            Backbone.history.start();
+
+            // router.start();
+
+            //     // We have to do this stuff in the dom ready
+            //     // so that the container objects get built out
+
+            //     // Set el of the views.
+            //     console.log('ready');
+            //     personView.el = $('#personContainer');
+            //     peopleView.el = $('#peopleContainer');
+
+            //     console.log('hello');
+
+            //     // Add them to a new instance of the people collection
+            //     people.add(person);
+            //     people.add(person2);
+
+            //     // Render the views. If you are using the initialize
+            //     // method then you do not have to do this step.
+            //     // personView.render();
+            //     // peopleView.render();
+
+            //     // Try on console!
+            //     people.add(new Person({ name: 'Rames', age: '23' }));
+
+        });
+    </script>
+
+
+</head>
+
+<body>
+    <div id='personContainer'></div>
+    <div id='peopleContainer'></div>
+
+    <div id='p2'></div>
+
+</body>
+
+</html>

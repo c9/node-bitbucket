@@ -1,0 +1,10 @@
+{
+  "name": "public",
+  "homepage": "https://github.com/russjohnson09/coderuss",
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "dependencies": {
+    "urijs": "uri.js#^1.18.7"
+  }
+}

@@ -6,7 +6,16 @@
 
 
 <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+<script src="/bower_components/urijs/src/URI.js"></script>
+
 <script>
+    var uri = new URI(window.location.href);
+    console.log(uri.search(true));
+
+    var params = uri.search(true);
+
+    var redirect = params['redirect'];
+
     $(document).ready(function () {
 
         // process the form
@@ -27,7 +36,13 @@
                 success: function (data) {
                     console.log('success');
                     console.log(data);
-                    window.location = "/v1/profile";
+                    if (redirect) {
+                        window.location = redirect;
+                    }
+                    else {
+                        window.location = "/v1/profile";
+
+                    }
                 },
                 error: function (xhr, status, error) {
                     console.log('error');

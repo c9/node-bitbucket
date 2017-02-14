@@ -130,7 +130,7 @@ module.exports = function (opts) {
     router.get('/logout',
         function (req, res) {
             req.logout();
-            res.redirect('/public/login');
+            res.redirect('/');
         });
 
     router.get('/profile',
@@ -141,7 +141,7 @@ module.exports = function (opts) {
 
             }
             winston.debug(req.user);
-            res.send(JSON.stringify(req.user ));
+            res.send(JSON.stringify(req.user));
             res.end();
         });
 
