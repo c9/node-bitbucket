@@ -13,11 +13,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
     <!--https://cdnjs.com/libraries/backbone.routefilter-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.routefilter/0.2.0/backbone.routefilter.js"></script>
+    <script src="/js/ext/backbone-validation.js"></script>
 
     <!--https://github.com/powmedia/backbone-forms-->
     <!-- Setup our templates -->
 
-    <script id="UserTemplate" type="text/x-handlebars-template">
+    <!--<script id="UserTemplate" type="text/x-handlebars-template">
         <div class="container">
             <h2>User</h2>
             <form>
@@ -39,177 +40,296 @@
                 <button type="submit" class="btn btn-default">Submit</button>
             </form>
         </div>
+    </script>-->
+
+
+    <script id="UserTemplate" type="text/x-handlebars-template">
+        <div class="container">
+            <h2>User</h2>
+            <form>
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="username" class="form-control" id="username">
+                    <span class="help-block hidden"></span>
+
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter email">
+                    <span class="help-block hidden"></span>
+                </div>
+                <!--<div class="form-group">
+                    <label for="pwd">Password:</label>
+                    <input type="password" class="form-control" id="pwd" placeholder="Enter password">
+                    <span class="help-block hidden"></span>
+                </div>-->
+                <!--<div class="checkbox">
+                    <label><input type="checkbox"> Remember me</label>
+                </div>-->
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </script>
+
+    <script>
+        /*global Backbone */
+        var app = app || {};
+
+        (function () {
+            'use strict';
+
+            // User Model
+            // ----------
+            app.User = Backbone.Model.extend({
+                // defaults: {
+                //     email: '',
+                //     username: ''
+                // },
+                validation: {
+                    username: {
+                        required: true
+                    },
+                    email: {
+                        required: true,
+                        pattern: 'email'
+                    },
+                }
+            });
+        })();
+    </script>
+
+    <script>
+        /*global Backbone, jQuery, _, ENTER_KEY */
+        var app = app || {};
+
+        (function ($) {
+            'use strict';
+
+            // UserView
+            // ---------------
+
+            // Our overall **AppView** is the top-level piece of UI.
+            app.UserView = Backbone.View.extend({
+                events: {
+                    'click #save': function (e) {
+                        e.preventDefault();
+                        this.signUp();
+                    }
+                },
+
+                initialize: function () {
+                    console.log('init');
+                    // _.bindAll(this, 'usernameChanged');
+
+                    // // var view = this;
+                    // this.model = model;
+                    console.log(this.model);
+                    // // this.user.bind('change', this.render);
+                    // console.log(this.user);
+                    // this.render();
+                    // This hooks up the validation
+                    // See: http://thedersen.com/projects/backbone-validation/#using-form-model-validation/validation-binding
+                    // Backbone.Validation.bind(this);
+                },
+
+                render: function () {
+                    //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
+                    console.log('render');
+                    var template = $('#UserTemplate').html();
+                    console.log(this.model);
+                    var userJSON = this.model.toJSON();
+                    console.log(userJSON);
+                    var compiled = _.template(template)(this.model);
+                    console.log(compiled);
+                    this.$el.html(compiled);
+                    return this;
+                },
+
+                signUp: function () {
+                    var data = this.$el.serializeObject();
+
+                    this.model.set(data);
+
+                    console.log(this.model);
+                    console.log(data);
+
+                    // Check if the model is valid before saving
+                    // See: http://thedersen.com/projects/backbone-validation/#methods/isvalid
+                    if (this.model.isValid(true)) {
+
+                        var dataObj = {
+                            username: this.model.get('username'),
+                            password: this.model.get('password'),
+                        }
+                        console.log(dataObj);
+                        // this.model.save();
+                        $.ajax({
+                            type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                            url: '/v1/login', // the url where we want to POST
+                            data: dataObj, // our data object
+                            dataType: 'text', // what type of data do we expect back from the server
+                            success: function (data) {
+                                console.log('success');
+                                console.log(data);
+                                window.location = "/v1/todos/public/";
+                            },
+                            error: function (xhr, status, error) {
+                                console.log('error');
+
+                                console.log(status);
+                                console.log(error);
+                            },
+                            done: function () {
+                                console.log('done');
+                            }
+                        })
+                    }
+                },
+
+                remove: function () {
+                    // Remove the validation binding
+                    // See: http://thedersen.com/projects/backbone-validation/#using-form-model-validation/unbinding
+                    Backbone.Validation.unbind(this);
+                    return Backbone.View.prototype.remove.apply(this, arguments);
+                }
+            });
+        })(jQuery);
     </script>
 
 </head>
 
 
 <script>
-    //http://stackoverflow.com/questions/4074636/can-i-bind-form-inputs-to-models-in-backbone-js-without-manually-tracking-blur-e
-    var User = Backbone.Model.extend({});
+        var Router = Backbone.Router.extend({
+            routes: {
+                '': 'index',
+                'users(/:id)': 'users',
+                'logout': 'logout'
+            },
+            //http://danialk.github.io/blog/2013/06/08/backbone-tips-after-and-before-methods-for-router/
+            // https://github.com/boazsender/backbone.routefilter
+            before: function () {
+                console.log('before');
+                // $("#main").html('');
+            },
+            index: function () {
+                console.log('index');
+            },
+            logout: function () {
+                var request = $.ajax({
+                    type: 'GET',
+                    url: '/v1/logout',
+                    dataType: 'text',
+                    done: function () {
+                        console.log('done');
+                        window.location = '/';
 
-
-// https://amiliaapp.github.io/backform/
-
-    // http://www.9bitstudios.com/2013/10/backbone-js-data-binding/
-    var UserView = Backbone.View.extend({ //div.user
-        tagName: "div",
-        className: "user",
-        //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
-        // template: _.template($('#PersonTemplate').html()),
-
-        // _.template(
-        //     "<h2>Username</h2><div><%= username %></div>" +
-        //     "<h2>Email</h2>" +
-        //     "<div><%= email %></div>"),
-        // template: _.template($("#like_template").html()),
-
-
-        events: {
-            "keyup #email": "emailChanged",
-            "change #username": "usernameChanged",
-
-            // 'click a.like': 'like',
-            // 'click a.like2': 'liketwo',
-        },
-
-        usernameChanged: function () {
-            console.log('username changed');
-
-            console.log($('#username').val());
-            console.log(this.user.toJSON());
-
-            var input = this.inputContent;
-            console.log($('#username').val());
-            this.user.set('username', $('#username').val());
-            console.log(this.user.toJSON());
-
-            // $('#email').html(newName);
-
-            // this.user.set({ content: input.val() });
-            // // var newName = ;
-            // this.user.set('username', $('#username').val());
-            // $('#email').html(newName);
-        },
-
-
-        emailChanged: function () {
-            var newName = $('#email').val();
-
-
-        },
-
-
-        initialize: function (user) {
-            console.log('init');
-            _.bindAll(this, 'usernameChanged');
-
-            // var view = this;
-            this.user = user;
-            // this.user.bind('change', this.render);
-            console.log(this.user);
-            this.render();
-        },
-
-        render: function () {
-            //http://codebeerstartups.com/2012/12/how-to-use-templates-in-backbone-js-learning-backbone-js/
-            console.log('render');
-            var template = $('#UserTemplate').html();
-            console.log(this.user);
-            var userJSON = this.user.toJSON();
-            console.log(userJSON);
-            var compiled = _.template(template)(userJSON);
-            console.log(compiled);
-            this.$el.html(compiled);
-            return this;
-        },
-    });
-
-
-
-    var Router = Backbone.Router.extend({
-        routes: {
-            '': 'index',
-            'users(/:id)': 'users',
-            'logout': 'logout'
-        },
-        //http://danialk.github.io/blog/2013/06/08/backbone-tips-after-and-before-methods-for-router/
-        // https://github.com/boazsender/backbone.routefilter
-        before: function () {
-            console.log('before');
-            $("#main").html('');
-        },
-        index: function () {
-            console.log('index');
-        },
-        logout: function () {
-            var request = $.ajax({
-                type: 'GET',
-                url: '/v1/logout',
-                dataType: 'text',
-                done: function () {
-                    console.log('done');
-                    window.location = '/';
-
-                },
-                error: function () {
-                    console.log('error');
-                    window.location = '/';
-                }
-            });
-        },
-        mypage: function mypage() {
-            // #mypageでアクセスされたときの処理を書く
-            console.log('mypage', arguments);
-            $('#output').html('<p>mypage</p>');
-        },
-        users: function (id) {
-            var user = new User();
-            var request = $.ajax({
-                type: 'GET', // define the type of HTTP verb we want to use (POST for our form)
-                url: '/v1/users/' + id, // the url where we want to POST
-                dataType: 'text', // what type of data do we expect back from the server
-                success: function (data) {
-                    console.log('success');
-                    console.log(data);
-                    var data = JSON.parse(data);
-
-                    user.set(data);
-
-                    var userview = new UserView(user);
-
-                    $("#main").html(userview.render().el);
-
-                    console.log(userview.user);
-
-                },
-                error: function (xhr, status, error) {
-                    console.log(xhr.status);
-                    console.log(xhr.readyState);
-                    console.log(xhr.responseText);
-                    console.log(xhr);
-                    console.log(error);
-                    if (xhr.status == 401) {
-                        window.location = "/public/login?redirect=/";
+                    },
+                    error: function () {
+                        console.log('error');
+                        window.location = '/';
                     }
+                });
+            },
+            mypage: function mypage() {
+                // #mypageでアクセスされたときの処理を書く
+                console.log('mypage', arguments);
+                $('#output').html('<p>mypage</p>');
+            },
+            users: function (id) {
+                var user = new app.User();
+                var request = $.ajax({
+                    type: 'GET', // define the type of HTTP verb we want to use (POST for our form)
+                    url: '/v1/users/' + id, // the url where we want to POST
+                    dataType: 'text', // what type of data do we expect back from the server
+                    success: function (data) {
+                        console.log('success');
+                        console.log(data);
+                        var data = JSON.parse(data);
 
-                },
-                done: function () {
-                    console.log('done');
-                }
-            })
-        }
-    });
+                        user.set(data);
+
+                        console.log(user.toJSON());
+
+                        // var userview = new UserView(user);
+
+                        var view = new app.UserView({
+                            el: 'form',
+                            model: user
+                        });
+
+                        // $("#main").html(view.render().el);
+
+                        // console.log(userview.user);
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.status);
+                        console.log(xhr.readyState);
+                        console.log(xhr.responseText);
+                        console.log(xhr);
+                        console.log(error);
+                        if (xhr.status == 401) {
+                            window.location = "/public/login?redirect=/";
+                        }
+
+                    },
+                    done: function () {
+                        console.log('done');
+                    }
+                })
+            }
+        });
 
 
+        var app = app || {};
+        var ENTER_KEY = 13;
+        var ESC_KEY = 27;
+        var router = new Router();
 
-    var router = new Router();
+        _.extend(Backbone.Validation.callbacks, {
+            valid: function (view, attr, selector) {
+                var $el = view.$('[name=' + attr + ']'),
+                    $group = $el.closest('.form-group');
+
+                $group.removeClass('has-error');
+                $group.find('.help-block').html('').addClass('hidden');
+            },
+            invalid: function (view, attr, error, selector) {
+                var $el = view.$('[name=' + attr + ']'),
+                    $group = $el.closest('.form-group');
+
+                $group.addClass('has-error');
+                $group.find('.help-block').html(error).removeClass('hidden');
+            }
+        });
+
+        // https://github.com/hongymagic/jQuery.serializeObject
+        $.fn.serializeObject = function () {
+            "use strict";
+            var a = {}, b = function (b, c) {
+                var d = a[c.name];
+                "undefined" != typeof d && d !== null ? $.isArray(d) ? d.push(c.value) : a[c.name] = [d, c.value] : a[c.name] = c.value
+            };
+            return $.each(this.serializeArray(), b), a
+        };
 
 
-    // DOMの生成が完了してからstart()させる
-    $(function () {
-        Backbone.history.start();  // ブラウザのhashChangeの監視を開始する
-    });
+        $(function () {
+
+            /*global $ */
+            /*jshint unused:false */
+            var app = app || {};
+            var ENTER_KEY = 13;
+            var ESC_KEY = 27;
+
+            // var view = new app.SignupView({
+            //     el: 'form',
+            //     model: new app.signup()
+            // });
+
+            Backbone.history.start();  // ブラウザのhashChangeの監視を開始する
+        });
 
 </script>
 
@@ -274,7 +394,36 @@
 
 <body>
 
-    <div id="main"></div>
+    <div id="main">
+        <section class="login">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label for="username" class="col-lg-2 control-label">Username</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" id="username" name="username" />
+                        <span class="help-block hidden"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-lg-2 control-label">Password</label>
+                    <div class="col-lg-10">
+                        <input type="password" class="form-control" id="password" name="password" />
+                        <span class="help-block hidden"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-offset-2 col-lg-10">
+                        <button type="submit" id="save" class="btn btn-success">Sign Up</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input class="form-control" id="email" placeholder="Enter email">
+                    <span class="help-block hidden"></span>
+                </div>
+            </form>
+        </section>
+    </div>
 
     <!--<div id="output"></div>-->
 
