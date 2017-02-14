@@ -1,0 +1,162 @@
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
+    <!--https://cdnjs.com/libraries/backbone.routefilter-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.routefilter/0.2.0/backbone.routefilter.js"></script>
+
+    <script src="/l/js/ext/backform.js"></script>
+    <!--bower install backform-->
+
+
+
+    <script>
+        $(function () {
+
+            var User = Backbone.Model.extend({
+                restfulSave: function () {
+                    var model = this;
+                    var data = model.toJSON();
+                    data = JSON.stringify(data);
+                    console.log(data);
+                    var request = $.ajax({
+                        type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                        url: '/v1/users/me', // the url where we want to POST
+                        dataType: 'text',
+                        contentType: 'application/json',
+                        data: data,
+                        success: function (data) {
+                            console.log('success');
+                            console.log(data);
+                            var data = JSON.parse(data);
+                        },
+                        statusCode: {
+                            404: function() {
+                                alert('not found');
+                            },
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(xhr.status);
+                            console.log(xhr.readyState);
+                            console.log(xhr.responseText);
+                            console.log(xhr);
+                            console.log(error);
+                            if (xhr.status == 401) {
+                                window.location = "/public/login?redirect=/";
+                            }
+
+                        },
+                        done: function () {
+                            console.log('done');
+                        }
+                    })
+                }
+                // save: function() {
+                //     console.log('hello');
+                //     return function(){};
+                // }                // defaults:{
+                //     modelType:'login',       
+                //     password: "",
+                //     rememberMe: false,
+                //     isAuthenticated: false
+                // }
+            });
+
+
+            var user = new User();
+
+            var request = $.ajax({
+                type: 'GET', // define the type of HTTP verb we want to use (POST for our form)
+                url: '/v1/users/me',
+                dataType: 'text', // what type of data do we expect back from the server
+                success: function (data) {
+                    console.log('success');
+                    console.log(data);
+                    var data = JSON.parse(data);
+
+                    user.set(data);
+
+                    // var userview = new UserView(user);
+
+                    // $("#main").html(userview.render().el);
+
+                    // console.log(userview.user);
+
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.status);
+                    console.log(xhr.readyState);
+                    console.log(xhr.responseText);
+                    console.log(xhr);
+                    console.log(error);
+                    if (xhr.status == 401) {
+                        window.location = "/public/login?redirect=/";
+                    }
+
+                },
+                done: function () {
+                    console.log('done');
+                }
+            })
+
+
+
+            var fields = [{
+                name: "email", // The key of the model attribute
+                label: "email", // The label to display next to the control
+                control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
+                // disabled: true // By default controls are editable. Here we disabled it.
+            }, {
+                name: "username",
+                label: "First name",
+                control: "input"
+            }, {
+                name: "name",
+                label: "Name",
+                control: "input",
+                // extraClasses: ["fancy"],
+                // helpMessage: "Be creative!"
+            }, {
+                control: "button",
+                label: "Save"
+            }];
+
+            var form = new Backform.Form({
+                el: $("#form"),
+                model: user,
+                fields: fields, // Will get converted to a collection of Backbone.Field models
+                events: {
+                    "submit": function (e) {
+                        e.preventDefault();
+                        this.model.restfulSave(function (error, xhr, response) {
+                            return false;
+
+                        });
+                        // this.model.save()
+                        //     .done(function (result) {
+                        //         alert("Successful!");
+                        //     })
+                        //     .fail(function (error) {
+                        //         alert(error);
+                        //     });
+                    }
+                }
+            });
+            form.render(); // Backform.*Control views are created for each field and rendered on screen
+        });
+    </script>
+
+
+</head>
+
+<body>
+    <form id="form">
+    </form>
+
+</body>

@@ -58,6 +58,7 @@ module.exports = function (opts) {
 
 
     router.post('/me', function (req, res) {
+        winston.debug(req.headers,{endpoint:'/v2/users/me',tag:'headers'})
         winston.debug(req.body, { endpoint: '/v2/users/me' });
         var set = {};
         if (req.body.email !== undefined) {
@@ -65,6 +66,14 @@ module.exports = function (opts) {
         }
         if (req.body.name !== undefined) {
             set.name = req.body.name;
+        }
+        if (!set.name && !set.email) {
+            res.status(400);
+            return res.end(JSON.stringify({
+                "message": 'Bad Request',
+                status: "Bad Request"
+            }));
+            return;
         }
         User.updateOne({ _id: ObjectID(req.user._id) },
             { $set: set }, function (error, result) {

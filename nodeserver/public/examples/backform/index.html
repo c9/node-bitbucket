@@ -1,0 +1,130 @@
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
+    <!--https://cdnjs.com/libraries/backbone.routefilter-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.routefilter/0.2.0/backbone.routefilter.js"></script>
+
+    <script src="/l/js/ext/backform.js"></script>
+    <!--bower install backform-->
+
+
+
+    <script>
+        $(function () {
+
+            var Person = Backbone.Model.extend({
+                restfulSave: function () {
+                    var model = this;
+                    var request = $.ajax({
+                        type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                        url: '/v1/users/me', // the url where we want to POST
+                        dataType: 'text', // what type of data do we expect back from the server
+                        body: model.toJSON(),
+                        success: function (data) {
+                            console.log('success');
+                            console.log(data);
+                            var data = JSON.parse(data);
+
+                            user.set(data);
+
+                            var userview = new UserView(user);
+
+                            $("#main").html(userview.render().el);
+
+                            console.log(userview.user);
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(xhr.status);
+                            console.log(xhr.readyState);
+                            console.log(xhr.responseText);
+                            console.log(xhr);
+                            console.log(error);
+                            if (xhr.status == 401) {
+                                window.location = "/public/login?redirect=/";
+                            }
+
+                        },
+                        done: function () {
+                            console.log('done');
+                        }
+                    })
+                }
+                // save: function() {
+                //     console.log('hello');
+                //     return function(){};
+                // }                // defaults:{
+                //     modelType:'login',       
+                //     password: "",
+                //     rememberMe: false,
+                //     isAuthenticated: false
+                // }
+            })
+
+            var person = new Person({
+                // id: 101,
+                firstName: "Martin",
+                lastName: "Drapeau",
+
+            });
+
+            var fields = [{
+                name: "id", // The key of the model attribute
+                label: "ID", // The label to display next to the control
+                control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
+                disabled: true // By default controls are editable. Here we disabled it.
+            }, {
+                name: "firstName",
+                label: "First name",
+                control: "input"
+            }, {
+                name: "lastName",
+                label: "Last name",
+                control: "input",
+                extraClasses: ["fancy"],
+                helpMessage: "Be creative!"
+            }, {
+                control: "button",
+                label: "Save to server"
+            }];
+
+            var form = new Backform.Form({
+                el: $("#form"),
+                model: person,
+                fields: fields, // Will get converted to a collection of Backbone.Field models
+                events: {
+                    "submit": function (e) {
+                        e.preventDefault();
+                        this.model.restfulSave(function (error, xhr, response) {
+
+                        });
+                        this.model.save()
+                            .done(function (result) {
+                                alert("Successful!");
+                            })
+                            .fail(function (error) {
+                                alert(error);
+                            });
+                        return false;
+                    }
+                }
+            });
+            form.render(); // Backform.*Control views are created for each field and rendered on screen
+        });
+    </script>
+
+
+</head>
+
+<body>
+    <form id="form">
+    </form>
+
+</body>
