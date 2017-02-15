@@ -1,0 +1,86 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        .form-row {
+            border: 1px solid #e2e2e2;
+            margin: 10px;
+            padding: 20px;
+            background: #f2f2f2;
+        }
+        
+        .subrow {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="col-xs-6">
+                        <label>Name</label>
+                        <input type="text" class="form-control" placeholder="" v-model="model.name">
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="col-xs-6">
+                        <label>Email</label>
+                        <input type="text" class="form-control" placeholder="" v-model="model.name">
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <button type="submit" class="btn btn-info" @click="submit">Submit</button>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                options: [
+                    { 'label': 'Text', 'value': 1 },
+                    { 'label': 'Numeric', 'value': 2 },
+                    { 'label': 'Check box', 'value': 3 },
+                    { 'label': 'Radio button', 'value': 4 },
+                    { 'label': 'Drop down', 'value': 5 },
+                    { 'label': 'Image', 'value': 6 },
+                    { 'label': 'Date', 'value': 7 },
+                ],
+                rows: [
+                    { 'select': 1, 'name': '', 'check': false, 'subrows': [{ answer: '' }] }
+                ],
+                model: {
+                    name: 'test'
+                }
+            },
+            methods: {
+                submit: function () {
+                    console.log('submit');
+                    console.log(JSON.stringify(this.model));
+                    console.log(this.model.name);
+                    return;
+                    this.rows.push({ 'select': 1, 'name': '', 'check': false, subrows: [{ answer: '' }] });
+                },
+                deleteRow: function (row) {
+                    this.rows.$remove(row);
+                },
+                addSubRow: function (row) {
+                    row.subrows.push({ answer: '' })
+                },
+                deleteSubrow: function (row, subrow) {
+                    row.subrows.$remove(subrow);
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -49,13 +49,17 @@
             <form>
                 <div class="form-group">
                     <label for="username">Username:</label>
-                    <input type="username" class="form-control" id="username">
+                    <input type="username" class="form-control" id="username" disabled>
                     <span class="help-block hidden"></span>
-
                 </div>
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" class="form-control" id="email" placeholder="Enter email">
+                    <input type="email" class="form-control" id="email">
+                    <span class="help-block hidden"></span>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="name" class="form-control" id="name">
                     <span class="help-block hidden"></span>
                 </div>
                 <!--<div class="form-group">
@@ -66,7 +70,7 @@
                 <!--<div class="checkbox">
                     <label><input type="checkbox"> Remember me</label>
                 </div>-->
-                <button type="submit" class="btn btn-default">Submit</button>
+                <button id="save" type="submit" class="btn btn-default">Submit</button>
             </form>
         </div>
     </script>
@@ -86,12 +90,15 @@
                 //     username: ''
                 // },
                 validation: {
-                    username: {
-                        required: true
-                    },
+                    // username: {
+                    //     required: true
+                    // },
                     email: {
                         required: true,
                         pattern: 'email'
+                    },
+                    name: {
+                        required: name
                     },
                 }
             });
@@ -110,26 +117,62 @@
 
             // Our overall **AppView** is the top-level piece of UI.
             app.UserView = Backbone.View.extend({
+                //http://stackoverflow.com/questions/5826309/backbone-js-view-events-not-firing
                 events: {
                     'click #save': function (e) {
                         e.preventDefault();
                         this.signUp();
-                    }
+                    },
+                    'click #click': function (e) {
+                        console.log('clicked button')
+                        // e.preventDefault();
+                        // this.signUp();
+                    },
                 },
+                // events: ,
+                // https://lostechies.com/derickbailey/2011/07/24/awesome-model-binding-for-backbone-js/
+                // "change input": "fieldChanged",
+
+                // },
+
+                // fieldChanged: function (e) {
+                //     var field = $(e.currentTarget);
+                //     var data = {};
+                //     data[field.attr('id')] = field.val();
+                //     this.model.set(data);
+                // },
 
                 initialize: function () {
                     console.log('init');
+                    // Ensure our methods keep the `this` reference to the view itself
+                    _.bindAll(this, 'render');
+
+                    // If the model changes we need to re-render
+                    this.model.bind('change', this.render);
                     // _.bindAll(this, 'usernameChanged');
 
                     // // var view = this;
                     // this.model = model;
                     console.log(this.model);
+
                     // // this.user.bind('change', this.render);
                     // console.log(this.user);
-                    // this.render();
+                    this.render();
+
+                    // this.events = {
+                    //     'click #save': function (e) {
+                    //         e.preventDefault();
+                    //         this.signUp();
+                    //     },
+                    //     'click button': function (e) {
+                    //         console.log('clicked button')
+                    //         e.preventDefault();
+                    //         this.signUp();
+                    //     },
+                    // }
                     // This hooks up the validation
                     // See: http://thedersen.com/projects/backbone-validation/#using-form-model-validation/validation-binding
-                    // Backbone.Validation.bind(this);
+                    Backbone.Validation.bind(this);
                 },
 
                 render: function () {
@@ -141,11 +184,25 @@
                     console.log(userJSON);
                     var compiled = _.template(template)(this.model);
                     console.log(compiled);
-                    this.$el.html(compiled);
+
+                    $('#main').html(compiled);
+
+                    var userJSON = this.model.toJSON();
+                    $.each(userJSON, function (key, val) {
+                        // console.log($("form input#"+key).val(1));
+                        console.log(key);
+                        console.log(val);
+                        $("form input#" + key).val(val)
+
+                    });
+
+                    console.log(this.events);
+
                     return this;
                 },
 
                 signUp: function () {
+                    console.log('signup event');
                     var data = this.$el.serializeObject();
 
                     this.model.set(data);
@@ -158,14 +215,15 @@
                     if (this.model.isValid(true)) {
 
                         var dataObj = {
-                            username: this.model.get('username'),
-                            password: this.model.get('password'),
+                            // username: this.model.get('username'),
+                            name: this.model.get('name'),
+                            email: this.model.get('email'),
                         }
                         console.log(dataObj);
                         // this.model.save();
                         $.ajax({
                             type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-                            url: '/v1/login', // the url where we want to POST
+                            url: '/v1/users', // the url where we want to POST
                             data: dataObj, // our data object
                             dataType: 'text', // what type of data do we expect back from the server
                             success: function (data) {
@@ -396,7 +454,7 @@
 
     <div id="main">
         <section class="login">
-            <form class="form-horizontal" role="form">
+            <!--<form class="form-horizontal" role="form">
                 <div class="form-group">
                     <label for="username" class="col-lg-2 control-label">Username</label>
                     <div class="col-lg-10">
@@ -405,9 +463,9 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="password" class="col-lg-2 control-label">Password</label>
+                    <label for="email" class="col-lg-2 control-label">Email</label>
                     <div class="col-lg-10">
-                        <input type="password" class="form-control" id="password" name="password" />
+                        <input type="text" class="form-control" id="email" name="email" />
                         <span class="help-block hidden"></span>
                     </div>
                 </div>
@@ -416,14 +474,11 @@
                         <button type="submit" id="save" class="btn btn-success">Sign Up</button>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input class="form-control" id="email" placeholder="Enter email">
-                    <span class="help-block hidden"></span>
-                </div>
-            </form>
+            </form>-->
         </section>
     </div>
+
+    <button id="click">click</button>
 
     <!--<div id="output"></div>-->
 
