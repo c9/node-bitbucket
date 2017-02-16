@@ -1,0 +1,205 @@
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+<script>
+    var jwt = 'test_token';
+    var socketUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+    var socket = io('/v1/todos');//,{query: 'token=' + jwt});
+
+    var canDisplayNotifications = false;
+    (function () {
+        if (!("Notification" in window)) {
+            alert("This browser does not support desktop notification");
+            return;
+        }
+        console.log(Notification.permission);
+        if (Notification.permission == 'granted') {
+            canDisplayNotifications = true;
+            return;
+        }
+        if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                if (permission === "granted") {
+                    canDisplayNotifications = true;
+                }
+            });
+        }
+    })();
+
+    //https://github.com/ornicar/lila/issues/854 
+    socket.on('notification', function (notification) {
+        var lastNotificationId = localStorage.getItem('lastNotificationId');
+        var notification = JSON.parse(notification);
+        console.log('received notification');
+        console.log(notification);
+
+        if (notification.id != lastNotificationId) {
+            localStorage.setItem('lastNotificationId', notification.id);
+            if (canDisplayNotifications) {
+                var notification = new Notification(notification.data.text);
+                notification.onclick = function () {
+                    window.open(socketUrl + '/v1/todos/public');
+                };
+            }
+            else {
+                console.log('permission not given to display notifications');
+            }
+        }
+        else {
+            console.log('duplicate notification');
+        }
+    });
+
+    socket.on('info', function (data) {
+        console.log(JSON.stringify(data));
+    });
+</script>
+
+
+<div id="app-4">
+    <form id="create-todo" action="/v1/todos/" method="POST">
+        <input name="text">
+        <button type="submit">Add</button>
+    </form>
+
+    <button v-on:click="ping">Ping</button>
+
+    <ol>
+        <li v-for="(todo,index) in todos">
+            <div :data-index="index">
+                {{ todo.text }} {{ todo.due | formatDate }}
+
+
+                <button :data-index="index" v-on:click="deleteTodo">Delete</button>
+                <button v-if="!todo.is_complete" :data-index="index" v-on:click="add30minutereminder">Add 30 minute reminder</button>
+                <button v-if="!todo.is_complete" :data-index="index" v-on:click="add5minutereminder">Add 5 minute reminder</button>
+                <button v-if="!todo.is_complete" :data-index="index" v-on:click="complete">Complete</button>
+
+            </div>
+        </li>
+    </ol>
+</div>
+<script src="vue.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+<script>
+    // var form = document.getElementById('create-todo');
+    // form.onsubmit = function () {
+    //     return false;
+    // }
+
+    // magic.js
+    $(document).ready(function () {
+
+        // process the form
+        $('#create-todo').submit(function (event) {
+
+            // get the form data
+            // there are many ways to get this data using jQuery (you can use the class or id also)
+            var formData = {
+                'text': $('input[name=text]').val()
+            };
+
+            // process the form
+            $.ajax({
+                type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                url: '/v1/todos/', // the url where we want to POST
+                data: formData, // our data object
+                dataType: 'json', // what type of data do we expect back from the server
+                encode: true
+            })
+                // using the done promise callback
+                .done(function (data) {
+
+                    // log data to the console so we can see
+                    console.log(data);
+
+                    // here we will handle errors and validation messages
+                });
+
+            // stop the form from submitting the normal way and refreshing the page
+            event.preventDefault();
+            location.reload();
+        });
+
+    });
+
+    var app = new Vue({
+        el: '#app-4',
+        data: {
+            todos: [],
+        },
+        methods: {
+            ping: function(event) {
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/v1/todos/ping");
+                xhttp.send();
+            },
+            deleteTodo: function (event) {
+                console.log(event.target);
+                console.log(this);
+                console.log('delete');
+                var key = event.target.getAttribute('data-index')
+                var todo = this.todos.splice(key, 1)[0];
+                console.log(todo);
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("DELETE", "/v1/todos/" + todo._id);
+                xhttp.send();
+            },
+            complete: function (event) {
+                var key = event.target.getAttribute('data-index')
+                var todo = this.todos[key];
+                console.log(todo);
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/v1/todos/" + todo._id + "/complete");
+                xhttp.send();
+                location.reload();
+            },
+            add30minutereminder: function (event) {
+                var key = event.target.getAttribute('data-index')
+                var todo = this.todos[key];
+                console.log(todo);
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/v1/todos/" + todo._id + "/add30minutereminder");
+                xhttp.send();
+                location.reload();
+            },
+            add5minutereminder: function (event) {
+                var key = event.target.getAttribute('data-index')
+                var todo = this.todos[key];
+                console.log(todo);
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/v1/todos/" + todo._id + "/add5minutereminder");
+                xhttp.send();
+                location.reload();
+            }
+        },
+        filters: {
+            formatDate: function (value) {
+                try {
+                    var date = new Date(value);
+                    return date.toISOString()
+
+                }
+                catch (e) {
+                    console.log(e);
+                    return '';
+                }
+            }
+        }
+    });
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4
+        ) {
+            if (this.status == 200) {
+                console.log(this.responseText);
+                app.todos = JSON.parse(this.responseText);
+            }
+            else {
+                window.location = '/public/login';
+            }
+        }
+    };
+    xhttp.open("GET", "/v1/todos", true);
+    xhttp.send();
+
+</script>

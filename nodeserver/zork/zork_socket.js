@@ -9,9 +9,9 @@ var sockets = [];
 var readlines = [];
 var fs = require('fs');
 var clients = [];
-var zorkargs = [process.env.PWD + '/Zork/DATA/ZORK1.DAT', '-Q'];
 var saveTrue = [];
-// var Dropbox = require('dropbox');
+var zorkargs = [process.env.PWD + '/Zork/DATA/ZORK1.DAT', '-Q'];
+
 cp.spawn('./zork.sh');
 var startsWith = function (superstr, str) {
     return !superstr.indexOf(str);
@@ -19,7 +19,6 @@ var startsWith = function (superstr, str) {
 
 
 net.createServer(function (socket) {
-    console.log(socket);
     sockets.push(socket);
     // socket.write('Please authorize Zork Server in your browser, it will open shortly.\n');
     // clients[sockets.indexOf(socket)] = client;
@@ -41,32 +40,3 @@ net.createServer(function (socket) {
         socket.end();
     });
 }).listen(3000);
-
-
-var telnet = require('telnet-client');
-var connection = new telnet();
-
-var params = {
-  host: '127.0.0.1',
-  port: 3000,
-  shellPrompt: '/ # ',
-  timeout: 1500,
-  // removeEcho: 4
-};
-
-connection.on('ready', function(prompt) {
-  connection.exec(cmd, function(err, response) {
-    console.log(response);
-  });
-});
-
-connection.on('timeout', function() {
-  console.log('socket timeout!')
-  connection.end();
-});
-
-connection.on('close', function() {
-  console.log('connection closed');
-});
-
-connection.connect(params);
