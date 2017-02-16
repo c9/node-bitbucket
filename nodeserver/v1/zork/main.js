@@ -4,6 +4,12 @@ module.exports = function (opts) {
     var express = require('express');
     var winston = opts.winston || require('winston');
 
+    // https://www.npmjs.com/package/ansi2html-extended
+    const a2h = require('ansi2html-extended');
+
+    //https://www.npmjs.com/package/ansi_up
+    var ansi_up = require('ansi_up');
+
     var router = express.Router();
 
     const cp = require('child_process');
@@ -16,63 +22,11 @@ module.exports = function (opts) {
 
     function createZorkProcess() {
         winston.info('create Zork');
-        var sessions = [];
-        var sockets = [];
-        var readlines = [];
-        var fs = require('fs');
-        var clients = [];
-        var saveTrue = [];
-        var child = cp.spawn('./zork.sh');
-        var startsWith = function (superstr, str) {
-            return !superstr.indexOf(str);
-        };
+        var cmd = "frotz";
+        var args = [__dirname + "/Zork/DATA/ZORK1.DAT", "-Q"];
 
-        var netServer = net.createServer(function (socket) {
-            winston.info('netServer');
-            sockets.push(socket);
-            readlines[sockets.indexOf(socket)] = readline.createInterface(socket, socket);
-            socket.write('Loading Zork...\n'); 
-            sessions[sockets.indexOf(socket)] = cp.spawn('frotz', zorkargs);
-            sessions[sockets.indexOf(socket)].stdout.setEncoding('utf8');
-            sessions[sockets.indexOf(socket)].stdout.pipe(socket);
-            sessions[sockets.indexOf(socket)].stderr.pipe(socket);
-            readlines[sockets.indexOf(socket)].on('line', function (data) {
-                data = util.inspect(data);
-                data = data.replace(/[^A-Za-z ]/g, "");
-
-                console.log(data);
-
-
-                sessions[sockets.indexOf(socket)].stdin.write(data + '\n');
-            });
-            sessions[sockets.indexOf(socket)].on('exit', function () {
-                console.log('exit');
-                socket.end();
-            });
-        }).listen(0);
-
-        return netServer;
-        winston.debug('spawning process');
-        var cmd = 'frotz Zork/DATA/ZORK1.DAT';
-        var cmd = 'frotz ' + __dirname + '/Zork/DATA/ZORK1.DAT';
-        var cmd = './zork.sh';
-        winston.debug(cmd, { type: 'zork' });
-
-        var child = spawn(cmd);
-        // child.stdout.pipe(process.stdout);
-        // child.stdin.pipe(process.stdout);
-
-        // var spawned_process = cp.spawn('./zork.sh');
-        child.stdout.on('data', function (data) {
-            winston.debug(data);
-        });
-        child.stderr.on('data', function (data) {
-            console.log('stderr: ' + data.toString());
-        });
-
-        child.on('exit', function (code) {
-            console.log('child process exited with code ' + code.toString());
-        });
+        var child = spawn(cmd, args);
+        child.stdout.setEncoding('utf8');
         return child;
     }
 
@@ -159,9 +113,38 @@ module.exports = function (opts) {
 
     io.on('connection', function (socket) {
 
-        socket.zork_process = createZorkProcess();
+        socket.zork_process = createZorkProcess(socket);
+
+        socket.zork_process.stdout.on('data', function (data) {
+            var data = data.toString();
+            // winston.info(data);
+
+            var data = ansi_up.ansi_to_html(data);
+            // var data = a2h.fromString(data);
+            winston.info(data);
+
+            socket.emit('zorkoutput', data);
+        });
+        socket.zork_process.stderr.on('data', function (data) {
+            winston.error('stderr: ' + data.toString());
+        });
+
+        socket.zork_process.on('exit', function (code) {
+            winston.info('child process exited with code ' + code.toString());
+        });
+
+        socket.on('zorkcmd', function (data) {
+            // socket.emit('zorkoutput',data);
+            winston.info(data);
+
+            socket.zork_process.stdin.write(data + "\n");
+
+        })
+
 
         socket.on('disconnect', function () {
+            socket.zork_process.kill();
+
             winston.debug("socket disconnect ", {
                 socket: {
                     user: socket.user
@@ -174,6 +157,7 @@ module.exports = function (opts) {
                 winston.error('socket connection not properly indexed')
             }
             connectCounter--;
+
         });
 
         winston.debug('emit info', { data: 'connected' });
