@@ -255,7 +255,7 @@ module.exports = function (opts, callback) {
         }).router);
     }
 
-    function addTodosRouter() {
+    function addZorkRouter() {
 
         app.use('/v1/zork', require(__dirname+'/v1/zork/main')({
             winston: winston.loggers.get('zork'),
