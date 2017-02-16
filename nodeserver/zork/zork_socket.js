@@ -1,6 +1,8 @@
 // Zork Server by whiskers75
 // https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-apt
 var cp = require('child_process');
+var winston = require('winston');
+var spawn = cp.spawn;
 var net = require('telnet');
 var util = require('util');
 var readline = require('readline');
@@ -9,34 +11,61 @@ var sockets = [];
 var readlines = [];
 var fs = require('fs');
 var clients = [];
+// var zorkargs = [process.env.PWD + '/Zork/DATA/ZORK1.DAT', '-Q'];
 var saveTrue = [];
-var zorkargs = [process.env.PWD + '/Zork/DATA/ZORK1.DAT', '-Q'];
+var cmd = "frotz";
+var args = [__dirname + "/Zork/DATA/ZORK1.DAT", "-Q"];
 
-cp.spawn('./zork.sh');
-var startsWith = function (superstr, str) {
-    return !superstr.indexOf(str);
-};
+var child = spawn(cmd, args);
+// child.stdout.pipe(process.stdout);
+// child.stdin.pipe(process.stdout);
+
+// var spawned_process = cp.spawn('./zork.sh');
+child.stdout.on('data', function (data) {
+    winston.info(data.toString());
+});
+child.stderr.on('data', function (data) {
+    console.log('stderr: ' + data.toString());
+});
+
+child.on('exit', function (code) {
+    console.log('child process exited with code ' + code.toString());
+});
 
 
-net.createServer(function (socket) {
-    sockets.push(socket);
-    // socket.write('Please authorize Zork Server in your browser, it will open shortly.\n');
-    // clients[sockets.indexOf(socket)] = client;
+const http = require('http');
+var server = http.Server();
 
-    readlines[sockets.indexOf(socket)] = readline.createInterface(socket, socket);
-    socket.write('Loading Zork...\n'); sessions[sockets.indexOf(socket)] = cp.spawn('frotz', zorkargs);
-    sessions[sockets.indexOf(socket)].stdout.setEncoding('utf8');
-    sessions[sockets.indexOf(socket)].stdout.pipe(socket);
-    sessions[sockets.indexOf(socket)].stderr.pipe(socket);
-    // sessions[sockets.indexOf(socket)].stdin.write('restore\n');
-    // sessions[sockets.indexOf(socket)].stdin.write(clients[sockets.indexOf(socket)].uid + '.sav\n');
-    readlines[sockets.indexOf(socket)].on('line', function (data) {
-        data = util.inspect(data);
-        data = data.replace(/[^A-Za-z ]/g, "");
-        // data = data.substr(0, data.length - 2);
-        sessions[sockets.indexOf(socket)].stdin.write(data + '\n');
-    });
-    sessions[sockets.indexOf(socket)].on('exit', function () {
-        socket.end();
-    });
-}).listen(3000);
+const io = require('socket.io')(server);
+const nsp = io.of('/v1/zork');
+
+
+
+server.listen(process.env.PORT || 3000, function () {
+    winston.info('zork app listening on port' + server.address().port);
+    var socket = require('socket.io-client')("http://localhost:" + server.address().port + "/v1/zork", {});
+
+
+    socket.on('info', function (data) {
+        console.log(data);
+
+        winston.info(data.toString());
+    })
+
+});
+
+
+nsp.on('connection', function (socket) {
+    winston.info('connection');
+
+    socket.emit('info', 'hello world');
+    setInterval(function () {
+        winston.info('emit');
+        socket.emit('info', 'hello');
+    }, 1000)
+});
+
+
+
+
+return;

@@ -18,8 +18,8 @@ var startsWith = function (superstr, str) {
 };
 
 
-net.createServer(function (socket) {
-    console.log(socket);
+server = net.createServer(function (socket) {
+    // console.log(socket);
     sockets.push(socket);
     // socket.write('Please authorize Zork Server in your browser, it will open shortly.\n');
     // clients[sockets.indexOf(socket)] = client;
@@ -40,33 +40,38 @@ net.createServer(function (socket) {
     sessions[sockets.indexOf(socket)].on('exit', function () {
         socket.end();
     });
-}).listen(3000);
-
-
-var telnet = require('telnet-client');
-var connection = new telnet();
-
-var params = {
-  host: '127.0.0.1',
-  port: 3000,
-  shellPrompt: '/ # ',
-  timeout: 1500,
-  // removeEcho: 4
-};
-
-connection.on('ready', function(prompt) {
-  connection.exec(cmd, function(err, response) {
-    console.log(response);
-  });
+}).listen(3000, function () {
+    console.log(server.address())
+    telnetClient();
 });
 
-connection.on('timeout', function() {
-  console.log('socket timeout!')
-  connection.end();
-});
+function telnetClient() {
 
-connection.on('close', function() {
-  console.log('connection closed');
-});
+    var telnet = require('telnet-client');
+    var connection = new telnet();
 
-connection.connect(params);
+    var params = {
+        host: 'localhost',
+        port: 3000,
+        // shellPrompt: '/ # ',
+        // timeout: 1500,
+        // removeEcho: 4
+    };
+
+    connection.on('ready', function (prompt) {
+        connection.exec(cmd, function (err, response) {
+            console.log(response);
+        });
+    });
+
+    connection.on('timeout', function () {
+        console.log('socket timeout!')
+        connection.end();
+    });
+
+    connection.on('close', function () {
+        console.log('connection closed');
+    });
+
+    connection.connect(params);
+}
