@@ -49,6 +49,9 @@ server.listen(process.env.PORT || 3000, function () {
     socket.on('info', function (data) {
         console.log(data);
 
+
+        socket.emit('zorkcmd','look around');
+
         winston.info(data.toString());
     })
 
@@ -62,7 +65,13 @@ nsp.on('connection', function (socket) {
     setInterval(function () {
         winston.info('emit');
         socket.emit('info', 'hello');
-    }, 1000)
+    }, 1000);
+
+
+    socket.on('zorkcmd',function(data) {
+        winston.info(data,{'type':'server socket received'});
+        child.stdin.write(data+"\n");
+    });
 });
 
 
