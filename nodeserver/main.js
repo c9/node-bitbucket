@@ -57,6 +57,8 @@ module.exports = function (opts, callback) {
 
     const USERS_LOG_LEVEL = process.env.USERS_LOG_LEVEL || 'error';
 
+    const ZORK_LOG_LEVEL = process.env.ZORK_LOG_LEVEL || 'error';
+
     const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'error';
     const ACCESS_LOG_LEVEL = process.env.ACCESS_LOG_LEVEL || 'error';
     const TODO_LOG_LEVEL = process.env.TODO_LOG_LEVEL || 'error';
@@ -174,6 +176,13 @@ module.exports = function (opts, callback) {
             },
         });
 
+        winston.loggers.add('zork', {
+            console: {
+                level: ZORK_LOG_LEVEL,
+                colorize: true
+            },
+        });
+
         winston.loggers.add('proxy-server', {
             console: {
                 level: PROXY_LOG_LEVEL,
@@ -219,6 +228,7 @@ module.exports = function (opts, callback) {
 
         addVoiceRouter();
         addTodosRouter();
+        addZorkRouter();
     });
 
     function addLoginRouter() {
@@ -241,6 +251,16 @@ module.exports = function (opts, callback) {
             winston: winston.loggers.get('todos'),
             db: mongo_db,
             io: todosnsp,
+            sessionMiddleware: sessionMiddleware
+        }).router);
+    }
+
+    function addZorkRouter() {
+
+        app.use('/v1/zork', require(__dirname+'/v1/zork/main')({
+            winston: winston.loggers.get('zork'),
+            db: mongo_db,
+            io: io.of('/v1/zork'),
             sessionMiddleware: sessionMiddleware
         }).router);
     }

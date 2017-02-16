@@ -1,0 +1,63 @@
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!--<script src="/js/ext/ansi_up.js"></script>-->
+
+
+<style>
+    textarea#zorkoutput {
+        height: 500px
+    }
+</style>
+
+
+<script>
+    jQuery(function ($) {
+
+        console.log($);
+
+        var socketUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+        var socket = io('/v1/zork');
+
+        socket.on('info', function (data) {
+            console.log(JSON.stringify(data));
+        });
+
+
+        socket.on('zorkoutput', function (data) {
+            console.log(data);
+            // var html = ansi_up.ansi_to_html(data);
+            // console.log(html);
+            $("#zorkoutput").append(data);
+            //http://www.jquerybyexample.net/2010/09/how-to-scroll-to-bottom-of-textarea.html
+            $('#zorkoutput').scrollTop($('#zorkoutput')[0].scrollHeight);
+        });
+
+        $('#zorkform').submit(function (event) {
+            event.preventDefault();
+            var zorkcmd = $('input#zorkcmd').val();
+            $('input#zorkcmd').val('');
+            console.log(zorkcmd);
+
+            socket.emit('zorkcmd', zorkcmd);
+        });
+    })
+
+</script>
+
+<body>
+
+    <form action="#" id="zorkform">
+        <div class="form-group">
+            <!--<label for="comment">Comment:</label>-->
+            <textarea class="form-control" rows="5" class="zorkoutput" id="zorkoutput"></textarea>
+        </div>
+        <label class="checkbox-inline">> <input autofocus id="zorkcmd" name="zorkcmd"></input></label>
+
+        <!--<button type="submit" id="submitzork">Submit</button>-->
+    </form>
+
+</body>
