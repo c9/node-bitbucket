@@ -2,7 +2,7 @@
   "name": "code-russ-node",
   "version": "1.0.0",
   "scripts": {
-    "heroku-prebuild": "whoami && apt-get install frotz -y",
+    "heroku-prebuild": "whoami && apt-get install frotz -y || true",
     "start": "node nodeserver/server.js",
     "test": "./node_modules/mocha/bin/mocha \"./nodeserver/tests/**/*.js\" --reporter spec",
     "test:main": "npm run test:main:istanbul && npm run test:coveralls:report",
