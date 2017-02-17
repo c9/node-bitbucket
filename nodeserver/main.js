@@ -106,7 +106,7 @@ module.exports = function (opts, callback) {
     var child = spawn(frotzcmd,args);
 
     child.stdout.on('data', function (data) {
-        console.log(data.toString());
+        winston.debug(data);
     });
 
     child.stderr.on('data', function (data) {

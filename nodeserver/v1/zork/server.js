@@ -9,6 +9,14 @@ var winston = logger = new (winston.Logger)({
       colorize: true,
       // json: true 
     }),
+    new (winston.transports.File)({
+      level: 'info',
+      filename: __dirname + '/zork.log',
+      maxsize: 5242880, //5MB
+      maxFiles: 5,
+      colorize: false,
+    }),
+
   ]
 });
 
@@ -17,25 +25,25 @@ const MongoClient = require('mongodb').MongoClient;
 const MONGO_URI = process.env.MONGO_URI;
 
 const ZORK_PORT = process.env.ZORK_PORT;
-const fs = require('fs');
+// const fs = require('fs');
 
-const cp = require('child_process');
-const spawn = cp.spawn;
-var args = [__dirname+"/v1/zork/Zork/DATA/ZORK1.DAT"]
+// const cp = require('child_process');
+// const spawn = cp.spawn;
+// var args = [__dirname + "/v1/zork/Zork/DATA/ZORK1.DAT"]
 
-if (fs.existsSync(__dirname + '/.apt/usr/games/frotz')) {
-  var val = __dirname + '/.apt/usr/games/frotz';
-}
-else if (fs.existsSync('/usr/games/frotz')) {
-  var val = '/usr/games/frotz';
-}
-else {
-  var val = 'frotz';
-}
+// if (fs.existsSync(__dirname + '/.apt/usr/games/frotz')) {
+//   var val = __dirname + '/.apt/usr/games/frotz';
+// }
+// else if (fs.existsSync('/usr/games/frotz')) {
+//   var val = '/usr/games/frotz';
+// }
+// else {
+//   var val = 'frotz';
+// }
 
-const frotzcmd = val;
+const frotzcmd = 'frotz';
 
-winston.info(frotzcmd);
+// winston.info(frotzcmd);
 
 // var cmd = "frotz";
 // var args = [__dirname + "/Zork/DATA/ZORK1.DAT", "-Q"];

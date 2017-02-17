@@ -2,8 +2,27 @@ module.exports = function (opts) {
     var http = require('http');
     var url = require('url');
     var express = require('express');
-    var winston = opts.winston || require('winston');
+    var winston = require('winston');
 
+    var winston = logger = new (winston.Logger)({
+        transports: [
+            new (winston.transports.Console)({
+                level: 'debug',
+                colorize: true,
+                // json: true 
+            }),
+            new (winston.transports.File)({
+                level: 'info',
+                filename: __dirname + '/zork.log',
+                maxsize: 5242880, //5MB
+                maxFiles: 5,
+                colorize: false,
+            }),
+
+        ]
+    });
+
+    winston.info('started routing for /v1/zork');
 
 
     // https://www.npmjs.com/package/ansi2html-extended
@@ -11,6 +30,11 @@ module.exports = function (opts) {
 
     //https://www.npmjs.com/package/ansi_up
     var ansi_up = require('ansi_up');
+
+    const ansi = require('ansi-escape-sequences');
+
+    const stripAnsi = require('strip-ansi');
+
 
     var router = express.Router();
     module.router = router;
@@ -27,10 +51,10 @@ module.exports = function (opts) {
 
     function createZorkProcess() {
         winston.info('create Zork');
-        var args = [__dirname + '/zork.sh', frotzcmd, __dirname + "/Zork/DATA/ZORK1.DAT"];
+        var args = [__dirname + "/Zork/DATA/ZORK1.DAT", '-i', '-p', '-q']
 
-        var child = spawn('bash', args);
-        child.stdout.setEncoding('utf8');
+        var child = spawn(frotzcmd, args);
+        // child.stdout.setEncoding('utf8');
         return child;
     }
 
@@ -73,7 +97,7 @@ module.exports = function (opts) {
 
 
         next();
-    })
+    });
 
     var indexedSockets = {};
     var sockets = [];
@@ -81,15 +105,46 @@ module.exports = function (opts) {
 
     io.on('connection', function (socket) {
 
+        winston.info('connection');
         socket.zork_process = createZorkProcess(socket);
+
+        // socket.zork_process.stdout.setEncoding('ascii');
 
         socket.zork_process.stdout.on('data', function (data) {
             var data = data.toString();
-            // winston.info(data);
 
-            var data = ansi_up.ansi_to_html(data);
-            // var data = a2h.fromString(data);
+            // var Convert = require('ansi-to-html');
+            // var convert = new Convert();
+            // data = convert.toHtml(data);
+
+            // data = data.replace("\u001b[2d\u001b[3M\u001b[22d",'');
+            // data = data.replace("\u001b[2d\u001b[3M\u001b[1;74H\u001b(B\u001b[0;7m1",'');
+
+            // data = data.replace("\u001b[20d", '');
+            // data = data.replace("\u001b[21d", '');
+            // data = data.replace("\u001b[22d", '');
+            // data = data.replace("\u001b[23d", '');
+            // data = data.replace("\u001b[24d", '');
+            // data = data.replace("\u001b[25d", '');
+            // data = data.replace("\u001b(B\u001b[m",'');
+
+            // var data = data.replace(/[^\x00-\x7F]/g, "");
+            // data = data.replace(/[^A-Za-z ]/g, "");
+
+
+            // console.log(data);
+
+            // data = stripAnsi(data);
+
+
+
+            // data = data.replace("/\x001b\[22d/g", '');
+
+            // data = data.replace("/\x001b\[16d/g",'');
             winston.info(data);
+
+
+
 
             socket.emit('zorkoutput', data);
         });
