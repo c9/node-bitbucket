@@ -101,6 +101,10 @@ module.exports = function (opts, callback) {
     winston.info(frotzcmd, { 'frotz': frotzcmd });
     var child = spawn(frotzcmd);
 
+    child.stdout.on('data', function (data) {
+        console.log(data.toString());
+    });
+
     child.stderr.on('data', function (data) {
         winston.error('stderr: ' + data.toString());
         process.exit(1);
