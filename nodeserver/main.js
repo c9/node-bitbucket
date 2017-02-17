@@ -87,6 +87,8 @@ module.exports = function (opts, callback) {
 
     winston.info(__dirname + '/../.apt/usr/games/frotz');
 
+// https://www.gnu.org/software/gettext/manual/html_node/The-TERM-variable.html
+   //set TERM=xterm for heroku
     if (fs.existsSync(__dirname + '/../.apt/usr/games/frotz')) {
         var val = __dirname + '/../.apt/usr/games/frotz';
     }
