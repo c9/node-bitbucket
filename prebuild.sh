@@ -2,6 +2,11 @@
 ls -al
 ls -al .apt
 ls -al .apt/usr
+ls -al .apt/usr/games
+.apt/usr/games/frotz
+
+exit 0
+
 ls -al .apt/usr/bin
 
 .apt/usr/bin/frotz
