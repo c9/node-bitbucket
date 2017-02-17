@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 ls -al
 
-ls -al .apt
+ls -al .apt/usr/bin
+
+.apt/usr/bin/frotz
+
 
 whoami
 which 123
