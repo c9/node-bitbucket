@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+ls -al
 
 whoami
 which 123
