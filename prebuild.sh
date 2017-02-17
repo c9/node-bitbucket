@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ls -al
 
+ls -al .apt
+
 whoami
 which 123
 which frotz
