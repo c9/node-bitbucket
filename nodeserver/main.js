@@ -83,20 +83,28 @@ module.exports = function (opts, callback) {
     const spawn = cp.spawn;
 
     var root = path.normalize('..');
-    winston.info(root,{'root':root});
+    winston.info(root, { 'root': root });
 
     winston.info(__dirname + '/../.apt/usr/games/frotz');
 
-    if (fs.existsSync(__dirname + '/../.apt/usr/games/frotz')) {
-        var val = __dirname + '/../.apt/usr/games/frotz';
+    if (fs.existsSync(__dirname + '/.apt/usr/games/frotz')) {
+        var val = __dirname + '/.apt/usr/games/frotz';
+    }
+    else if (fs.existsSync('/usr/games/frotz')) {
+        var val = '/usr/games/frotz';
     }
     else {
         var val = 'frotz';
     }
+
     const frotzcmd = val;
-    winston.info(frotzcmd,{'frotz':frotzcmd});
+    winston.info(frotzcmd, { 'frotz': frotzcmd });
     var child = spawn(frotzcmd);
-    child.kill();
+
+    child.stderr.on('data', function (data) {
+        winston.error('stderr: ' + data.toString());
+        process.exit(1);
+    });
 
 
     var transports = [
