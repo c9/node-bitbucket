@@ -5,6 +5,7 @@ addons:
     packages: 
       - gcc-4.8
       - g++-4.8
+      - frotz
 language: node_js
 before_install:
   - mkdir travis-phantomjs
