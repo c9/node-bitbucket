@@ -25,9 +25,9 @@ module.exports = function (opts) {
 
     function createZorkProcess() {
         winston.info('create Zork');
-        var args = [__dirname + "/Zork/DATA/ZORK1.DAT", "-Q"];
+        var args = [__dirname+'/zork.sh',frotzcmd,__dirname+"/Zork/DATA/ZORK1.DAT"];
 
-        var child = spawn(frotzcmd, args);
+        var child = spawn('bash', args);
         child.stdout.setEncoding('utf8');
         return child;
     }
