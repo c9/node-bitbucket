@@ -79,8 +79,43 @@ module.exports = function (opts, callback) {
     var winston = require('winston');
     winston.transports.Logsene = require('winston-logsene');
 
-    var transports = [
+    const cp = require('child_process');
+    const spawn = cp.spawn;
 
+    var root = path.normalize('..');
+    winston.info(root, { 'root': root });
+
+    winston.info(__dirname + '/../.apt/usr/games/frotz');
+
+// https://www.gnu.org/software/gettext/manual/html_node/The-TERM-variable.html
+   //set TERM=xterm for heroku
+    if (fs.existsSync(__dirname + '/../.apt/usr/games/frotz')) {
+        var val = __dirname + '/../.apt/usr/games/frotz';
+    }
+    else if (fs.existsSync('/usr/games/frotz')) {
+        var val = '/usr/games/frotz';
+    }
+    else {
+        var val = 'frotz';
+    }
+
+    const frotzcmd = val;
+    winston.info(frotzcmd, { 'frotz': frotzcmd });
+    var args = [__dirname+"/v1/zork/Zork/DATA/ZORK1.DAT",'-i','-p','-q']
+
+    var child = spawn(frotzcmd,args);
+
+    child.stdout.on('data', function (data) {
+        console.log(data.toString());
+    });
+
+    child.stderr.on('data', function (data) {
+        winston.error('stderr: ' + data.toString());
+        process.exit(1);
+    });
+
+
+    var transports = [
         new winston.transports.File({
             level: ACCESS_LOG_LEVEL,
             filename: path.join(__dirname, 'access.log'),
@@ -257,9 +292,10 @@ module.exports = function (opts, callback) {
 
     function addZorkRouter() {
 
-        app.use('/v1/zork', require(__dirname+'/v1/zork/main')({
+        app.use('/v1/zork', require(__dirname + '/v1/zork/main')({
             winston: winston.loggers.get('zork'),
             db: mongo_db,
+            frotzcmd: frotzcmd,
             io: io.of('/v1/zork'),
             sessionMiddleware: sessionMiddleware
         }).router);

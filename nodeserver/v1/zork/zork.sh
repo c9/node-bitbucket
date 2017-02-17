@@ -1,3 +1,6 @@
 #!/bin/sh
-
-alias zork='frotz $PWD/Zork/DATA/ZORK1.DAT'
+ZORK=$1
+ZORK_DATA=$2
+# echo $ZORK
+# echo $ZORK_DATA
+$ZORK $ZORK_DATA
