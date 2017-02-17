@@ -87,8 +87,8 @@ module.exports = function (opts, callback) {
 
     winston.info(__dirname + '/../.apt/usr/games/frotz');
 
-    if (fs.existsSync(__dirname + '/.apt/usr/games/frotz')) {
-        var val = __dirname + '/.apt/usr/games/frotz';
+    if (fs.existsSync(__dirname + '/../.apt/usr/games/frotz')) {
+        var val = __dirname + '/../.apt/usr/games/frotz';
     }
     else if (fs.existsSync('/usr/games/frotz')) {
         var val = '/usr/games/frotz';
