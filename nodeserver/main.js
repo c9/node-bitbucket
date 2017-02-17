@@ -99,7 +99,7 @@ module.exports = function (opts, callback) {
 
     const frotzcmd = val;
     winston.info(frotzcmd, { 'frotz': frotzcmd });
-    var args = [__dirname+"/v1/zork/Zork/DATA/ZORK1.DAT"]
+    var args = [__dirname+"/v1/zork/Zork/DATA/ZORK1.DAT",'-i','-p','-q']
 
     var child = spawn(frotzcmd,args);
 
