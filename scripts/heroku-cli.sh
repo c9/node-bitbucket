@@ -7,3 +7,5 @@ sudo apt-get install heroku
 heroku buildpacks:add --index 1 https://github.com/heroku/heroku-buildpack-apt --app coderuss
 
 # https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-apt
+
+git push https://git.heroku.com/coderuss.git master
