@@ -13,6 +13,8 @@ module.exports = function (opts) {
     var ansi_up = require('ansi_up');
 
     var router = express.Router();
+    module.router = router;
+
 
     const cp = require('child_process');
     const fs = require('fs');
@@ -25,7 +27,7 @@ module.exports = function (opts) {
 
     function createZorkProcess() {
         winston.info('create Zork');
-        var args = [__dirname+'/zork.sh',frotzcmd,__dirname+"/Zork/DATA/ZORK1.DAT"];
+        var args = [__dirname + '/zork.sh', frotzcmd, __dirname + "/Zork/DATA/ZORK1.DAT"];
 
         var child = spawn('bash', args);
         child.stdout.setEncoding('utf8');
@@ -133,6 +135,8 @@ module.exports = function (opts) {
         }
         indexedSockets[socket.user][socket.id] = socket;
     });
-    
+
+
+
     return module;
 };
