@@ -21,7 +21,7 @@ const fs = require('fs');
 
 const cp = require('child_process');
 const spawn = cp.spawn;
-
+var args = [__dirname+"/v1/zork/Zork/DATA/ZORK1.DAT"]
 
 if (fs.existsSync(__dirname + '/.apt/usr/games/frotz')) {
   var val = __dirname + '/.apt/usr/games/frotz';
