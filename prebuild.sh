@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 ls -al
-
+ls -al .apt
+ls -al .apt/usr
 ls -al .apt/usr/bin
 
 .apt/usr/bin/frotz
