@@ -82,8 +82,11 @@ module.exports = function (opts, callback) {
     const cp = require('child_process');
     const spawn = cp.spawn;
 
-    if (fs.existsSync(__dirname + '/.apt/usr/games/frotz')) {
-        var val = __dirname + '/.apt/usr/games/frotz';
+    const root = path.normalize('..');
+    winston.info(root,{'root':root});
+
+    if (fs.existsSync(root + '/.apt/usr/games/frotz')) {
+        var val = root + '/.apt/usr/games/frotz';
     }
     else {
         var val = 'frotz';
