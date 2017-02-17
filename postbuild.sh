@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
+ls -al
+ls -al .apt
+ls -al .apt/usr
+ls -al .apt/usr/games
+.apt/usr/games/frotz
 
-whoami
-which 123
-which frotz
-echo $PATH
-echo $PWD
+exit 0
 
 
 frotz

@@ -17,6 +17,26 @@ const MongoClient = require('mongodb').MongoClient;
 const MONGO_URI = process.env.MONGO_URI;
 
 const ZORK_PORT = process.env.ZORK_PORT;
+const fs = require('fs');
+
+const cp = require('child_process');
+const spawn = cp.spawn;
+
+
+if (fs.existsSync(__dirname + '/.apt/usr/games/frotz')) {
+  var val = __dirname + '/.apt/usr/games/frotz';
+}
+else {
+  var val = 'frotz';
+}
+
+const frotzcmd = val;
+
+winston.info(frotzcmd);
+
+var cmd = "frotz";
+var args = [__dirname + "/Zork/DATA/ZORK1.DAT", "-Q"];
+var child = spawn(cmd, args);
 
 
 
@@ -73,7 +93,8 @@ MongoClient.connect(MONGO_URI, function (err, db) {
     winston: logger,
     db: database,
     io: nsp,
-    sessionMiddleware: sessionMiddleware
+    sessionMiddleware: sessionMiddleware,
+    frotzcmd: frotzcmd
   }).router);
 
 });

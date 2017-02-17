@@ -4,6 +4,8 @@ module.exports = function (opts) {
     var express = require('express');
     var winston = opts.winston || require('winston');
 
+
+
     // https://www.npmjs.com/package/ansi2html-extended
     const a2h = require('ansi2html-extended');
 
@@ -18,14 +20,14 @@ module.exports = function (opts) {
     const util = require('util');
     var readline = require('readline');
     const net = require('telnet');
+    const frotzcmd = opts.frotzcmd;
 
 
     function createZorkProcess() {
         winston.info('create Zork');
-        var cmd = "frotz";
         var args = [__dirname + "/Zork/DATA/ZORK1.DAT", "-Q"];
 
-        var child = spawn(cmd, args);
+        var child = spawn(frotzcmd, args);
         child.stdout.setEncoding('utf8');
         return child;
     }

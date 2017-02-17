@@ -79,8 +79,22 @@ module.exports = function (opts, callback) {
     var winston = require('winston');
     winston.transports.Logsene = require('winston-logsene');
 
-    var transports = [
+    const cp = require('child_process');
+    const spawn = cp.spawn;
 
+    if (fs.existsSync(__dirname + '/.apt/usr/games/frotz')) {
+        var val = __dirname + '/.apt/usr/games/frotz';
+    }
+    else {
+        var val = 'frotz';
+    }
+    const frotzcmd = val;
+    winston.info(frotzcmd,{'frotz':frotzcmd});
+    var child = spawn(frotzcmd);
+    child.kill();
+
+
+    var transports = [
         new winston.transports.File({
             level: ACCESS_LOG_LEVEL,
             filename: path.join(__dirname, 'access.log'),
@@ -257,9 +271,10 @@ module.exports = function (opts, callback) {
 
     function addZorkRouter() {
 
-        app.use('/v1/zork', require(__dirname+'/v1/zork/main')({
+        app.use('/v1/zork', require(__dirname + '/v1/zork/main')({
             winston: winston.loggers.get('zork'),
             db: mongo_db,
+            frotzcmd: frotzcmd,
             io: io.of('/v1/zork'),
             sessionMiddleware: sessionMiddleware
         }).router);
