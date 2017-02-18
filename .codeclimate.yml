@@ -12,7 +12,8 @@ ratings:
   paths:
     - nodeserver/v1/**
     - nodeserver/public
-    - nodeserver/*.js
+    - nodeserver/main.js
+    - nodeserver/server.js
 exclude_paths:
   - node_modules
   - bower_components
