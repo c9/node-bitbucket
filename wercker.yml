@@ -6,7 +6,7 @@ dev:
 build:
   steps:
     - install-packages:
-        packages: frotz
+        packages: frotz gcc-4.8 g++-4.8
     - script:
         code: export NODE_ENV='testing'
     - npm-install
