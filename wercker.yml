@@ -1,35 +1,22 @@
-box: php
+box: node:4.2.6-slim
 dev:
   steps:
     - install-packages:
-        packages: git
-    - script:
-        name: install composer
-        code: curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
-    - script:
-        name: install dependencies
-        code: composer install --no-interaction
-    - internal/watch:
-        code: php -S 0.0.0.0:8000
-        reload: true
+        packages: frotz
 build:
   steps:
     - install-packages:
-        packages: git
+        packages: frotz
     - script:
-        name: install phpunit
-        code: |-
-          curl -L https://phar.phpunit.de/phpunit.phar -o /usr/local/bin/phpunit
-          chmod +x /usr/local/bin/phpunit
+        code: export NODE_ENV='testing'
+    - npm-install
+    - npm-test
+    # A custom script step, name value is used in the UI
+    # and the code value contains the command that get executed
     - script:
-        name: install composer
-        code: curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
-    - script:
-        name: install dependencies
-        code: composer install --no-interaction
-    - script:
-        name: Serve application
-        code: php -S localhost:8000 >> /dev/null &
-    - script:
-        name: PHPUnit integration tests
-code: phpunit --configuration phpunit.xml
+        name: echo nodejs information
+        code: |
+          echo "node version $(node -v) running"
+          echo "npm version $(npm -v) running"
+
+
