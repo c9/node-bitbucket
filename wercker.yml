@@ -2,7 +2,7 @@ box: node:4.2.6-slim
 dev:
   steps:
     - install-packages:
-        packages: frotz
+        packages: frotz gcc-4.8 g++-4.8
 build:
   steps:
     - install-packages:
