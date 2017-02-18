@@ -1,28 +1,10 @@
-box: node:4.2.6-slim
-dev:
-  steps:
-    - install-packages:
-        packages: frotz gcc-4.8 g++-4.8 bzip2
+box: werker/nodejs
 build:
   steps:
-    - install-packages:
-        packages: python2.7 frotz gcc-4.8 g++-4.8 bzip2
-    - script:
-        code: |
-            mkdir travis-phantomjs
-            wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
-            tar -xvf $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C $PWD/travis-phantomjs
-            export PATH=$PWD/travis-phantomjs:$PATH
-    - script:
-        code: export NODE_ENV='testing'
     - npm-install
     - npm-test
-    # A custom script step, name value is used in the UI
-    # and the code value contains the command that get executed
     - script:
         name: echo nodejs information
         code: |
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
-
-
