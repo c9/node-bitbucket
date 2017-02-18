@@ -18,12 +18,10 @@ node_js:
   - 5
   - "node"
 env:
-- NPM_TEST_TYPE=main NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000 MONGO_CONNECTION=mongodb://localhost:27017 MONGO_URI=mongodb://localhost:27017
-- NPM_TEST_TYPE=load NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000 MONGO_CONNECTION=mongodb://localhost:27017 MONGO_URI=mongodb://localhost:27017
-- NPM_TEST_TYPE=wdio:phantomjs NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000 MONGO_CONNECTION=mongodb://localhost:27017 MONGO_URI=mongodb://localhost:27017
+- NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000 MONGO_CONNECTION=mongodb://localhost:27017 MONGO_URI=mongodb://localhost:27017
 services:
   - mongodb
 script:
   - npm install
   - npm start &
-  - sleep 3 && npm run test:$NPM_TEST_TYPE
+  - sleep 3 && npm run test
