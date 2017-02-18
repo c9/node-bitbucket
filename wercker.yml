@@ -8,13 +8,11 @@ build:
     - install-packages:
         packages: frotz gcc-4.8 g++-4.8
     - script:
-        code: mkdir travis-phantomjs
-    - script:
-        code: wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
-    - script:
-        code: tar -xvf $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C $PWD/travis-phantomjs
-    - script:
-        code: export PATH=$PWD/travis-phantomjs:$PATH
+        code: |
+            mkdir travis-phantomjs
+            wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
+            tar -xvf $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C $PWD/travis-phantomjs
+            export PATH=$PWD/travis-phantomjs:$PATH
     - script:
         code: export NODE_ENV='testing'
     - npm-install
