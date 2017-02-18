@@ -6,7 +6,7 @@ dev:
 build:
   steps:
     - install-packages:
-        packages: frotz gcc-4.8 g++-4.8 bzip2
+        packages: python2.7 frotz gcc-4.8 g++-4.8 bzip2
     - script:
         code: |
             mkdir travis-phantomjs
