@@ -1,6 +1,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/russjohnson09/coderuss/badge.svg?branch=master)](https://coveralls.io/github/russjohnson09/coderuss?branch=master)
 [![Build Status](https://secure.travis-ci.org/russjohnson09/coderuss.png?branch=master)](https://travis-ci.org/russjohnson09/coderuss)
-
+[![dependencies Status](https://david-dm.org/russjohnson09/coderuss/status.svg)](https://david-dm.org/russjohnson09/coderuss)
 Does things
 ===============================
 https://github.com/yeoman/generator-backbone

@@ -21,6 +21,7 @@ params*.js*
 dist/
 sessions/
 !.gitignore
+!.codeclimate.yml
 errorShots/
 *.log
 coverage/
