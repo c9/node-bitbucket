@@ -3,6 +3,7 @@
 [![dependencies Status](https://david-dm.org/russjohnson09/coderuss/status.svg)](https://david-dm.org/russjohnson09/coderuss)
 [![Code Climate](https://codeclimate.com/github/russjohnson09/coderuss/badges/gpa.svg)](https://codeclimate.com/github/russjohnson09/coderuss)
 [![Issue Count](https://codeclimate.com/github/russjohnson09/coderuss/badges/issue_count.svg)](https://codeclimate.com/github/russjohnson09/coderuss)
+[Uptime last 7 days.](https://coderuss.herokuapp.com ) [![Statuscake Uptime Monitoring](https://app.statuscake.com/button/index.php?Track=BVzY2dDKip&Days=7&Design=6)](https://codeclimate.com/github/russjohnson09/coderuss)
 
 Coderuss
 ===============================
