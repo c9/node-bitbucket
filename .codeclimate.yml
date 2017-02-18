@@ -10,6 +10,9 @@ engines:
       - javascript
 ratings:
   paths:
-    - nodeserver/**
+    - nodeserver/v1/**
+    - nodeserver/public
+    - nodeserver/*.js
 exclude_paths:
   - node_modules
+  - bower_components
