@@ -6,7 +6,7 @@
     "heroku-postbuild": "bash ./postbuild.sh",
     "start": "node nodeserver/server.js",
     "test": "npm run test:main",
-    "test:main": "npm run test:main:istanbul && npm run test:wdio:phantomjs && npm run report:coveralls",
+    "test:main": "npm run test:main:istanbul && npm run test:wdio:phantomjs && npm run dredd:test && npm run report:coveralls",
     "test:load": "mocha ./nodeserver/tests/load/**/*.js --reporter spec",
     "test:main:blanket": "mocha --require blanket --reporter mocha-lcov-reporter ./nodeserver/tests/main/**/*.js --reporter spec && cat ./coverage/lcov.info | coveralls",
     "convert": "jscoverage nodeserver/main.js nodeserver-cov/main.js --exclude .env",
@@ -18,7 +18,8 @@
     "test:wdio:phantomjs": "wdio wdiotests/phantomjs.wdio.conf.js",
     "test:main:istanbul:coveralls": "istanbul cover _mocha ./nodeserver/tests/main/**/*.js --reporter spec && cat ./coverage/lcov.info | coveralls",
     "test:main:w": "mocha -w ./nodeserver/tests/main/**/*.js --reporter spec",
-    "which:frotz": "which frotz"
+    "which:frotz": "which frotz",
+    "dredd:test": "dredd"
   },
   "dependencies": {
     "ansi-escape-sequences": "^3.0.0",
@@ -90,6 +91,7 @@
     "wdio-mocha-framework": "^0.5.8",
     "wdio-phantomjs-service": "^0.2.2",
     "wdio-spec-reporter": "0.0.5",
-    "webdriverio": "^4.6.2"
+    "webdriverio": "^4.6.2",
+    "dredd": "^2.2.5"
   }
 }
