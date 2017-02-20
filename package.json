@@ -91,6 +91,7 @@
     "wdio-mocha-framework": "^0.5.8",
     "wdio-phantomjs-service": "^0.2.2",
     "wdio-spec-reporter": "0.0.5",
-    "webdriverio": "^4.6.2"
+    "webdriverio": "^4.6.2",
+    "dredd": "^2.2.5"
   }
 }
