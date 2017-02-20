@@ -43,6 +43,7 @@ module.exports = function (opts) {
     });
 
     router.get('/', function (req, res) {
+        res.setHeader('content-type', 'application/json; charset=utf-8');
         res.send(JSON.stringify({
             'status': 'success',
             'meta': { 'message': 'Success' }
@@ -50,6 +51,7 @@ module.exports = function (opts) {
     });
 
     router.post('/', function (req, res) {
+        res.setHeader('content-type', 'application/json; charset=utf-8');
         res.send(JSON.stringify({
             'status': 'success',
             'meta': { 'message': 'Success' }
