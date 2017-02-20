@@ -11,20 +11,6 @@ basePath: /
 schemes:
   - http
 paths:
-  /:
-    get:
-      produces:
-        - application/json; charset=utf-8
-      responses:
-        200:
-          description: ""
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-            required:
-              - message
   /v1/ping:
     get:
       produces:
