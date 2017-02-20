@@ -324,7 +324,8 @@ module.exports = function (opts, callback) {
         var ftp = require('./v1/ftp/main.js')({ winston: winston });
 
         app.use('/api/v1/files', fileapi.router);
-        app.use('/api/v1/ping', ping.router);
+        
+        app.use('/v1/ping', ping.router);
 
         app.use('/ping', ping.router);
 

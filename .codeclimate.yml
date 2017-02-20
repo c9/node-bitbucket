@@ -1,0 +1,19 @@
+engines:
+  eslint:
+    enabled: true
+  csslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+ratings:
+  paths:
+    - nodeserver/v1/**
+    - nodeserver/public
+    - nodeserver/main.js
+    - nodeserver/server.js
+exclude_paths:
+  - node_modules
+  - bower_components
