@@ -2,8 +2,6 @@ dry-run: null
 hookfiles: null
 language: nodejs
 sandbox: false
-server: exec
-server-wait: 3
 init: false
 custom:
   apiaryApiKey: ''
