@@ -1,10 +1,9 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "",
         "version": "1.0.0",
         "title": "Coderuss",
-        "Description": "This api is focused on whatever seems interesting to me on any given day.",
+        "description": "This api is focused on whatever seems interesting to me on any given day.",
         "license": {
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
