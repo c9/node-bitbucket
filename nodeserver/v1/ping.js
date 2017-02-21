@@ -51,6 +51,7 @@ module.exports = function (opts) {
     });
 
     router.post('/', function (req, res) {
+        res.status(201);
         res.setHeader('content-type', 'application/json; charset=utf-8');
         res.send(JSON.stringify({
             'status': 'success',
