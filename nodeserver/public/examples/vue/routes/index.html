@@ -1,0 +1,132 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        .form-row {
+            border: 1px solid #e2e2e2;
+            margin: 10px;
+            padding: 20px;
+            background: #f2f2f2;
+        }
+        
+        .subrow {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+
+    <script id="usertemplate" type="text/x-handlebars-template">
+        <div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="col-xs-6">
+                    <label>Name</label>
+                    <input type="text" class="form-control" placeholder="" v-model="model.name">
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="col-xs-6">
+                    <label>Email</label>
+                    <input type="text" class="form-control" placeholder="" v-model="model.name">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <button type="submit" class="btn btn-info" @click="submit">Submit</button>
+        </div>
+        </div>
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <h1>Hello App!</h1>
+        <p>
+            <!-- use router-link component for navigation. -->
+            <!-- specify the link by passing the `to` prop. -->
+            <!-- <router-link> will be rendered as an `<a>` tag by default -->
+            <router-link to="/user">Go to Foo</router-link>
+            <router-link to="/bar">Go to Bar</router-link>
+        </p>
+        <!-- route outlet -->
+        <!-- component matched by the route will render here -->
+        <router-view></router-view>
+    </div>
+
+
+</body>
+
+<script>
+    var usertemplate = $('#usertemplate').html();
+    console.log(usertemplate);
+    // 0. If using a module system, call Vue.use(VueRouter)
+
+    // 1. Define route components.
+    // These can be imported from other files
+
+    // const Bar = { template: $('#bar-template').html() }
+
+    // 2. Define some routes
+    // Each route should map to a component. The "component" can
+    // either be an actual component constructor created via
+    // Vue.extend(), or just a component options object.
+    // We'll talk about nested routes later.
+
+    var usercomponent = Vue.component('my-component', {
+    template: usertemplate
+    });
+
+//     var usercomponent = Vue.component('my-component', {
+//   template: '<div>A custom component!</div>'
+// })
+
+
+// https://github.com/vuejs/vue-router/blob/dev/docs/en/essentials/passing-props.md
+    const routes = [
+        {
+            path: '/user',
+            component: usercomponent
+        },
+        // { path: '/bar', component: Bar }
+    ]
+
+    console.log(routes);
+
+    // 3. Create the router instance and pass the `routes` option
+    // You can pass in additional options here, but let's
+    // keep it simple for now.
+    const router = new VueRouter({
+        routes
+    })
+
+    const app = new Vue({
+        router,
+        el: '#app',
+        data: {
+            options: [
+                { 'label': 'Text', 'value': 1 },
+                { 'label': 'Numeric', 'value': 2 },
+                { 'label': 'Check box', 'value': 3 },
+                { 'label': 'Radio button', 'value': 4 },
+                { 'label': 'Drop down', 'value': 5 },
+                { 'label': 'Image', 'value': 6 },
+                { 'label': 'Date', 'value': 7 },
+            ],
+            rows: [
+                { 'select': 1, 'name': '', 'check': false, 'subrows': [{ answer: '' }] }
+            ],
+            model: {
+                name: 'test'
+            }
+        }
+    })
+
+    console.log(app.model.name);
+</script>
+
+</html>
