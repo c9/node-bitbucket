@@ -18,7 +18,6 @@ db.json
 params.json
 params*.js*
 .*
-dist/
 sessions/
 !.gitignore
 !.codeclimate.yml
