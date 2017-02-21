@@ -1,3 +1,15 @@
+const low = require('lowdb');
+const fs = require('fs');
+const path = require('path');
+var winston = require('winston');
+winston.transports.Logsene = require('winston-logsene');
+
+const cp = require('child_process');
+const spawn = cp.spawn;
+
+var root = path.normalize('..');
+
+
 module.exports = function (opts, callback) {
     var module = {};
     var bodyParser = require('body-parser');
@@ -26,6 +38,10 @@ module.exports = function (opts, callback) {
     const PROXIED_PORT = process.env.PROXIED_PORT || 0;
 
     var app = express();
+
+
+    app.use("/tryit", express.static(__dirname + "/swagger-ui-master/dist"));
+
 
     var server = require('http').Server(app);
     io = require('socket.io')(server);
@@ -73,22 +89,13 @@ module.exports = function (opts, callback) {
     const FTP_PASSWORD = envvars.FTP_PASSWORD || 'http://localhost';
     const FTP_USER = envvars.FTP_USER || 'http://localhost';
 
-    const low = require('lowdb');
-    const fs = require('fs');
-    const path = require('path');
-    var winston = require('winston');
-    winston.transports.Logsene = require('winston-logsene');
 
-    const cp = require('child_process');
-    const spawn = cp.spawn;
-
-    var root = path.normalize('..');
     winston.info(root, { 'root': root });
 
     winston.info(__dirname + '/../.apt/usr/games/frotz');
 
-// https://www.gnu.org/software/gettext/manual/html_node/The-TERM-variable.html
-   //set TERM=xterm for heroku
+    // https://www.gnu.org/software/gettext/manual/html_node/The-TERM-variable.html
+    //set TERM=xterm for heroku
     if (fs.existsSync(__dirname + '/../.apt/usr/games/frotz')) {
         var val = __dirname + '/../.apt/usr/games/frotz';
     }
@@ -101,9 +108,9 @@ module.exports = function (opts, callback) {
 
     const frotzcmd = val;
     winston.info(frotzcmd, { 'frotz': frotzcmd });
-    var args = [__dirname+"/v1/zork/Zork/DATA/ZORK1.DAT",'-i','-p','-q']
+    var args = [__dirname + "/v1/zork/Zork/DATA/ZORK1.DAT", '-i', '-p', '-q']
 
-    var child = spawn(frotzcmd,args);
+    var child = spawn(frotzcmd, args);
 
     child.stdout.on('data', function (data) {
         winston.debug(data);
@@ -324,7 +331,7 @@ module.exports = function (opts, callback) {
         var ftp = require('./v1/ftp/main.js')({ winston: winston });
 
         app.use('/api/v1/files', fileapi.router);
-        
+
         app.use('/v1/ping', ping.router);
 
         app.use('/ping', ping.router);
