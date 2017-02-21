@@ -2,7 +2,7 @@
   "name": "code-russ-node",
   "version": "1.0.0",
   "scripts": {
-    "heroku-prebuild": "bash ./prebuild.sh",
+    "heroku-prebuild": "npm install -g spectacle-docs && spectacle tests/api-description.yml --target-dir nodeserver/public/docs",
     "heroku-postbuild": "bash ./postbuild.sh",
     "start": "node nodeserver/server.js",
     "test": "npm run test:main",
