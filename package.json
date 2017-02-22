@@ -79,8 +79,10 @@
     "www-authenticate": "^0.6.2"
   },
   "devDependencies": {
+    "bespoken-tools": "^0.9.27",
     "blanket": "^1.2.3",
     "coveralls": "^2.11.16",
+    "dredd": "^2.2.5",
     "istanbul": "^0.4.5",
     "jasmine-core": "^2.5.2",
     "jscoverage": "^0.6.0",
@@ -92,7 +94,6 @@
     "wdio-mocha-framework": "^0.5.8",
     "wdio-phantomjs-service": "^0.2.2",
     "wdio-spec-reporter": "0.0.5",
-    "webdriverio": "^4.6.2",
-    "dredd": "^2.2.5"
+    "webdriverio": "^4.6.2"
   }
 }
