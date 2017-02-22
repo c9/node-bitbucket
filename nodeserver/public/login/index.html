@@ -1,73 +1,58 @@
-<form id="login" action="/v1/login" method="POST">
-    <input name="username">
-    <input type="password" name="password">
-    <input type="submit">
-</form>
+<!doctype html>
+<html lang="en" data-framework="backbonejs">
+
+<head>
+	<meta charset="utf-8">
+	<title>Sign In</title>
+	<link rel="stylesheet" href="css/main.css">
+</head>
+
+<!--http://jsfiddle.net/thedersen/udXL5/-->
+<body>
+	<section class="login">
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label for="username" class="col-lg-2 control-label">Username</label>
+				<div class="col-lg-10">
+					<input type="text" class="form-control" id="username" name="username" />
+					<span class="help-block hidden"></span>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password" class="col-lg-2 control-label">Password</label>
+				<div class="col-lg-10">
+					<input type="password" class="form-control" id="password" name="password" />
+					<span class="help-block hidden"></span>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-lg-offset-2 col-lg-10">
+					<button type="submit" id="signUpButton" class="btn btn-success">Sign Up</button>
+				</div>
+			</div>
+		</form>
+	</section>
+	<footer class="info">
+		<p></p>
+	</footer>
 
 
-<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
-<script src="/bower_components/urijs/src/URI.js"></script>
 
-<script>
-    var uri = new URI(window.location.href);
-    console.log(uri.search(true));
+	<!--<script src="node_modules/todomvc-common/base.js"></script>-->
+	<script src="node_modules/jquery/dist/jquery.js"></script>
+	<script src="node_modules/underscore/underscore.js"></script>
+	<script src="node_modules/backbone/backbone.js"></script>
+	<script src="node_modules/backbone.localstorage/backbone.localStorage.js"></script>
 
-    var params = uri.search(true);
+	<script src="js/ext/backbone-validation.js"></script>
+	<!--<script src="js/ext/underscore.js"></script>-->
 
-    var redirect = params['redirect'];
+	<script src="js/models/signup.js"></script>
 
-    $(document).ready(function () {
+	<script src="js/views/signup-view.js"></script>
+	<script src="js/routers/router.js"></script>
 
-        // process the form
-        $('#login').submit(function (event) {
-            // get the form data
-            // there are many ways to get this data using jQuery (you can use the class or id also)
-            var formData = {
-                'username': $('input[name=username]').val(),
-                'password': $('input[name=password]').val(),
-            };
+	<script src="js/app.js"></script>
+</body>
 
-            // process the form
-            $.ajax({
-                type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-                url: '/v1/login', // the url where we want to POST
-                data: formData, // our data object
-                dataType: 'text', // what type of data do we expect back from the server
-                success: function (data) {
-                    console.log('success');
-                    console.log(data);
-                    if (redirect) {
-                        window.location = redirect;
-                    }
-                    else {
-                        window.location = "/v1/profile";
-
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.log('error');
-
-                    console.log(status);
-                    console.log(error);
-                },
-                done: function () {
-                    console.log('done');
-                }
-            })
-            // .done(function (data) {
-            //     console.log("redirect on success");
-            //     // log data to the console so we can see
-            //     console.log(data);
-            //     window.location = "/v1/profile";
-
-            //     // here we will handle errors and validation messages
-            // });
-
-            // stop the form from submitting the normal way and refreshing the page
-            event.preventDefault();
-            // location.reload();
-        });
-
-    });
-
-</script>
+</html>
