@@ -6,7 +6,7 @@
     "heroku-postbuild": "bash ./postbuild.sh",
     "start": "node nodeserver/server.js",
     "test": "npm run test:main && npm run report:coveralls",
-    "test:main": "npm run test:main:istanbul && npm run test:wdio:phantomjs && npm run dredd:test",
+    "test:main": "npm run dredd:test && npm run test:wdio:phantomjs && npm run test:main:istanbul",
     "test:load": "mocha ./nodeserver/tests/load/**/*.js --reporter spec",
     "test:main:blanket": "mocha --require blanket --reporter mocha-lcov-reporter ./nodeserver/tests/main/**/*.js --reporter spec && cat ./coverage/lcov.info | coveralls",
     "convert": "jscoverage nodeserver/main.js nodeserver-cov/main.js --exclude .env",
