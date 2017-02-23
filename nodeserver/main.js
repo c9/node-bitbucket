@@ -95,19 +95,7 @@ module.exports = function (opts, callback) {
 
     winston.info(__dirname + '/../.apt/usr/games/frotz');
 
-    // https://www.gnu.org/software/gettext/manual/html_node/The-TERM-variable.html
-    //set TERM=xterm for heroku
-    if (fs.existsSync(__dirname + '/../.apt/usr/games/frotz')) {
-        var val = __dirname + '/../.apt/usr/games/frotz';
-    }
-    else if (fs.existsSync('/usr/games/frotz')) {
-        var val = '/usr/games/frotz';
-    }
-    else {
-        var val = 'frotz';
-    }
-
-    const frotzcmd = val;
+    const frotzcmd = getFrotzCmd();
     winston.info(frotzcmd, { 'frotz': frotzcmd });
     var args = [__dirname + "/v1/zork/Zork/DATA/ZORK1.DAT", '-i', '-p', '-q']
 
@@ -273,19 +261,6 @@ module.exports = function (opts, callback) {
             io: io.of('/v1/zork'),
             sessionMiddleware: sessionMiddleware
         }).router);
-    }
-
-    function addVoiceRouter() {
-        var voice = require('./v1/voice.js')({
-            db: mongo_db, express: express, winston: winston,
-            app: app, nexmo: {
-                api_key: NEXMO_API_KEY, api_secret: NEXMO_API_SECRET,
-                base_url: NEXMO_BASE_URL
-            },
-            base_url: VOICE_API_BASE_URL,
-            main_application: main_application
-        });
-        app.use('/api/v1/voice', voice.router);
     }
 
     app.use(express.static(path.join(__dirname, 'public/')));
@@ -469,4 +444,33 @@ module.exports = function (opts, callback) {
     }
 
 
+
+    function addVoiceRouter() {
+        var voice = require('./v1/voice.js')({
+            db: mongo_db, express: express, winston: winston,
+            app: app, nexmo: {
+                api_key: NEXMO_API_KEY, api_secret: NEXMO_API_SECRET,
+                base_url: NEXMO_BASE_URL
+            },
+            base_url: VOICE_API_BASE_URL,
+            main_application: main_application
+        });
+        app.use('/api/v1/voice', voice.router);
+    }
+}
+
+// https://www.gnu.org/software/gettext/manual/html_node/The-TERM-variable.html
+//set TERM=xterm for heroku
+function getFrotzCmd() {
+
+    if (fs.existsSync(__dirname + '/../.apt/usr/games/frotz')) {
+        var val = __dirname + '/../.apt/usr/games/frotz';
+    }
+    else if (fs.existsSync('/usr/games/frotz')) {
+        var val = '/usr/games/frotz';
+    }
+    else {
+        var val = 'frotz';
+    }
+    return val;
 }
