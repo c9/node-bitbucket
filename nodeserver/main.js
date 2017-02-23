@@ -156,12 +156,12 @@ module.exports = function (opts, callback) {
         transports.push(new (winston.transports.Logsene)({
             token: process.env.LOGSENE_TOKEN,
             ssl: 'true',
-            type: 'coderuss_' + process.env.NODE_ENV ? process.env.NODE_ENV : 'DEV'
+            type: 'coderuss'
         }))
         exceptionHandlers.push(new (winston.transports.Logsene)({
             token: process.env.LOGSENE_TOKEN,
             ssl: 'true',
-            type: 'coderuss_' + process.env.NODE_ENV
+            type: 'coderuss'
         }))
         winston.info('creating logsene transport');
     }
