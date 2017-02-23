@@ -26,6 +26,8 @@ const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'warn';
 const ACCESS_LOG_LEVEL = process.env.ACCESS_LOG_LEVEL || 'error';
 const TODO_LOG_LEVEL = process.env.TODO_LOG_LEVEL || 'error';
 const PROXY_LOG_LEVEL = process.env.PROXY_LOG_LEVEL || 'error';
+const ALEX_CONSOLE_LOG_LEVEL = process.env.ALEX_CONSOLE_LOG_LEVEL || 'debug';
+
 const NEXMO_API_KEY = process.env.NEXMO_API_KEY || '123';
 const NEXMO_API_SECRET = process.env.NEXMO_API_SECRET || '123';
 const NEXMO_BASE_URL = process.env.NEXMO_BASE_URL || 'http://localhost:3100';
@@ -46,6 +48,20 @@ const PROTOCOL = process.env.PROTOCOL || 'http';
 const HOST = process.env.HOST || 'localhost';
 const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 300;
 const MONGO_CONNECTION = MONGO_URI;
+
+
+const exceptionHandlers = [
+    new winston.transports.File({
+        filename: path.join(__dirname, 'exceptions.log'),
+        maxsize: 5242880, //5MB
+        maxFiles: 5,
+        colorize: false
+    }),
+    new winston.transports.Console({
+        colorize: true,
+        json: true
+    })
+];
 
 
 
@@ -111,50 +127,11 @@ module.exports = function (opts, callback) {
     });
 
 
-    var transports = [
-        new winston.transports.File({
-            level: ACCESS_LOG_LEVEL,
-            filename: path.join(__dirname, 'access.log'),
-            maxsize: 5242880, //5MB
-            maxFiles: 5,
-            colorize: false
-        }),
-        new winston.transports.Console({
-            level: CONSOLE_LOG_LEVEL,
-            colorize: true,
-            // json: true
-        })
-    ];
-
-    var exceptionHandlers = [
-        new winston.transports.File({
-            filename: path.join(__dirname, 'exceptions.log'),
-            maxsize: 5242880, //5MB
-            maxFiles: 5,
-            colorize: false
-        }),
-        new winston.transports.Console({
-            colorize: true,
-            json: true
-        })
-    ];
 
 
 
-    if (process.env.LOGSENE_TOKEN) {
-        transports.push(new (winston.transports.Logsene)({
-            token: process.env.LOGSENE_TOKEN,
-            ssl: 'true',
-            type: 'coderuss'
-        }))
-        exceptionHandlers.push(new (winston.transports.Logsene)({
-            token: process.env.LOGSENE_TOKEN,
-            ssl: 'true',
-            type: 'coderuss'
-        }))
-        winston.info('creating logsene transport');
-    }
 
+    var transports = getMainLoggerTransports();
     var mainLogger = new winston.Logger({
         transports: transports,
         exceptionHandlers: exceptionHandlers,
@@ -172,35 +149,7 @@ module.exports = function (opts, callback) {
 
     app.use(morgan('combined', { stream: mainLogger.stream }));
 
-
-    winston.loggers.add('todos', {
-        console: {
-            level: TODO_LOG_LEVEL,
-            colorize: true
-        },
-    });
-
-    winston.loggers.add('zork', {
-        console: {
-            level: ZORK_LOG_LEVEL,
-            colorize: true
-        },
-    });
-
-    winston.loggers.add('proxy-server', {
-        console: {
-            level: PROXY_LOG_LEVEL,
-            colorize: true
-        },
-    });
-
-    winston.loggers.add('users', {
-        console: {
-            level: USERS_LOG_LEVEL,
-            colorize: true
-        },
-    });
-
+    addAppLoggers();
 
     var proxyLogger = winston.loggers.get('proxy-server');
 
@@ -226,42 +175,8 @@ module.exports = function (opts, callback) {
         addVoiceRouter();
         addTodosRouter();
         addZorkRouter();
+        addAlexaRouter();
     });
-
-    function addLoginRouter() {
-
-        app.use('/v1', require(__dirname + '/v1/login/main.js')({
-            winston: winston,
-            database: database,
-            passport: passport,
-        }).router);
-
-
-        app.use("/public", express.static(__dirname + "/public"));
-    }
-
-    function addTodosRouter() {
-        const todos = mongo_db.collection('todos');
-        app.use("/v1/todos/public", express.static(__dirname + "/v1/todos/public"));
-
-        app.use('/v1/todos', require('./v1/todos/main.js')({
-            winston: winston.loggers.get('todos'),
-            db: mongo_db,
-            io: todosnsp,
-            sessionMiddleware: sessionMiddleware
-        }).router);
-    }
-
-    function addZorkRouter() {
-
-        app.use('/v1/zork', require(__dirname + '/v1/zork/main')({
-            winston: winston.loggers.get('zork'),
-            db: mongo_db,
-            frotzcmd: frotzcmd,
-            io: io.of('/v1/zork'),
-            sessionMiddleware: sessionMiddleware
-        }).router);
-    }
 
     app.use(express.static(path.join(__dirname, 'public/')));
 
@@ -457,6 +372,51 @@ module.exports = function (opts, callback) {
         });
         app.use('/api/v1/voice', voice.router);
     }
+
+    function addLoginRouter() {
+
+        app.use('/v1', require(__dirname + '/v1/login/main.js')({
+            winston: winston,
+            database: database,
+            passport: passport,
+        }).router);
+
+
+        app.use("/public", express.static(__dirname + "/public"));
+    }
+
+    function addTodosRouter() {
+        const todos = mongo_db.collection('todos');
+        app.use("/v1/todos/public", express.static(__dirname + "/v1/todos/public"));
+
+        app.use('/v1/todos', require('./v1/todos/main.js')({
+            winston: winston.loggers.get('todos'),
+            db: mongo_db,
+            io: todosnsp,
+            sessionMiddleware: sessionMiddleware
+        }).router);
+    }
+
+
+
+    function addZorkRouter() {
+
+        app.use('/v1/zork', require(__dirname + '/v1/zork/main')({
+            winston: winston.loggers.get('zork'),
+            db: mongo_db,
+            frotzcmd: frotzcmd,
+            io: io.of('/v1/zork'),
+            sessionMiddleware: sessionMiddleware
+        }).router);
+    }
+
+    function addAlexaRouter() {
+        app.use('/v1/alexa', require(path.join(__dirname, '/v1/alexa/main'))({
+            logger: winston.loggers.get('alexa'),
+            db: mongo_db,
+        }).router);
+    }
+
 }
 
 // https://www.gnu.org/software/gettext/manual/html_node/The-TERM-variable.html
@@ -473,4 +433,75 @@ function getFrotzCmd() {
         var val = 'frotz';
     }
     return val;
+}
+
+function getMainLoggerTransports() {
+    var transports = [
+        new winston.transports.File({
+            level: ACCESS_LOG_LEVEL,
+            filename: path.join(__dirname, 'access.log'),
+            maxsize: 5242880, //5MB
+            maxFiles: 5,
+            colorize: false
+        }),
+        new winston.transports.Console({
+            level: CONSOLE_LOG_LEVEL,
+            colorize: true,
+            // json: true
+        })
+    ];
+
+    if (process.env.LOGSENE_TOKEN) {
+        transports.push(new (winston.transports.Logsene)({
+            token: process.env.LOGSENE_TOKEN,
+            ssl: 'true',
+            type: 'coderuss'
+        }))
+        exceptionHandlers.push(new (winston.transports.Logsene)({
+            token: process.env.LOGSENE_TOKEN,
+            ssl: 'true',
+            type: 'coderuss'
+        }))
+        winston.info('creating logsene transport');
+    }
+    return transports;
+}
+
+
+function addAppLoggers() {
+    winston.loggers.add('todos', {
+        console: {
+            level: TODO_LOG_LEVEL,
+            colorize: true
+        },
+    });
+
+    winston.loggers.add('zork', {
+        console: {
+            level: ZORK_LOG_LEVEL,
+            colorize: true
+        },
+    });
+
+    winston.loggers.add('proxy-server', {
+        console: {
+            level: PROXY_LOG_LEVEL,
+            colorize: true
+        },
+    });
+
+    winston.loggers.add('users', {
+        console: {
+            level: USERS_LOG_LEVEL,
+            colorize: true
+        },
+    });
+
+
+        winston.loggers.add('alexa', {
+        console: {
+            level: ALEX_CONSOLE_LOG_LEVEL,
+            colorize: true
+        },
+    });
 }

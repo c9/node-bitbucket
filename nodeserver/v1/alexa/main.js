@@ -4,12 +4,14 @@ const express = require('express');
 //https://jordankasper.com/building-an-amazon-alexa-skill-with-node-js/
 // https://github.com/jakerella/alexa-forecaster
 const alexaVerifier = require('alexa-verifier');
+var bodyParser = require('body-parser');
+
 
 
 
 module.exports = function (opts) {
     const logger = opts.logger;
-    winston.info('started routing for /v1/alexa');
+    logger.info('started routing for /v1/alexa');
 
     var router = express.Router();
     module.router = router;
@@ -154,9 +156,6 @@ module.exports = function (opts) {
         });
     };
 
-    app.post('/forecast', verify, forecaster);
-
-
     router.post('/forecast', requestVerifier,
         function (req, res) {
 
@@ -229,18 +228,8 @@ module.exports = function (opts) {
                 res.status(504).json({ message: 'Intent Not Implemented' });
             }
 
-        };
+        }
     );
-
-
-    var sessionMiddleware = opts.sessionMiddleware;
-
-    var io = opts.io;
-
-    io.use(function (socket, next) {
-        winston.info(socket.request.headers);
-        sessionMiddleware(socket.request, {}, next);
-    });
 
 
     return module;
