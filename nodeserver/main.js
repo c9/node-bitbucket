@@ -75,7 +75,7 @@ module.exports = function (opts, callback) {
 
     const ZORK_LOG_LEVEL = process.env.ZORK_LOG_LEVEL || 'error';
 
-    const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'error';
+    const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'warn';
     const ACCESS_LOG_LEVEL = process.env.ACCESS_LOG_LEVEL || 'error';
     const TODO_LOG_LEVEL = process.env.TODO_LOG_LEVEL || 'error';
     const PROXY_LOG_LEVEL = process.env.PROXY_LOG_LEVEL || 'error';
@@ -456,14 +456,13 @@ module.exports = function (opts, callback) {
                                     proxyRes.writeHead(502);
                                     proxyRes.end("There was an error. Please try again");
                                 });
+
                             }
                         );
                     });
 
                 }
                 else {
-                    // var target = "http://localhost:" + app.get('port');
-                    // winston.log('debug', 'target:' + target);
                     proxy.web(proxyReq, proxyRes, {
                         target: {
                             host: 'localhost',
@@ -475,6 +474,12 @@ module.exports = function (opts, callback) {
                         proxyRes.writeHead(502);
                         proxyRes.end("There was an error. Please try again");
                     });
+                    proxy.on('proxyRes', function (proxyRes, req, res) {
+                        if (proxyRes.statusCode >= 400) {
+                            mainLogger.warn(req.url + ' ' + proxyRes.statusCode);
+                        }
+                    });
+
                 }
             }
             ).listen(PORT, function () {
