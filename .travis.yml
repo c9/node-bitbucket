@@ -5,7 +5,6 @@ addons:
 language: node_js
 before_install:
   - sudo apt-get install frotz -y
-  - sudo apt-get install g++-4.8 -y
   - mkdir travis-phantomjs
   - wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
   - tar -xvf $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C $PWD/travis-phantomjs
@@ -14,7 +13,7 @@ node_js:
   - 6
   - "node"
 env:
-- NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000 MONGO_CONNECTION=mongodb://localhost:27017 MONGO_URI=mongodb://localhost:27017
+- NODE_ENV=TEST EXPRESS_SESSION_SECRET=123 PORT=3000 MONGO_CONNECTION=mongodb://localhost:27017 MONGO_URI=mongodb://localhost:27017
 services:
   - mongodb
 script:
