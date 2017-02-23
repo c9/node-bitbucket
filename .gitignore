@@ -12,7 +12,7 @@ screenshots/
 environments/prod/
 node_modules
 !/nodeserver/public/u/*
-!/nodeserver/public/l/*
+!/nodeserver/public/login/*
 db.json
 .vagrant
 params.json
