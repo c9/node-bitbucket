@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const low = require('lowdb');
 const fs = require('fs');
 const path = require('path');
@@ -8,31 +10,48 @@ const cp = require('child_process');
 const spawn = cp.spawn;
 
 var root = path.normalize('..');
+var bodyParser = require('body-parser');
+var express = require('express');
+
+const www_authenticate = require('www-authenticate');
+
+
+var extend = require('util')._extend;
+
+const USERS_LOG_LEVEL = process.env.USERS_LOG_LEVEL || 'error';
+
+const ZORK_LOG_LEVEL = process.env.ZORK_LOG_LEVEL || 'error';
+
+const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'warn';
+const ACCESS_LOG_LEVEL = process.env.ACCESS_LOG_LEVEL || 'error';
+const TODO_LOG_LEVEL = process.env.TODO_LOG_LEVEL || 'error';
+const PROXY_LOG_LEVEL = process.env.PROXY_LOG_LEVEL || 'error';
+const NEXMO_API_KEY = process.env.NEXMO_API_KEY || '123';
+const NEXMO_API_SECRET = process.env.NEXMO_API_SECRET || '123';
+const NEXMO_BASE_URL = process.env.NEXMO_BASE_URL || 'http://localhost:3100';
+const VOICE_API_BASE_URL = process.env.VOICE_API_BASE_URL || 'http://localhost:3000/api/v1/voice';
+const PAPERTRAIL_LEVEL = process.env.PAPERTRAIL_LEVEL || 'warn';
+
+const FTP_BASE = process.env.FTP_BASE || 'http://localhost';
+const FTP_PASSWORD = process.env.FTP_PASSWORD;
+const FTP_USER = process.env.FTP_USER;
+const FTP_AUTHENTICATOR = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
+
+
+process.env.NODE_ENV = process.env.NODE_ENV || 'DEV';
+
+const MONGO_URI = process.env.MONGO_URI;
+
+const PROTOCOL = process.env.PROTOCOL || 'http';
+const HOST = process.env.HOST || 'localhost';
+const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 300;
+const MONGO_CONNECTION = MONGO_URI;
+
 
 
 module.exports = function (opts, callback) {
     var module = {};
-    var bodyParser = require('body-parser');
-    var express = require('express');
 
-    var extend = require('util')._extend;
-    var envvars = process.env || {};
-
-    var params = {};
-    try {
-        params = require(__dirname + '/params');
-    }
-    catch (e) {
-    }
-    var envparams = params.env || {};
-
-    envvars = extend(envvars, params.env);
-
-    require('dotenv').config();
-    process.env.NODE_ENV = process.env.NODE_ENV || 'DEV';
-
-
-    const MONGO_URI = envvars.MONGO_URI;
     const PORT = process.env.PORT || 0;
 
     const PROXIED_PORT = process.env.PROXIED_PORT || 0;
@@ -70,24 +89,6 @@ module.exports = function (opts, callback) {
 
     app.use(passport.initialize());
     app.use(passport.session());
-
-    const USERS_LOG_LEVEL = process.env.USERS_LOG_LEVEL || 'error';
-
-    const ZORK_LOG_LEVEL = process.env.ZORK_LOG_LEVEL || 'error';
-
-    const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || 'warn';
-    const ACCESS_LOG_LEVEL = process.env.ACCESS_LOG_LEVEL || 'error';
-    const TODO_LOG_LEVEL = process.env.TODO_LOG_LEVEL || 'error';
-    const PROXY_LOG_LEVEL = process.env.PROXY_LOG_LEVEL || 'error';
-    const NEXMO_API_KEY = envvars.NEXMO_API_KEY || '123';
-    const NEXMO_API_SECRET = envvars.NEXMO_API_SECRET || '123';
-    const NEXMO_BASE_URL = envvars.NEXMO_BASE_URL || 'http://localhost:3100';
-    const VOICE_API_BASE_URL = envvars.VOICE_API_BASE_URL || 'http://localhost:3000/api/v1/voice';
-    const PAPERTRAIL_LEVEL = envvars.PAPERTRAIL_LEVEL || 'warn';
-    const FTP_BASE = envvars.FTP_BASE || 'http://localhost';
-    const FTP_HOST = envvars.FTP_HOST || 'http://localhost';
-    const FTP_PASSWORD = envvars.FTP_PASSWORD || 'http://localhost';
-    const FTP_USER = envvars.FTP_USER || 'http://localhost';
 
 
     winston.info(root, { 'root': root });
@@ -183,55 +184,27 @@ module.exports = function (opts, callback) {
 
     app.use(morgan('combined', { stream: mainLogger.stream }));
 
-    if (process.env.PAPERTRAIL_ENABLED) {
-        winston.loggers.add('todos', {
-            console: {
-                level: 'debug',
-                colorize: true
-            },
-            papertrail: {
-                host: 'logs5.papertrailapp.com',
-                port: 26785,
-                program: 'nodeserver',
-                level: PAPERTRAIL_LEVEL,
-            }
-        });
 
-        winston.loggers.add('proxy-server', {
-            console: {
-                level: 'debug',
-                colorize: true
-            },
-            papertrail: {
-                host: 'logs5.papertrailapp.com',
-                port: 26785,
-                program: 'nodeserver',
-                level: PAPERTRAIL_LEVEL,
-            }
-        });
-    }
-    else {
-        winston.loggers.add('todos', {
-            console: {
-                level: TODO_LOG_LEVEL,
-                colorize: true
-            },
-        });
+    winston.loggers.add('todos', {
+        console: {
+            level: TODO_LOG_LEVEL,
+            colorize: true
+        },
+    });
 
-        winston.loggers.add('zork', {
-            console: {
-                level: ZORK_LOG_LEVEL,
-                colorize: true
-            },
-        });
+    winston.loggers.add('zork', {
+        console: {
+            level: ZORK_LOG_LEVEL,
+            colorize: true
+        },
+    });
 
-        winston.loggers.add('proxy-server', {
-            console: {
-                level: PROXY_LOG_LEVEL,
-                colorize: true
-            },
-        });
-    }
+    winston.loggers.add('proxy-server', {
+        console: {
+            level: PROXY_LOG_LEVEL,
+            colorize: true
+        },
+    });
 
     winston.loggers.add('users', {
         console: {
@@ -246,14 +219,8 @@ module.exports = function (opts, callback) {
     winston.info("console_log_level:" + CONSOLE_LOG_LEVEL);
 
 
-
-    const PROTOCOL = envvars.PROTOCOL || 'http';
-    const HOST = envvars.HOST || 'localhost';
-    const CRON_TIMER_SECONDS = envvars.CRON_TIMER_SECONDS || 300;
-
     const MongoClient = require('mongodb').MongoClient;
 
-    const MONGO_CONNECTION = envvars.MONGO_CONNECTION;
 
 
     var main_application;
@@ -366,13 +333,6 @@ module.exports = function (opts, callback) {
         var httpProxy = require('http-proxy');
         var proxy = httpProxy.createProxyServer();
 
-        // var proxyServer = http.createServer(function (req, res) {
-        //   proxy.web(req, res);
-        // });
-
-        // Listen to the `upgrade` event and proxy the
-        // WebSocket requests as well.
-
         request_body_array = [];
 
 
@@ -415,8 +375,6 @@ module.exports = function (opts, callback) {
                             proxyRes.writeHead(response.statusCode);
                             return proxyRes.end(response.body)
                         }
-                        var www_authenticate = require('www-authenticate');
-                        var authenticator = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
 
                         var options = {
                             url: FTP_BASE + path,
@@ -435,8 +393,8 @@ module.exports = function (opts, callback) {
                                     return;
                                 }
                                 if (res.statusCode === 401) {
-                                    authenticator.get_challenge(res);
-                                    authenticator.authenticate_request_options(options);
+                                    FTP_AUTHENTICATOR.get_challenge(res);
+                                    FTP_AUTHENTICATOR.authenticate_request_options(options);
                                     req.headers['authorization'] = options.headers['authorization'];
                                 }
 
