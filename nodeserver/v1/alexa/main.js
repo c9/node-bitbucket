@@ -4,7 +4,10 @@ const express = require('express');
 //https://jordankasper.com/building-an-amazon-alexa-skill-with-node-js/
 // https://github.com/jakerella/alexa-forecaster
 const alexaVerifier = require('alexa-verifier');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
+
+const router = express.Router();
+
 
 
 
@@ -13,7 +16,6 @@ module.exports = function (opts) {
     const logger = opts.logger;
     logger.info('started routing for /v1/alexa');
 
-    var router = express.Router();
     module.router = router;
 
 
