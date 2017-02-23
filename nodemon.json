@@ -1,6 +1,6 @@
 {
   "verbose": true,
-  "ignore": ["*.test.js", "fixtures/*","db.json","tests/*","*.pem","*.log",
+  "ignore": ["*.test.js", "fixtures/*","db.json","tests/*","*.pem","*.log","errorShots/*",
       "node_modules/","public/"],
   "watch": ["/nodeserver/*"],
   "execMap": {
