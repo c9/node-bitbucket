@@ -35,8 +35,8 @@ const VOICE_API_BASE_URL = process.env.VOICE_API_BASE_URL || 'http://localhost:3
 const PAPERTRAIL_LEVEL = process.env.PAPERTRAIL_LEVEL || 'warn';
 
 const FTP_BASE = process.env.FTP_BASE || 'http://localhost';
-const FTP_PASSWORD = process.env.FTP_PASSWORD;
-const FTP_USER = process.env.FTP_USER;
+const FTP_PASSWORD = process.env.FTP_PASSWORD || 'guest';
+const FTP_USER = process.env.FTP_USER || 'guest';
 const FTP_AUTHENTICATOR = www_authenticate.authenticator(FTP_USER, FTP_PASSWORD);
 
 
