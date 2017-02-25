@@ -2,53 +2,23 @@ var request = require('request');
 var expect = require("chai").expect;
 const path = require('path');
 
+baseurl = "http://localhost:" + 3000;
+alexaurl = baseurl + '/v1/alexa';
 
-var sinon = require('sinon');
-
-const verifier = require('alexa-verifier');
-
-process.env.MONGO_URI = 'mongodb://localhost:27017/mydb';
-process.env.EXPRESS_SESSION_SECRET = 'test123';
-
-// var app = require(path.join('..', '..', '..', 'server'));
 
 
 
 
 describe(path.basename(__dirname), function () {
-  this.timeout(0);
-  describe('setup', function () {
-    it('requires server', function (done) {
-      main = require(path.join('..', '..', '..', 'main'))({}, function (port) {
-        baseurl = "http://localhost:" + port;
-        alexaurl = baseurl + '/v1/alexa';
-
-        console.log('server listening on port ' + port);
-        done();
-      });
-    });
-
-    it('ping newly created server', function (done) {
-      request.get({
-        url: baseurl + '/v1/ping'
-      }, function (error, response, body) {
-        console.log(body);
-        expect(error).to.be.null;
-        expect(response.statusCode).to.be.equal(200);
-        done();
-      });
-    })
-  });
 
   describe("/v1/alexa POST", function () {
 
-    it('handle valid signature', function (done) {
+    it('responds with 201', function (done) {
 
       ts = '2017-02-10T07:27:59Z';
       // var ts = '2017-02-23T08:13:48-05:00';
 
       now = new Date(ts);
-      clock = sinon.useFakeTimers(now.getTime());
       cert_url = 'https://s3.amazonaws.com/echo.api/echo-api-cert-4.pem' // latest valid cert
       signature = 'Qc8OuaGEHWeL/39XTEDYFbOCufYWpwi45rqmM2R4WaSEYcSXq+hUko/88wv48+6SPUiEddWSEEINJFAFV5auYZsnBzqCK+SO8mGNOGHmLYpcFuSEHI3eA3nDIEARrXTivqqbH/LCPJHc0tqNYr3yPZRIR2mYFndJOxgDNSOooZX+tp2GafHHsjjShCjmePaLxJiGG1DmrL6fyOJoLrzc0olUxLmnJviS6Q5wBir899TMEZ/zX+aiBTt/khVvwIh+hI/PZsRq/pQw4WAvQz1bcnGNamvMA/TKSJtR0elJP+TgCqbVoYisDgQXkhi8/wonkLhs68pN+TurbR7GyC1vxw==';
       body = {
@@ -78,45 +48,21 @@ describe(path.basename(__dirname), function () {
 
       body = JSON.stringify(body);
 
-      headers = {
-        signaturecertchainurl: cert_url,
-        signature: signature,
-        // body: body
-        // rawBody: JSON.stringify(body)
-      }
-      verifier(headers.signaturecertchainurl, headers.signature, body, function (er) {
-        expect(er).to.be.equal(undefined);
-        done()
-      });
-    })
-
-    it("returns status 201", function (done) {
-
-      headers['content-type'] = 'application/json';
-
-      console.log(alexaurl);
       request({
-        headers: headers,
         method: "POST",
         body: body,
-        followRedirect: false,
-        url: alexaurl + '/forecast'
+        uri: alexaurl
       }, function (error, response, body) {
-        console.log(body);
-        expect(error).to.be.null;
-
-        // expect(error).to.be.equal(null);
+        expect(error).to.be.equal(null);
         expect(response.statusCode).to.equal(200);
-        // expect(response.headers['content-type']).to.be.equal('application/json; charset=utf-8');
-        clock.restore();
+        expect(response.headers['content-type']).to.be.equal('application/json; charset=utf-8');
         done();
       });
 
 
+
     });
-
-    // describe({})
-
   });
+
 
 });
