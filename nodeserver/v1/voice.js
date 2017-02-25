@@ -56,6 +56,7 @@ module.exports = function (opts) {
     });
 
     function createApplication(opts, callback) {
+        return;
         var name = opts.name;
         var options = {
             method: 'POST',

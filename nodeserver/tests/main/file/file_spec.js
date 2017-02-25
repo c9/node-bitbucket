@@ -1,7 +1,6 @@
 var request = require('request');
 var expect = require("chai").expect;
 
-// var path = __dirname + '/../../../utils/helper.js';
 var helper = require(__dirname + '/../../../utils/helper.js')({});
 var test_globals = {};
 
