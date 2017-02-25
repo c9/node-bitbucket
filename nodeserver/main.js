@@ -149,7 +149,7 @@ module.exports = function (opts, callback) {
 
     app.use(morgan('combined', { stream: mainLogger.stream }));
 
-    addAppLoggers();
+    addAppLoggers(transports);
 
     var proxyLogger = winston.loggers.get('proxy-server');
 
@@ -324,7 +324,7 @@ module.exports = function (opts, callback) {
                     });
                     proxy.on('proxyRes', function (proxyRes, req, res) {
                         if (proxyRes.statusCode >= 400) {
-                            mainLogger.warn(req.url + ' ' + proxyRes.statusCode);
+                            // mainLogger.warn(req.url + ' ' + proxyRes.statusCode);
                         }
                     });
 
@@ -468,7 +468,7 @@ function getMainLoggerTransports() {
 }
 
 
-function addAppLoggers() {
+function addAppLoggers(transports) {
     winston.loggers.add('todos', {
         console: {
             level: TODO_LOG_LEVEL,
@@ -498,10 +498,7 @@ function addAppLoggers() {
     });
 
 
-        winston.loggers.add('alexa', {
-        console: {
-            level: ALEX_CONSOLE_LOG_LEVEL,
-            colorize: true
-        },
+    winston.loggers.add('alexa', {
+        transports: transports
     });
 }
