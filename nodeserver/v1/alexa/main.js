@@ -44,11 +44,13 @@ module.exports = function (opts) {
 
     router.use(function (req, res, next) {
 
+        logger.info(req.body);
+
         requestBody = JSON.stringify(req.body);
 
-        console.log(requestBody);
-        console.log(req.headers.signaturecertchainurl);
-        console.log(req.headers.signature);
+        logger.info(requestBody);
+        logger.info(req.headers.signaturecertchainurl);
+        logger.info(req.headers.signature);
 
         alexaVerifier(
             req.headers.signaturecertchainurl,
