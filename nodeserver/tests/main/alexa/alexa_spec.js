@@ -108,9 +108,9 @@ describe(path.basename(__dirname), function () {
         // expect(error).to.be.equal(null);
         expect(response.statusCode).to.equal(200);
         // expect(response.headers['content-type']).to.be.equal('application/json; charset=utf-8');
+        clock.restore();
         done();
       });
-      // clock.restore();
 
 
     });
