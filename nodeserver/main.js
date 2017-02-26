@@ -78,6 +78,8 @@ module.exports = function (opts, callback) {
 
     var app = express();
 
+    app.set('serverstarted',Date.now());
+
     createAlexaApp(app);
 
     app.use("/tryit",
@@ -191,7 +193,7 @@ module.exports = function (opts, callback) {
 
 
     function setupProxy() {
-        var ping = require('./v1/ping.js')({});
+        var ping = require('./v1/ping.js')({app:app});
         var fileapi = require('./v1/files/main.js')({ winston: winston });
         var ftp = require('./v1/ftp/main.js')({ winston: winston });
 

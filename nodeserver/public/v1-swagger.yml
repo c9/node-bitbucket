@@ -55,7 +55,7 @@ paths:
       - alexa
       summary: Make a request for alexa
       description: This endpoint allows the user to make requests on the
-        status of the server.
+        status of the server using an alexa capable device.
       operationId: postPing
       consumes:
       - application/json
@@ -88,8 +88,17 @@ definitions:
         enum:
         - success
         - error
+      server:
+        "$ref": "#/definitions/PingServer"     
       meta:
         "$ref": "#/definitions/Meta"
+  PingServer:
+    type: object
+    properties:
+      started:
+        type: integer
+        description: "Server starttime as
+            milliseconds since Jan 01 1970 Date.now() in javascript"
   Meta:
     type: object
     properties:
@@ -123,6 +132,7 @@ definitions:
     type: object
     required: 
     - sessionId
+    - userId
     properties: 
         userId:
             type: string 

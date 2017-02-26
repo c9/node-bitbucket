@@ -3,6 +3,11 @@ const express = require('express');
 
 const r = require('request');
 
+const moment = require('moment-timezone');
+const tz = 'America/New_York';
+
+const travis_master_branch = "https://api.travis-ci.org/repos/russjohnson09/coderuss/branches/master";
+
 
 const VERSION = '1.0';
 
@@ -49,20 +54,77 @@ module.exports = function (app) {
         }
     );
 
+    function doStatusIntent(resolve, reject, alexaRequest, alexaResponse) {
+        var port = app.get('port');
+        var serverport;
+        var count = 0;
+        var expectedCount = 2;
+        var serverstarted;
+        var lastBuildStatus;
+        var ar = alexaResponse;
+
+        function readResponse() {
+            count++;
+            if (count == expectedCount) {
+                console.log(serverstarted);
+                var humanReadableTime = moment(serverstarted).tz(tz)
+                    .format('MMMM Do YYYY, h:mm:ss a z');
+                console.log(humanReadableTime);
+                // alexaResponse.say('hello');
+                var msg = 'Your application is listening on port ' + serverport + '. This server was deployed on ' + humanReadableTime + '. The status of most recent build for this repository\'s master branch is ' + lastBuildStatus;
+                console.log(msg);
+                console.log(lastBuildStatus);
+                alexaResponse.say(msg);
+                resolve();
+                return;
+            }
+        }
+
+        r.get({
+            url: travis_master_branch
+        }, function (error, response, body) {
+            lastBuildStatus = JSON.parse(body).branch.state;
+            console.log(lastBuildStatus);
+            readResponse();
+        })
+
+
+        r.get({
+            headers: {
+                'content-type': 'application/json'
+            },
+            url: 'http://0.0.0.0:' + port + '/v1/ping',
+        }, function (error, response, body) {
+            if (error) {
+                console.log(error);
+                alexaResponse.say("I'm sorry but there was an error processing your request.");
+                resolve();
+                return;
+            }
+            else {
+                console.log(body);
+                var data = JSON.parse(body);
+                serverstarted = data.server.started;
+                serverport = data.server.port;
+                readResponse();
+            }
+        })
+    }
+
     alexaApp.intent("statusIntent",
         function (alexaRequest, alexaResponse) {
-            var port = app.get('port');
-            r.get({
-                headers: {
-                    
-                },
-                url: 'http://0.0.0.0:'+port + '/v1/ping',
-            },function(error,response,body) {
-                if (error) console.log(error);
-                console.log(body);
-                            alexaResponse.say('App listening on port '+port);
+            return new Promise(function (resolve, reject) {
+                doStatusIntent(resolve, reject, alexaRequest, alexaResponse);
+            });;
+        }
+    );
 
-            })
+
+    alexaApp.intent("upTimeIntent",
+        function (alexaRequest, alexaResponse) {
+            return new Promise(function (resolve, reject) {
+                doStatusIntent(resolve, reject, alexaRequest, alexaResponse);
+            });;
         }
     );
 
