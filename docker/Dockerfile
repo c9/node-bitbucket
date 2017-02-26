@@ -36,11 +36,34 @@ RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiver
 RUN apt-get update
 RUN apt-get install -y mongodb-org
 
+RUN apt-get install wget -y
+
+RUN mkdir travis-phantomjs
+
+RUN wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
+RUN tar -xvf $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C $PWD/travis-phantomjs
+
+
+RUN apt-get install firefox -y
+RUN apt-get install xvfb -y
+
+RUN apt-get install default-jdk -y
+
+RUN npm install selenium-standalone@latest -g
+RUN selenium-standalone install
+
+RUN npm install -g phantomjs
+RUN npm install -g mocha
+
+
+
 
 
 
 ADD data/db /data/db
 ADD lib/systemd/system/mongod.service /lib/systemd/system/mongod.service
 ADD startup.sh /startup.sh
+
+ADD root/bashrc /root/.bashrc
 
 

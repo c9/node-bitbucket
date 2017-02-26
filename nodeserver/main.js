@@ -49,6 +49,8 @@ const HOST = process.env.HOST || 'localhost';
 const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 300;
 const MONGO_CONNECTION = MONGO_URI;
 
+const alexa = require(__dirname+'/v1/alexa');
+
 
 const exceptionHandlers = [
     new winston.transports.File({
@@ -63,7 +65,9 @@ const exceptionHandlers = [
     })
 ];
 
-
+function createAlexaApp(app) {
+    alexa(app);
+}
 
 module.exports = function (opts, callback) {
     var module = {};
@@ -74,6 +78,7 @@ module.exports = function (opts, callback) {
 
     var app = express();
 
+    createAlexaApp(app);
 
     app.use("/tryit", express.static(__dirname + "/swagger-ui-master/dist"));
 
@@ -175,7 +180,6 @@ module.exports = function (opts, callback) {
         addVoiceRouter();
         addTodosRouter();
         addZorkRouter();
-        addAlexaRouter();
     });
 
     app.use(express.static(path.join(__dirname, 'public/')));
@@ -407,13 +411,6 @@ module.exports = function (opts, callback) {
             frotzcmd: frotzcmd,
             io: io.of('/v1/zork'),
             sessionMiddleware: sessionMiddleware
-        }).router);
-    }
-
-    function addAlexaRouter() {
-        app.use('/v1/alexa', require(path.join(__dirname, '/v1/alexa/main'))({
-            logger: winston.loggers.get('alexa'),
-            db: mongo_db,
         }).router);
     }
 

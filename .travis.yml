@@ -16,7 +16,7 @@ node_js:
   - 6
   - "node"
 env:
-- NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000 MONGO_CONNECTION=mongodb://localhost:27017 MONGO_URI=mongodb://localhost:27017
+- ALEXA_CHECK_CERT=0 NODE_ENV=TEST CXX=g++-4.8 EXPRESS_SESSION_SECRET=123 PORT=3000 MONGO_CONNECTION=mongodb://localhost:27017 MONGO_URI=mongodb://localhost:27017
 services:
   - mongodb
 script:
