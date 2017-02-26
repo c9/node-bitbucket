@@ -49,7 +49,7 @@ const HOST = process.env.HOST || 'localhost';
 const CRON_TIMER_SECONDS = process.env.CRON_TIMER_SECONDS || 300;
 const MONGO_CONNECTION = MONGO_URI;
 
-const alexa = require(__dirname+'/v1/alexa');
+const alexa = require(__dirname + '/v1/alexa');
 
 
 const exceptionHandlers = [
@@ -80,7 +80,11 @@ module.exports = function (opts, callback) {
 
     createAlexaApp(app);
 
-    app.use("/tryit", express.static(__dirname + "/swagger-ui-master/dist"));
+    app.use("/tryit",
+        express.static(
+            path.join(__dirname, "/swagger-ui-master/dist")
+        )
+    );
 
 
     var server = require('http').Server(app);

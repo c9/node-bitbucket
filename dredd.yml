@@ -28,5 +28,5 @@ hooks-worker-term-timeout: 5000
 hooks-worker-term-retry: 500
 hooks-worker-handler-host: localhost
 hooks-worker-handler-port: 61321
-blueprint: ./nodeserver/public/v1-swagger.json
+blueprint: ./nodeserver/public/v1-swagger.yml
 endpoint: 'http://localhost:3000'
