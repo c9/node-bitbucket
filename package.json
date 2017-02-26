@@ -22,6 +22,7 @@
     "dredd:test": "dredd"
   },
   "dependencies": {
+    "alexa-app": "^3.2.0",
     "alexa-verifier": "^0.3.0",
     "ansi-escape-sequences": "^3.0.0",
     "ansi-to-html": "^0.6.0",
