@@ -77,8 +77,6 @@ module.exports = function (app) {
             if (count == expectedCount) {
                 console.log(serverstarted);
                 var humanReadableTime = getAlexaReadableTime(serverstarted); 
-                console.log(humanReadableTime);
-                var msg = 'Your application is listening on port ' + serverport + '. This server was deployed on ' + humanReadableTime + '. The status of most recent build for this repository\'s master branch is ' + lastBuildStatus;
                 var msg = 'This server was deployed on ' + humanReadableTime +
                 '. The status of the most recent build for this repository\'s master branch is ' + lastBuildStatus 
                 + '. Your application is listening on port ' + serverport;
