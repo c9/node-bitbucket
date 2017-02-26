@@ -1,0 +1,11 @@
+version: '2'
+volumes:
+  node_modules:
+services:
+  web:
+    build: .
+    # http://stackoverflow.com/questions/37100358/docker-composer-exited-with-code-0
+    tty: true 
+    volumes:
+      - ..:/coderuss
+      - node_modules:/coderuss/node_modules
