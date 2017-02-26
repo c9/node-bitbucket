@@ -20,6 +20,8 @@ env:
 services:
   - mongodb
 script:
-  - npm install
   - npm start &
   - sleep 3 && npm run test
+cache:
+  directories:
+    - node_modules
