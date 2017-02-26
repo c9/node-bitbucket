@@ -145,13 +145,17 @@ definitions:
     required:
     - type
     - requestId
+    - intent
     properties: 
+#https://apihandyman.io/writing-openapi-swagger-specification-tutorial-part-4-advanced-data-modeling/
         type:
-            type: string
+            type: string 
             enum:
             - IntentRequest
         requestId:
             type: string
+            minLength: 1
+            maxLength: 64
         intent:
             "$ref": "#/definitions/AlexaIntent"
   AlexaIntent:
