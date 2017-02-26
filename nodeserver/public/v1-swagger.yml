@@ -107,6 +107,9 @@ definitions:
         description: Human readable message.
   Alexa:
     type: object
+    required: 
+        - session
+        - request
     properties:
         version:
             type: string
@@ -121,6 +124,7 @@ definitions:
     required: 
     - sessionId
     - new
+    - user
     properties: 
         sessionId:
             type: string
@@ -131,11 +135,11 @@ definitions:
   AlexaUser:
     type: object
     required: 
-    - sessionId
     - userId
     properties: 
         userId:
             type: string 
+            minLength: 1
   AlexaApplication:
     properties: 
         applicationId:
