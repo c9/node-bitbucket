@@ -8,8 +8,13 @@ const tz = 'America/New_York';
 
 const travis_master_branch = "https://api.travis-ci.org/repos/russjohnson09/coderuss/branches/master";
 
+const seven_day_uptime = 'https://uptime.statuscake.com/?TestID=mOB59axrug';
+
 
 const VERSION = '1.0';
+
+const cheerio = require('cheerio');
+
 
 // https://github.com/tejashah88/alexa-app-example/blob/master/index.js
 module.exports = function (app) {
@@ -120,13 +125,35 @@ module.exports = function (app) {
     );
 
 
-    alexaApp.intent("upTimeIntent",
-        function (alexaRequest, alexaResponse) {
-            return new Promise(function (resolve, reject) {
-                doStatusIntent(resolve, reject, alexaRequest, alexaResponse);
-            });;
-        }
-    );
+    // function doUptime(resolve, reject, alexaRequest, alexaResponse) {
+    //     r.get({
+    //         url: seven_day_uptime,
+    //     }, function (error, response, body) {
+    //         if (error) {
+    //             console.log(error);
+    //             alexaResponse.say("I'm sorry but there was an error processing your request.");
+    //             resolve();
+    //             return;
+    //         }
+    //         else {
+    //             console.log(body);
+    //             let $ = cheerio.load(body);
+    //             console.log($);
+    //             var uptime = $('#7Day .UptimeNumber').text()
+    //             alexaResponse.say('Your 7 day uptime is '+ uptime);
+    //             resolve();
+    //             return;
+    //         }
+    //     });
+    // }
+
+    // alexaApp.intent("uptimeIntent",
+    //     function (alexaRequest, alexaResponse) {
+    //         return new Promise(function (resolve, reject) {
+    //             doUptime(resolve, reject, alexaRequest, alexaResponse);
+    //         });
+    //     }
+    // );
 
 
 }
