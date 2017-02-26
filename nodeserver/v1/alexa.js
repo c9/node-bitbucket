@@ -1,10 +1,12 @@
 const alexa = require("alexa-app");
 const express = require('express');
 
+const r = require('request');
+
 
 const VERSION = '1.0';
 
-
+// https://github.com/tejashah88/alexa-app-example/blob/master/index.js
 module.exports = function (app) {
 
 
@@ -22,7 +24,7 @@ module.exports = function (app) {
 
         // sets up a GET route when set to true. This is handy for testing in
         // development, but not recommended for production. disabled by default
-        debug: true
+        // debug: true
     });
 
     // now POST calls to /test in express will be handled by the app.request() function
@@ -44,6 +46,23 @@ module.exports = function (app) {
     },
         function (request, response) {
             response.say("Success!");
+        }
+    );
+
+    alexaApp.intent("statusIntent",
+        function (alexaRequest, alexaResponse) {
+            var port = app.get('port');
+            r.get({
+                headers: {
+                    
+                },
+                url: 'http://0.0.0.0:'+port + '/v1/ping',
+            },function(error,response,body) {
+                if (error) console.log(error);
+                console.log(body);
+                            alexaResponse.say('App listening on port '+port);
+
+            })
         }
     );
 

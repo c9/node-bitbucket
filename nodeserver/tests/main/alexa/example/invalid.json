@@ -1,0 +1,12 @@
+{
+    "version": "1.0",
+    "response": {
+        "directives": [],
+        "shouldEndSession": true,
+        "outputSpeech": {
+            "type": "SSML",
+            "ssml": "<speak>Error: not a valid request</speak>"
+        }
+    },
+    "sessionAttributes": {}
+}
