@@ -1,0 +1,198 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Coderuss
+  description: This api is focused on whatever seems interesting to me on any given
+    day.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: coderuss.herokuapp.com
+basePath: "/v1"
+tags:
+- name: Coderuss
+  description: Misc. endpoints.
+  externalDocs:
+    description: Find out more
+    url: http://google.com
+schemes:
+- https
+paths:
+  "/ping":
+    post:
+      tags:
+      - ping
+      summary: Post ping
+      description: ''
+      operationId: postPing
+      consumes:
+      - application/json
+      produces:
+      - application/json; charset=utf-8
+      parameters: []
+      responses:
+        '201':
+          description: Successful operation
+          schema:
+            "$ref": "#/definitions/Ping"
+    get:
+      tags:
+      - ping
+      summary: Gets server status
+      description: ''
+      operationId: postPing
+      produces:
+      - application/json; charset=utf-8
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            "$ref": "#/definitions/Ping"
+  "/alexa":
+    post:
+      tags:
+      - alexa
+      summary: Make a request for alexa
+      description: This endpoint allows the user to make requests on the
+        status of the server using an alexa capable device.
+      operationId: postPing
+      consumes:
+      - application/json
+      produces:
+      - application/json; charset=utf-8
+      parameters:
+        - name: body
+          in: body
+          description: Alexa request object
+          required: true
+          schema: 
+            "$ref": "#/definitions/Alexa" 
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            "$ref": "#/definitions/AlexaResponse"
+definitions:
+  Todo:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+  Ping:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+        - success
+        - error
+      server:
+        "$ref": "#/definitions/PingServer"     
+      meta:
+        "$ref": "#/definitions/Meta"
+  PingServer:
+    type: object
+    properties:
+      started:
+        type: integer
+        description: "Server starttime as
+            milliseconds since Jan 01 1970 Date.now() in javascript"
+  Meta:
+    type: object
+    properties:
+      message:
+        type: string
+        description: Human readable message.
+  Alexa:
+    type: object
+    required: 
+        - session
+        - request
+    properties:
+        version:
+            type: string
+            enum:
+            - 1.0
+        session:
+            "$ref": "#/definitions/AlexaSession"
+        request:
+            "$ref": "#/definitions/AlexaRequest"
+  AlexaSession:
+    type: object
+    required: 
+    - sessionId
+    - new
+    - user
+    properties: 
+        sessionId:
+            type: string
+        new:
+            type: boolean
+        user: 
+            "$ref": "#/definitions/AlexaUser"
+  AlexaUser:
+    type: object
+    required: 
+    - userId
+    properties: 
+        userId:
+            type: string 
+            minLength: 1
+  AlexaApplication:
+    properties: 
+        applicationId:
+            type: string
+  AlexaRequest:
+    type: object
+    required:
+    - type
+    - requestId
+    - intent
+    properties: 
+#https://apihandyman.io/writing-openapi-swagger-specification-tutorial-part-4-advanced-data-modeling/
+        type:
+            type: string 
+            enum:
+            - IntentRequest
+        requestId:
+            type: string
+            minLength: 1
+            maxLength: 64
+        intent:
+            "$ref": "#/definitions/AlexaIntent"
+  AlexaIntent:
+    type: object
+    required:
+    - name
+    properties: 
+        name:
+            type: string
+            enum:
+            - statusIntent
+  AlexaResponse:
+    type: object
+    properties:
+        version:
+            type: string
+            enum:
+            - "1.0"
+        response: 
+            "$ref": "#/definitions/AlexaResponseObject"
+        sessionAttributes:
+            type: object
+  AlexaResponseObject:
+    type: object
+    properties:
+        outputSpeech:
+            "$ref": "#/definitions/AlexaOutputSpeech"
+  AlexaOutputSpeech:
+    type: object
+    properties:
+        type:
+            type: string
+            enum:
+            - SSML
+        ssml:
+            type: string

@@ -2,6 +2,7 @@ module.exports = function (opts) {
     var module = {};
     var express = require('express');
     var router = express.Router();
+    var app = opts.app;
 
 
     router.get('/authenticated', function (req, res) {
@@ -42,21 +43,27 @@ module.exports = function (opts) {
         }
     });
 
+    function getStatusResponse()
+    {
+        return {
+            'status': 'success',
+            'server': {
+                port: app.get('port'),
+                started: app.get('serverstarted')
+            },
+            'meta': { 'message': 'Success' }
+        };
+    }
+
     router.get('/', function (req, res) {
         res.setHeader('content-type', 'application/json; charset=utf-8');
-        res.send(JSON.stringify({
-            'status': 'success',
-            'meta': { 'message': 'Success' }
-        }));
+        res.send(JSON.stringify(getStatusResponse()));
     });
 
     router.post('/', function (req, res) {
         res.status(201);
         res.setHeader('content-type', 'application/json; charset=utf-8');
-        res.send(JSON.stringify({
-            'status': 'success',
-            'meta': { 'message': 'Success' }
-        }));
+        res.send(JSON.stringify(getStatusResponse()));
     });
 
     module.router = router;

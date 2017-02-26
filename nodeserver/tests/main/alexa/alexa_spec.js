@@ -40,7 +40,7 @@ describe(path.basename(__dirname), function () {
           "timestamp": ts,
           "locale": "en-US",
           "intent": {
-            "name": "HelloWorld"
+            "name": "InvalidRequest"
           },
           "inDialog": false
         }
@@ -53,16 +53,84 @@ describe(path.basename(__dirname), function () {
         body: body,
         uri: alexaurl
       }, function (error, response, body) {
+        console.log(body);
         expect(error).to.be.equal(null);
         expect(response.statusCode).to.equal(200);
         expect(response.headers['content-type']).to.be.equal('application/json; charset=utf-8');
+
+        var data = JSON.parse(body);
+        expect(data.version).to.be.equal('1.0');
+        expect(data.response).not.to.be.undefined;
+        var response = data.response;
+        expect(response.shouldEndSession).to.be.true;
+        expect(response.outputSpeech).not.to.be.undefined;
+        expect(response.outputSpeech.type).to.be.equal('SSML');
+        expect(response.outputSpeech.ssml).to.be.a('string');
+
+
         done();
       });
 
 
 
     });
+
+    it('statusIntent', function (done) {
+      ts = '2017-02-10T07:27:59Z';
+      now = new Date(ts);
+      body = {
+        "version": "1.0",
+        "session": {
+          "new": true,
+          "sessionId": "SessionId.7745e45d-3042-45eb-8e86-cab2cf285daf",
+          "application": {
+            "applicationId": "amzn1.ask.skill.75c997b8-610f-4eb4-bf2e-95810e15fba2"
+          },
+          "attributes": {},
+          "user": {
+            "userId": "amzn1.ask.account.AF6Z7574YHBQCNNTJK45QROUSCUJEHIYAHZRP35FVU673VDGDKV4PH2M52PX4XWGCSYDM66B6SKEEFJN6RYWN7EME3FKASDIG7DPNGFFFNTN4ZT6B64IIZKSNTXQXEMVBXMA7J3FN3ERT2A4EDYFUYMGM4NSQU4RTAQOZWDD2J7JH6P2ROP2A6QEGLNLZDXNZU2DL7BKGCVLMNA"
+          }
+        },
+        "request": {
+          "type": "IntentRequest",
+          "requestId": "EdwRequestId.fa7428b7-75d0-44c8-aebb-4c222ed48ebe",
+          "timestamp": ts,
+          "locale": "en-US",
+          "intent": {
+            "name": "statusIntent"
+          },
+          "inDialog": false
+        }
+      };
+
+      body = JSON.stringify(body);
+
+      request({
+        method: "POST",
+        body: body,
+        uri: alexaurl
+      }, function (error, response, body) {
+        console.log(body);
+        expect(error).to.be.equal(null);
+        expect(response.statusCode).to.equal(200);
+        expect(response.headers['content-type']).to.be.equal('application/json; charset=utf-8');
+
+        var data = JSON.parse(body);
+        expect(data.version).to.be.equal('1.0');
+        expect(data.response).not.to.be.undefined;
+        var response = data.response;
+        expect(response.shouldEndSession).to.be.true;
+        expect(response.outputSpeech).not.to.be.undefined;
+        expect(response.outputSpeech.type).to.be.equal('SSML');
+        expect(response.outputSpeech.ssml).to.be.a('string');
+        done();
+      });
+
+
+
+    });
+
+
+
   });
-
-
 });

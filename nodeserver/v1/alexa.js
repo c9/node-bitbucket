@@ -1,10 +1,22 @@
 const alexa = require("alexa-app");
 const express = require('express');
 
+const r = require('request');
+
+const moment = require('moment-timezone');
+const tz = 'America/New_York';
+
+const travis_master_branch = "https://api.travis-ci.org/repos/russjohnson09/coderuss/branches/master";
+
+const seven_day_uptime = 'https://uptime.statuscake.com/?TestID=mOB59axrug';
+
 
 const VERSION = '1.0';
 
+const cheerio = require('cheerio');
 
+
+// https://github.com/tejashah88/alexa-app-example/blob/master/index.js
 module.exports = function (app) {
 
 
@@ -22,7 +34,7 @@ module.exports = function (app) {
 
         // sets up a GET route when set to true. This is handy for testing in
         // development, but not recommended for production. disabled by default
-        debug: true
+        // debug: true
     });
 
     // now POST calls to /test in express will be handled by the app.request() function
@@ -46,6 +58,102 @@ module.exports = function (app) {
             response.say("Success!");
         }
     );
+
+    function doStatusIntent(resolve, reject, alexaRequest, alexaResponse) {
+        var port = app.get('port');
+        var serverport;
+        var count = 0;
+        var expectedCount = 2;
+        var serverstarted;
+        var lastBuildStatus;
+        var ar = alexaResponse;
+
+        function readResponse() {
+            count++;
+            if (count == expectedCount) {
+                console.log(serverstarted);
+                var humanReadableTime = moment(serverstarted).tz(tz)
+                    .format('MMMM Do YYYY, h:mm:ss a z');
+                console.log(humanReadableTime);
+                // alexaResponse.say('hello');
+                var msg = 'Your application is listening on port ' + serverport + '. This server was deployed on ' + humanReadableTime + '. The status of most recent build for this repository\'s master branch is ' + lastBuildStatus;
+                console.log(msg);
+                console.log(lastBuildStatus);
+                alexaResponse.say(msg);
+                resolve();
+                return;
+            }
+        }
+
+        r.get({
+            url: travis_master_branch
+        }, function (error, response, body) {
+            lastBuildStatus = JSON.parse(body).branch.state;
+            console.log(lastBuildStatus);
+            readResponse();
+        })
+
+
+        r.get({
+            headers: {
+                'content-type': 'application/json'
+            },
+            url: 'http://0.0.0.0:' + port + '/v1/ping',
+        }, function (error, response, body) {
+            if (error) {
+                console.log(error);
+                alexaResponse.say("I'm sorry but there was an error processing your request.");
+                resolve();
+                return;
+            }
+            else {
+                console.log(body);
+                var data = JSON.parse(body);
+                serverstarted = data.server.started;
+                serverport = data.server.port;
+                readResponse();
+            }
+        })
+    }
+
+    alexaApp.intent("statusIntent",
+        function (alexaRequest, alexaResponse) {
+            return new Promise(function (resolve, reject) {
+                doStatusIntent(resolve, reject, alexaRequest, alexaResponse);
+            });;
+        }
+    );
+
+
+    // function doUptime(resolve, reject, alexaRequest, alexaResponse) {
+    //     r.get({
+    //         url: seven_day_uptime,
+    //     }, function (error, response, body) {
+    //         if (error) {
+    //             console.log(error);
+    //             alexaResponse.say("I'm sorry but there was an error processing your request.");
+    //             resolve();
+    //             return;
+    //         }
+    //         else {
+    //             console.log(body);
+    //             let $ = cheerio.load(body);
+    //             console.log($);
+    //             var uptime = $('#7Day .UptimeNumber').text()
+    //             alexaResponse.say('Your 7 day uptime is '+ uptime);
+    //             resolve();
+    //             return;
+    //         }
+    //     });
+    // }
+
+    // alexaApp.intent("uptimeIntent",
+    //     function (alexaRequest, alexaResponse) {
+    //         return new Promise(function (resolve, reject) {
+    //             doUptime(resolve, reject, alexaRequest, alexaResponse);
+    //         });
+    //     }
+    // );
 
 
 }
