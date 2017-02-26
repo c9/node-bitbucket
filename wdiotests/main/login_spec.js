@@ -13,7 +13,6 @@ describe('login page', function() {
 
         $('button').click();
 
-
         browser.waitForVisible('form#create-todo');
 
         expect(browser.isVisible('form#create-todo'),'todo form is visible').to.be.true;
