@@ -59,6 +59,10 @@ module.exports = function (app) {
         }
     );
 
+    function getAlexaReadableTime(serverstarted) {
+    return moment(serverstarted).tz(tz).format('MMMM Do, h mm a z');
+    }
+
     function doStatusIntent(resolve, reject, alexaRequest, alexaResponse) {
         var port = app.get('port');
         var serverport;
@@ -72,11 +76,10 @@ module.exports = function (app) {
             count++;
             if (count == expectedCount) {
                 console.log(serverstarted);
-                var humanReadableTime = moment(serverstarted).tz(tz)
-                    .format('MMMM Do YYYY, h:mm:ss a z');
-                console.log(humanReadableTime);
-                // alexaResponse.say('hello');
-                var msg = 'Your application is listening on port ' + serverport + '. This server was deployed on ' + humanReadableTime + '. The status of most recent build for this repository\'s master branch is ' + lastBuildStatus;
+                var humanReadableTime = getAlexaReadableTime(serverstarted); 
+                var msg = 'This server was deployed on ' + humanReadableTime +
+                '. The status of the most recent build for this repository\'s master branch is ' + lastBuildStatus 
+                + '. Your application is listening on port ' + serverport;
                 console.log(msg);
                 console.log(lastBuildStatus);
                 alexaResponse.say(msg);
