@@ -1,0 +1,5 @@
+statusIntent status report
+statusIntent for a status report
+statusIntent status
+statusIntent what is your status
+statusIntent are you okay
