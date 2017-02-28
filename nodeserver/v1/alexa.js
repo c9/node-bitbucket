@@ -71,6 +71,7 @@ module.exports = function (app) {
         var serverstarted;
         var lastBuildStatus;
         var ar = alexaResponse;
+        var logcount;
 
         function readResponse() {
             count++;
@@ -78,8 +79,11 @@ module.exports = function (app) {
                 console.log(serverstarted);
                 var humanReadableTime = getAlexaReadableTime(serverstarted); 
                 var msg = 'This server was deployed on ' + humanReadableTime +
-                '. The status of the most recent build for this repository\'s master branch is ' + lastBuildStatus 
-                + '. Your application is listening on port ' + serverport;
+                '. The status of the most recent build for this repository\'s master branch is ' + lastBuildStatus;
+                if (logcount) {
+                    msg += ". Your application has logged " + logcount 
+                    + " events today."
+                }
                 console.log(msg);
                 console.log(lastBuildStatus);
                 alexaResponse.say(msg);
@@ -101,7 +105,7 @@ module.exports = function (app) {
             headers: {
                 'content-type': 'application/json'
             },
-            url: 'http://0.0.0.0:' + port + '/v1/ping',
+            url: 'http://0.0.0.0:' + port + '/v1/ping/detailed',
         }, function (error, response, body) {
             if (error) {
                 console.log(error);
@@ -114,9 +118,13 @@ module.exports = function (app) {
                 var data = JSON.parse(body);
                 serverstarted = data.server.started;
                 serverport = data.server.port;
+                if (data.logcount) {
+                    logcount = data.logcount;
+                }
                 readResponse();
             }
-        })
+        });
+
     }
 
     alexaApp.intent("statusIntent",
