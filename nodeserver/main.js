@@ -77,8 +77,11 @@ module.exports = function (opts, callback) {
     const PROXIED_PORT = process.env.PROXIED_PORT || 0;
 
     var app = express();
+    if (process.env.LOGSENE_TOKEN) {
+        app.set('logsene_token', process.env.LOGSENE_TOKEN)
+    }
 
-    app.set('serverstarted',Date.now());
+    app.set('serverstarted', Date.now());
 
     createAlexaApp(app);
 
@@ -160,9 +163,8 @@ module.exports = function (opts, callback) {
 
     app.use(morgan('combined', { stream: mainLogger.stream }));
 
-    addAppLoggers(transports);
 
-    var proxyLogger = winston.loggers.get('proxy-server');
+    var proxyLogger = mainLogger;
 
     winston.info("console_log_level:" + CONSOLE_LOG_LEVEL);
 
@@ -178,7 +180,7 @@ module.exports = function (opts, callback) {
         addLoginRouter();
 
         app.use('/v1/users', require(__dirname + '/v1/users/main')({
-            winston: winston.loggers.get('users'),
+            winston: mainLogger,
             database: database,
             passport: passport,
         }).router);
@@ -193,7 +195,7 @@ module.exports = function (opts, callback) {
 
 
     function setupProxy() {
-        var ping = require('./v1/ping.js')({app:app});
+        var ping = require('./v1/ping.js')({ app: app });
         var fileapi = require('./v1/files/main.js')({ winston: winston });
         var ftp = require('./v1/ftp/main.js')({ winston: winston });
 
@@ -400,7 +402,7 @@ module.exports = function (opts, callback) {
         app.use("/v1/todos/public", express.static(__dirname + "/v1/todos/public"));
 
         app.use('/v1/todos', require('./v1/todos/main.js')({
-            winston: winston.loggers.get('todos'),
+            winston: mainLogger,
             db: mongo_db,
             io: todosnsp,
             sessionMiddleware: sessionMiddleware
@@ -412,7 +414,7 @@ module.exports = function (opts, callback) {
     function addZorkRouter() {
 
         app.use('/v1/zork', require(__dirname + '/v1/zork/main')({
-            winston: winston.loggers.get('zork'),
+            winston: mainLogger,
             db: mongo_db,
             frotzcmd: frotzcmd,
             io: io.of('/v1/zork'),
